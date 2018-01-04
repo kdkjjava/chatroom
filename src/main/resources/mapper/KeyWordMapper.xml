@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kdkj.intelligent.dao.KeyWordMapper">
+  <resultMap id="BaseResultMap" type="com.kdkj.intelligent.entity.KeyWord">
+    <id column="主键" jdbcType="INTEGER" property="主键" />
+    <result column="master_id" jdbcType="INTEGER" property="masterId" />
+    <result column="group_space" jdbcType="VARCHAR" property="groupSpace" />
+    <result column="type_space" jdbcType="VARCHAR" property="typeSpace" />
+    <result column="inner_space" jdbcType="VARCHAR" property="innerSpace" />
+    <result column="upper_key" jdbcType="VARCHAR" property="upperKey" />
+    <result column="lower_key" jdbcType="VARCHAR" property="lowerKey" />
+    <result column="modify_attack" jdbcType="VARCHAR" property="modifyAttack" />
+    <result column="delete_attack" jdbcType="VARCHAR" property="deleteAttack" />
+    <result column="query_attack" jdbcType="VARCHAR" property="queryAttack" />
+    <result column="count_key" jdbcType="VARCHAR" property="countKey" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from key_word
+    where 主键 = #{主键,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.kdkj.intelligent.entity.KeyWord">
+    insert into key_word (主键, master_id, group_space, 
+      type_space, inner_space, upper_key, 
+      lower_key, modify_attack, delete_attack, 
+      query_attack, count_key)
+    values (#{主键,jdbcType=INTEGER}, #{masterId,jdbcType=INTEGER}, #{groupSpace,jdbcType=VARCHAR}, 
+      #{typeSpace,jdbcType=VARCHAR}, #{innerSpace,jdbcType=VARCHAR}, #{upperKey,jdbcType=VARCHAR}, 
+      #{lowerKey,jdbcType=VARCHAR}, #{modifyAttack,jdbcType=VARCHAR}, #{deleteAttack,jdbcType=VARCHAR}, 
+      #{queryAttack,jdbcType=VARCHAR}, #{countKey,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.kdkj.intelligent.entity.KeyWord">
+    update key_word
+    set master_id = #{masterId,jdbcType=INTEGER},
+      group_space = #{groupSpace,jdbcType=VARCHAR},
+      type_space = #{typeSpace,jdbcType=VARCHAR},
+      inner_space = #{innerSpace,jdbcType=VARCHAR},
+      upper_key = #{upperKey,jdbcType=VARCHAR},
+      lower_key = #{lowerKey,jdbcType=VARCHAR},
+      modify_attack = #{modifyAttack,jdbcType=VARCHAR},
+      delete_attack = #{deleteAttack,jdbcType=VARCHAR},
+      query_attack = #{queryAttack,jdbcType=VARCHAR},
+      count_key = #{countKey,jdbcType=VARCHAR}
+    where 主键 = #{主键,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 主键, master_id, group_space, type_space, inner_space, upper_key, lower_key, 
+    modify_attack, delete_attack, query_attack, count_key
+    from key_word
+    where 主键 = #{主键,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select 主键, master_id, group_space, type_space, inner_space, upper_key, lower_key, 
+    modify_attack, delete_attack, query_attack, count_key
+    from key_word
+  </select>
+</mapper>

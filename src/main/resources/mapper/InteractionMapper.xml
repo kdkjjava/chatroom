@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kdkj.intelligent.dao.InteractionMapper">
+  <resultMap id="BaseResultMap" type="com.kdkj.intelligent.entity.Interaction">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="master_id" jdbcType="INTEGER" property="masterId" />
+    <result column="after_add" jdbcType="VARCHAR" property="afterAdd" />
+    <result column="after_delete" jdbcType="VARCHAR" property="afterDelete" />
+    <result column="modify_provision" jdbcType="VARCHAR" property="modifyProvision" />
+    <result column="modify_playing" jdbcType="VARCHAR" property="modifyPlaying" />
+    <result column="truncate_playing" jdbcType="VARCHAR" property="truncatePlaying" />
+    <result column="modify_nickname" jdbcType="VARCHAR" property="modifyNickname" />
+    <result column="using_image" jdbcType="VARCHAR" property="usingImage" />
+    <result column="cancle_message" jdbcType="VARCHAR" property="cancleMessage" />
+    <result column="receive_request" jdbcType="VARCHAR" property="receiveRequest" />
+    <result column="ensure_request" jdbcType="VARCHAR" property="ensureRequest" />
+    <result column="ensure_playing" jdbcType="VARCHAR" property="ensurePlaying" />
+    <result column="commit_false" jdbcType="VARCHAR" property="commitFalse" />
+    <result column="lack_provision" jdbcType="VARCHAR" property="lackProvision" />
+    <result column="limit_provision" jdbcType="VARCHAR" property="limitProvision" />
+    <result column="game_stoped" jdbcType="VARCHAR" property="gameStoped" />
+    <result column="undo_message" jdbcType="VARCHAR" property="undoMessage" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from interaction
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.kdkj.intelligent.entity.Interaction">
+    insert into interaction (id, master_id, after_add, 
+      after_delete, modify_provision, modify_playing, 
+      truncate_playing, modify_nickname, using_image, 
+      cancle_message, receive_request, ensure_request, 
+      ensure_playing, commit_false, lack_provision, 
+      limit_provision, game_stoped, undo_message
+      )
+    values (#{id,jdbcType=INTEGER}, #{masterId,jdbcType=INTEGER}, #{afterAdd,jdbcType=VARCHAR}, 
+      #{afterDelete,jdbcType=VARCHAR}, #{modifyProvision,jdbcType=VARCHAR}, #{modifyPlaying,jdbcType=VARCHAR}, 
+      #{truncatePlaying,jdbcType=VARCHAR}, #{modifyNickname,jdbcType=VARCHAR}, #{usingImage,jdbcType=VARCHAR}, 
+      #{cancleMessage,jdbcType=VARCHAR}, #{receiveRequest,jdbcType=VARCHAR}, #{ensureRequest,jdbcType=VARCHAR}, 
+      #{ensurePlaying,jdbcType=VARCHAR}, #{commitFalse,jdbcType=VARCHAR}, #{lackProvision,jdbcType=VARCHAR}, 
+      #{limitProvision,jdbcType=VARCHAR}, #{gameStoped,jdbcType=VARCHAR}, #{undoMessage,jdbcType=VARCHAR}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.kdkj.intelligent.entity.Interaction">
+    update interaction
+    set master_id = #{masterId,jdbcType=INTEGER},
+      after_add = #{afterAdd,jdbcType=VARCHAR},
+      after_delete = #{afterDelete,jdbcType=VARCHAR},
+      modify_provision = #{modifyProvision,jdbcType=VARCHAR},
+      modify_playing = #{modifyPlaying,jdbcType=VARCHAR},
+      truncate_playing = #{truncatePlaying,jdbcType=VARCHAR},
+      modify_nickname = #{modifyNickname,jdbcType=VARCHAR},
+      using_image = #{usingImage,jdbcType=VARCHAR},
+      cancle_message = #{cancleMessage,jdbcType=VARCHAR},
+      receive_request = #{receiveRequest,jdbcType=VARCHAR},
+      ensure_request = #{ensureRequest,jdbcType=VARCHAR},
+      ensure_playing = #{ensurePlaying,jdbcType=VARCHAR},
+      commit_false = #{commitFalse,jdbcType=VARCHAR},
+      lack_provision = #{lackProvision,jdbcType=VARCHAR},
+      limit_provision = #{limitProvision,jdbcType=VARCHAR},
+      game_stoped = #{gameStoped,jdbcType=VARCHAR},
+      undo_message = #{undoMessage,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, master_id, after_add, after_delete, modify_provision, modify_playing, 
+    truncate_playing, modify_nickname, using_image, cancle_message, receive_request, 
+    ensure_request, ensure_playing, commit_false, lack_provision, limit_provision, game_stoped, 
+    undo_message
+    from interaction
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, master_id, after_add, after_delete, modify_provision, modify_playing, 
+    truncate_playing, modify_nickname, using_image, cancle_message, receive_request, 
+    ensure_request, ensure_playing, commit_false, lack_provision, limit_provision, game_stoped, 
+    undo_message
+    from interaction
+  </select>
+</mapper>

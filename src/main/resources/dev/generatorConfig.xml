@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+    <!-- 引入配置文件 -->
+    <!-- <properties resource="classpath:jdbc.properties"/>
+ -->
+    <!--指定驱动的位置-->
+     <!--<classPathEntry-->
+            <!--location="C:\Personal File\maven\repository\mysql\mysql-connector-java\5.1.43\mysql-connector-java-5.1.43.jar"/>-->
+    <!--生成对象环境 targetRuntime= MyBatis3：默认的值，生成基于MyBatis3.x以上版本的内容，包括XXXBySample-->
+
+    <context id="mybatis" targetRuntime="MyBatis3Simple">
+        <!-- 下面这三句是generator内置插件，具体说明参考地址：http://blog.csdn.net/zsg88/article/details/77619240?locationNum=5&fps=1 -->
+        <!-- <plugin type="org.mybatis.generator.plugins.EqualsHashCodePlugin"></plugin>
+     <plugin type="org.mybatis.generator.plugins.SerializablePlugin"></plugin>
+     <plugin type="org.mybatis.generator.plugins.ToStringPlugin"></plugin>  -->
+        <commentGenerator>
+            <!-- 这个元素用来去除指定生成的注释中是否包含生成的日期 false:表示保护 -->
+            <!-- 如果生成日期，会造成即使修改一个字段，整个实体类所有属性都会发生变化，不利于版本控制，所以设置为true -->
+            <property name="suppressDate" value="false"/>
+            <!-- 是否去除自动生成的注释 true：是 ： false:否 -->
+            <property name="suppressAllComments" value="true"/>
+        </commentGenerator>
+
+        <!--数据库相关设置-->
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://192.168.20.8:3306/intelligent"
+                        userId="root"
+                        password="root"/>
+
+        <!--实体放置目录-->
+        <javaModelGenerator targetPackage="com.kdkj.intelligent.entity"
+                            targetProject="src/main/java">
+            <property name="enableSubPackages" value="true"/>
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+
+        <!--mybatis映射xml文件放置位置-->
+        <sqlMapGenerator targetPackage="mapper"
+                         targetProject="src/main/resources">
+            <property name="enableSubPackages" value="true"/>
+        </sqlMapGenerator>
+
+        <javaClientGenerator targetPackage="com.kdkj.intelligent.dao"
+                             targetProject="src/main/java"
+                             type="XMLMAPPER">
+            <property name="enableSubPackages" value="true"/>
+        </javaClientGenerator>
+
+        <!--如果有多个表，复制这一段，改下表名即可-->
+       <!-- <table tableName="sys_user_info" domainObjectName="UserInfo"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false"
+               selectByExampleQueryId="false">-->
+            <!-- 这里还可以做一些控制字段类型，控制哪些字段不生成等 -->
+            <!-- 忽略列，不生成bean 字段 -->
+            <!-- <ignoreColumn column="name" />     -->
+            <!-- 指定列的java数据类型 -->
+            <!-- <columnOverride column="sex" jdbcType="VARCHAR" /> -->
+        <!--</table>-->
+        <table tableName="friendship"/>
+        <table tableName="group_team"/>
+        <table tableName="interaction"/>
+        <table tableName="key_word"/>
+        <table tableName="members"/>
+        <table tableName="users"/>
+
+        <!--1，schema：数据库的schema；-->
+        <!--2，catalog：数据库的catalog；-->
+        <!--3，alias：为数据表设置的别名，如果设置了alias，那么生成的所有的SELECT SQL语句中，列名会变成：alias_actualColumnName-->
+        <!--4，domainObjectName：生成的domain类的名字，如果不设置，直接使用表名作为domain类的名字；可以设置为somepck.domainName，那么会自动把domainName类再放到somepck包里面；-->
+        <!--5，enableInsert（默认true）：指定是否生成insert语句；-->
+        <!--6，enableSelectByPrimaryKey（默认true）：指定是否生成按照主键查询对象的语句（就是getById或get）；-->
+        <!--7，enableSelectByExample（默认true）：MyBatis3Simple为false，指定是否生成动态查询语句；-->
+        <!--8，enableUpdateByPrimaryKey（默认true）：指定是否生成按照主键修改对象的语句（即update)；-->
+        <!--9，enableDeleteByPrimaryKey（默认true）：指定是否生成按照主键删除对象的语句（即delete）；-->
+        <!--10，enableDeleteByExample（默认true）：MyBatis3Simple为false，指定是否生成动态删除语句；-->
+        <!--11，enableCountByExample（默认true）：MyBatis3Simple为false，指定是否生成动态查询总条数语句（用于分页的总条数查询）；-->
+        <!--12，enableUpdateByExample（默认true）：MyBatis3Simple为false，指定是否生成动态修改语句（只修改对象中不为空的属性）；-->
+        <!--13，modelType：参考context元素的defaultModelType，相当于覆盖；-->
+        <!--14，delimitIdentifiers：参考tableName的解释，注意，默认的delimitIdentifiers是双引号，如果类似MYSQL这样的数据库，
+        使用的是`（反引号，那么还需要设置context的beginningDelimiter和endingDelimiter属性）-->
+        <!--15，delimitAllColumns：设置是否所有生成的SQL中的列名都使用标识符引起来。默认为false，delimitIdentifiers参考context的属性-->
+
+    </context>
+</generatorConfiguration>

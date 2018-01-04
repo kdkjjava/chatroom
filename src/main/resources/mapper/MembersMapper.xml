@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kdkj.intelligent.dao.MembersMapper">
+  <resultMap id="BaseResultMap" type="com.kdkj.intelligent.entity.Members">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="group_id" jdbcType="INTEGER" property="groupId" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="build_time" jdbcType="TIMESTAMP" property="buildTime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from members
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.kdkj.intelligent.entity.Members">
+    insert into members (id, user_id, group_id, 
+      status, build_time)
+    values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=INTEGER}, #{groupId,jdbcType=INTEGER}, 
+      #{status,jdbcType=VARCHAR}, #{buildTime,jdbcType=TIMESTAMP})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.kdkj.intelligent.entity.Members">
+    update members
+    set user_id = #{userId,jdbcType=INTEGER},
+      group_id = #{groupId,jdbcType=INTEGER},
+      status = #{status,jdbcType=VARCHAR},
+      build_time = #{buildTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select id, user_id, group_id, status, build_time
+    from members
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, user_id, group_id, status, build_time
+    from members
+  </select>
+</mapper>

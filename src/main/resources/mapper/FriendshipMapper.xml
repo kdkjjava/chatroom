@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kdkj.intelligent.dao.FriendshipMapper">
+  <resultMap id="BaseResultMap" type="com.kdkj.intelligent.entity.Friendship">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="uid1" jdbcType="INTEGER" property="uid1" />
+    <result column="uid2" jdbcType="INTEGER" property="uid2" />
+    <result column="build_time" jdbcType="TIMESTAMP" property="buildTime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from friendship
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.kdkj.intelligent.entity.Friendship">
+    insert into friendship (id, uid1, uid2, 
+      build_time)
+    values (#{id,jdbcType=BIGINT}, #{uid1,jdbcType=INTEGER}, #{uid2,jdbcType=INTEGER}, 
+      #{buildTime,jdbcType=TIMESTAMP})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.kdkj.intelligent.entity.Friendship">
+    update friendship
+    set uid1 = #{uid1,jdbcType=INTEGER},
+      uid2 = #{uid2,jdbcType=INTEGER},
+      build_time = #{buildTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select id, uid1, uid2, build_time
+    from friendship
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, uid1, uid2, build_time
+    from friendship
+  </select>
+</mapper>
