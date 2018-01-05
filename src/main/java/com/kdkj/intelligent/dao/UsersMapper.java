@@ -9,7 +9,9 @@ public interface UsersMapper {
     int insert(Users record);
 
     Users selectByPrimaryKey(Integer id);
-
+    
+    List<Users> selectListByUser(Users record);
+    
     List<Users> selectAll();
 
     int updateByPrimaryKey(Users record);
