@@ -19,6 +19,8 @@ public class GroupTeam {
 
     private Date buildTime;
 
+    private Integer gameId;
+
     public Integer getId() {
         return id;
     }
@@ -81,5 +83,13 @@ public class GroupTeam {
 
     public void setBuildTime(Date buildTime) {
         this.buildTime = buildTime;
+    }
+
+    public Integer getGameId() {
+        return gameId;
+    }
+
+    public void setGameId(Integer gameId) {
+        this.gameId = gameId;
     }
 }

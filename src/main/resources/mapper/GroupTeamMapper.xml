@@ -10,6 +10,7 @@
     <result column="status" jdbcType="VARCHAR" property="status" />
     <result column="type" jdbcType="VARCHAR" property="type" />
     <result column="build_time" jdbcType="TIMESTAMP" property="buildTime" />
+    <result column="game_id" jdbcType="INTEGER" property="gameId" />
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from group_team
@@ -18,10 +19,12 @@
   <insert id="insert" parameterType="com.kdkj.intelligent.entity.GroupTeam">
     insert into group_team (id, group_id, group_name, 
       master_id, upper_limit, status, 
-      type, build_time)
+      type, build_time, game_id
+      )
     values (#{id,jdbcType=INTEGER}, #{groupId,jdbcType=VARCHAR}, #{groupName,jdbcType=VARCHAR}, 
       #{masterId,jdbcType=INTEGER}, #{upperLimit,jdbcType=INTEGER}, #{status,jdbcType=VARCHAR}, 
-      #{type,jdbcType=VARCHAR}, #{buildTime,jdbcType=TIMESTAMP})
+      #{type,jdbcType=VARCHAR}, #{buildTime,jdbcType=TIMESTAMP}, #{gameId,jdbcType=INTEGER}
+      )
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.kdkj.intelligent.entity.GroupTeam">
     update group_team
@@ -31,16 +34,19 @@
       upper_limit = #{upperLimit,jdbcType=INTEGER},
       status = #{status,jdbcType=VARCHAR},
       type = #{type,jdbcType=VARCHAR},
-      build_time = #{buildTime,jdbcType=TIMESTAMP}
+      build_time = #{buildTime,jdbcType=TIMESTAMP},
+      game_id = #{gameId,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select id, group_id, group_name, master_id, upper_limit, status, type, build_time
+    select id, group_id, group_name, master_id, upper_limit, status, type, build_time, 
+    game_id
     from group_team
     where id = #{id,jdbcType=INTEGER}
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
-    select id, group_id, group_name, master_id, upper_limit, status, type, build_time
+    select id, group_id, group_name, master_id, upper_limit, status, type, build_time, 
+    game_id
     from group_team
   </select>
 </mapper>

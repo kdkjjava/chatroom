@@ -1,7 +1,7 @@
 package com.kdkj.intelligent.entity;
 
 public class KeyWord {
-    private Integer 主键;
+    private Integer id;
 
     private Integer masterId;
 
@@ -23,12 +23,12 @@ public class KeyWord {
 
     private String countKey;
 
-    public Integer get主键() {
-        return 主键;
+    public Integer getId() {
+        return id;
     }
 
-    public void set主键(Integer 主键) {
-        this.主键 = 主键;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public Integer getMasterId() {

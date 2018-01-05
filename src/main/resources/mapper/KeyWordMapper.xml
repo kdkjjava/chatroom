@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kdkj.intelligent.dao.KeyWordMapper">
   <resultMap id="BaseResultMap" type="com.kdkj.intelligent.entity.KeyWord">
-    <id column="主键" jdbcType="INTEGER" property="主键" />
+    <id column="id" jdbcType="INTEGER" property="id" />
     <result column="master_id" jdbcType="INTEGER" property="masterId" />
     <result column="group_space" jdbcType="VARCHAR" property="groupSpace" />
     <result column="type_space" jdbcType="VARCHAR" property="typeSpace" />
@@ -16,14 +16,14 @@
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from key_word
-    where 主键 = #{主键,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.kdkj.intelligent.entity.KeyWord">
-    insert into key_word (主键, master_id, group_space, 
+    insert into key_word (id, master_id, group_space, 
       type_space, inner_space, upper_key, 
       lower_key, modify_attack, delete_attack, 
       query_attack, count_key)
-    values (#{主键,jdbcType=INTEGER}, #{masterId,jdbcType=INTEGER}, #{groupSpace,jdbcType=VARCHAR}, 
+    values (#{id,jdbcType=INTEGER}, #{masterId,jdbcType=INTEGER}, #{groupSpace,jdbcType=VARCHAR}, 
       #{typeSpace,jdbcType=VARCHAR}, #{innerSpace,jdbcType=VARCHAR}, #{upperKey,jdbcType=VARCHAR}, 
       #{lowerKey,jdbcType=VARCHAR}, #{modifyAttack,jdbcType=VARCHAR}, #{deleteAttack,jdbcType=VARCHAR}, 
       #{queryAttack,jdbcType=VARCHAR}, #{countKey,jdbcType=VARCHAR})
@@ -40,16 +40,16 @@
       delete_attack = #{deleteAttack,jdbcType=VARCHAR},
       query_attack = #{queryAttack,jdbcType=VARCHAR},
       count_key = #{countKey,jdbcType=VARCHAR}
-    where 主键 = #{主键,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
   </update>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 主键, master_id, group_space, type_space, inner_space, upper_key, lower_key, 
+    select id, master_id, group_space, type_space, inner_space, upper_key, lower_key, 
     modify_attack, delete_attack, query_attack, count_key
     from key_word
-    where 主键 = #{主键,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
-    select 主键, master_id, group_space, type_space, inner_space, upper_key, lower_key, 
+    select id, master_id, group_space, type_space, inner_space, upper_key, lower_key, 
     modify_attack, delete_attack, query_attack, count_key
     from key_word
   </select>

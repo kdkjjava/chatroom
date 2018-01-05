@@ -4,11 +4,11 @@ import com.kdkj.intelligent.entity.KeyWord;
 import java.util.List;
 
 public interface KeyWordMapper {
-    int deleteByPrimaryKey(Integer 主键);
+    int deleteByPrimaryKey(Integer id);
 
     int insert(KeyWord record);
 
-    KeyWord selectByPrimaryKey(Integer 主键);
+    KeyWord selectByPrimaryKey(Integer id);
 
     List<KeyWord> selectAll();
 

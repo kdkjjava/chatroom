@@ -41,8 +41,8 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select id, username, password, nickname, type, status, score, regist_time, picture_address, 
-    phone
+    select 'true' as QUERYID,id, username, password, nickname, type, status, score, regist_time, 
+    picture_address, phone
     from users
     where id = #{id,jdbcType=INTEGER}
   </select>
