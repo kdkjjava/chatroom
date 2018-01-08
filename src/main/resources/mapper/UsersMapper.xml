@@ -18,11 +18,14 @@
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.kdkj.intelligent.entity.Users">
-    insert into users (id, username, password, 
+       <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">  
+            SELECT LAST_INSERT_ID()  
+        </selectKey> 
+    insert into users (username, password, 
       nickname, type, status, 
       score, regist_time, picture_address, 
       phone)
-    values (#{id,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
+    values (#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
       #{nickname,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, 
       #{score,jdbcType=BIGINT}, #{registTime,jdbcType=TIMESTAMP}, #{pictureAddress,jdbcType=VARCHAR}, 
       #{phone,jdbcType=VARCHAR})
@@ -46,6 +49,22 @@
     from users
     where id = #{id,jdbcType=INTEGER}
   </select>
+  
+  <select id="selectListByUser" resultMap="BaseResultMap" parameterType="com.kdkj.intelligent.entity.Users">
+     select id, username, password,nickname, type, status, 
+      score, regist_time, picture_address,phone
+     from users
+     where 1=1
+    <if test="username !=null and username !='' ">and username = #{username,jdbcType=VARCHAR}</if>
+    <if test="nickname !=null and nickname !='' ">and nickname = #{nickname,jdbcType=VARCHAR}</if>
+    <if test="type !=null and type !=''">and type = #{type,jdbcType=VARCHAR}</if>
+    <if test="status !=null and status !=''">and status = #{status,jdbcType=VARCHAR}</if>
+    <if test="score !=null and score !=''">and score = #{score,jdbcType=VARCHAR}</if>
+    <if test="registTime !=null">and regist_time = #{registTime,jdbcType=TIMESTAMP}</if>
+    <if test="pictureAddress !=null and picture_address !=''">and picture_address = #{pictureAddress,jdbcType=VARCHAR}</if>
+    <if test="phone !=null and phone !=''">and phone = #{phone,jdbcType=VARCHAR}</if>
+  </select>
+  
   <select id="selectAll" resultMap="BaseResultMap">
     select id, username, password, nickname, type, status, score, regist_time, picture_address, 
     phone

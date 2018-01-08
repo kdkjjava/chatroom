@@ -1,9 +1,15 @@
 package com.kdkj.intelligent.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Users {
-    private Integer id;
+public class Users extends Pageinfo implements Serializable{
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -8543965219359179064L;
+
+	private Integer id;
 
     private String username;
 
