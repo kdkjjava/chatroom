@@ -1,5 +1,7 @@
 package com.kdkj.intelligent.service.impl;
 
+import java.io.UnsupportedEncodingException;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,7 @@ import com.github.pagehelper.PageInfo;
 import com.kdkj.intelligent.dao.UsersMapper;
 import com.kdkj.intelligent.entity.Users;
 import com.kdkj.intelligent.service.UsersService;
+import com.kdkj.intelligent.util.MD5Encryption;
 
 @Service
 public class UsersServiceImpl implements UsersService{
@@ -22,7 +25,9 @@ public class UsersServiceImpl implements UsersService{
 	}
 
 	@Override
-	public int insert(Users record) {
+	public int insert(Users record) throws UnsupportedEncodingException {
+		record.setRegistTime(new Date());
+		record.setPassword(MD5Encryption.getEncryption(record.getPassword()));
 		return usersMapper.insert(record);
 	}
 
