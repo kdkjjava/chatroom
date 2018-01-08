@@ -1,8 +1,10 @@
 package com.kdkj.intelligent.dao;
 
 import com.kdkj.intelligent.entity.Interaction;
-import java.util.List;
+import org.springframework.stereotype.Repository;
 
+import java.util.List;
+@Repository
 public interface InteractionMapper {
     int deleteByPrimaryKey(Integer id);
 

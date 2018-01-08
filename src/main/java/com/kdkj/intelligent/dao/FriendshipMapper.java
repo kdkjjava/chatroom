@@ -1,8 +1,10 @@
 package com.kdkj.intelligent.dao;
 
 import com.kdkj.intelligent.entity.Friendship;
-import java.util.List;
+import org.springframework.stereotype.Repository;
 
+import java.util.List;
+@Repository
 public interface FriendshipMapper {
     int deleteByPrimaryKey(Long id);
 

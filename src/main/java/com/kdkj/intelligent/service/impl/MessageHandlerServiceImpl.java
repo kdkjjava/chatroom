@@ -8,12 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.regex.Pattern;
 
 /**
  * powered by IntelliJ IDEA
@@ -31,28 +28,29 @@ public class MessageHandlerServiceImpl implements MessageHandlerService {
     /**
      * 声明一个map集合用于存储关键字信息
      */
-    private static Map<Integer, KeyWord> keyWordList;
+    private volatile static Map<Integer, KeyWord> keyWordList;
     /**
      * 声明一个map集合用于储存各个代理的命令关键字
      */
-    private static Map<Integer, ArrayList<String>> commandWords;
+    private volatile static Map<Integer, ArrayList<String>> commandWords;
 
     static {
         keyWordList = new ConcurrentHashMap<Integer, KeyWord>();
         commandWords = new ConcurrentHashMap<Integer, ArrayList<String>>();
+
     }
 
     /**
      * 该方法用于初始化keyWordList的值，当spring容器一加载即将数据库的参数查询出放到该变量中
      */
     @PostConstruct
-    private void initialKeyWord() {
-        List<KeyWord> keyWords = keyWordMapper.selectAll();
+    public void initialKeyWord() {
+        List<KeyWord> keyWords = getKeyWordList();
         for (KeyWord keyWord : keyWords) {
-            keyWordList.put(keyWord.getId(), keyWord);
+            keyWordList.put(keyWord.getMasterId(), keyWord);
 
-            ArrayList<String> commandList = commandWords.put(keyWord.getId(), new ArrayList<>());
-
+            commandWords.put(keyWord.getMasterId(), new ArrayList<>());
+            ArrayList<String> commandList = commandWords.get(keyWord.getMasterId());
             //将命令关键字全部添加到commandWords的集合中
             commandList.addAll(Arrays.asList(keyWord.getUpperKey().split(" ")));
             commandList.addAll(Arrays.asList(keyWord.getLowerKey().split(" ")));
@@ -61,6 +59,7 @@ public class MessageHandlerServiceImpl implements MessageHandlerService {
             commandList.addAll(Arrays.asList(keyWord.getQueryAttack().split(" ")));
             commandList.addAll(Arrays.asList(keyWord.getCountKey().split(" ")));
         }
+        System.out.println(keyWordList.get(2).getTypeSpace());
 
     }
 
@@ -74,10 +73,15 @@ public class MessageHandlerServiceImpl implements MessageHandlerService {
      */
     @Override
     public String handleMessage(String message, Integer proxyId) {
-        if (isCommand(message,proxyId)!=null)
+        if (isCommand(message, proxyId) != null)
             return message;
 
         return null;
+    }
+
+    @Override
+    public List<KeyWord> getKeyWordList() {
+        return keyWordMapper.selectAll();
     }
 
     /**
@@ -94,5 +98,30 @@ public class MessageHandlerServiceImpl implements MessageHandlerService {
         return null;
     }
 
+    /**
+     * 该方法用于判断玩家传输的信息是否为攻击指令，若是，则转换格式化为对应的字符串
+     *
+     * @param message 用户输入的消息
+     * @param proxyId 代理商的id
+     * @return
+     */
+    private String messageFormat(String message, Integer proxyId) {
+        KeyWord keyWord=keyWordList.get(proxyId);
+        String groupSpace = keyWord.getGroupSpace();
+        groupSpace = groupSpace.replaceAll("空格", " ");
+
+        Pattern pattern = Pattern.compile("\\d"+"["+keyWord.getTypeSpace()+"]"+"[大小单双龙虎]"+"["+keyWord.getTypeSpace()+"]"+"[1-9]+\\d*");
+
+        return null;
+    }
+
+    @Test
+    public void test() {
+
+        String str ="-/\\=、";
+        Pattern pattern = Pattern.compile("^\\d"+"["+str+"]"+"[大小单双龙虎]"+"["+str+"]"+"[1-9]+\\d*$");
+        System.out.println("1\\大\\9".matches(pattern.pattern()));
+        System.out.println(str);
+    }
 
 }

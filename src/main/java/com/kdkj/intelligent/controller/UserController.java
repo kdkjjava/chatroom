@@ -16,6 +16,8 @@ import com.kdkj.intelligent.service.UsersService;
 import com.kdkj.intelligent.util.MD5Encryption;
 import com.kdkj.intelligent.util.Result;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -23,27 +25,27 @@ public class UserController {
     private UsersService usersService;
 
     @RequestMapping(value = "/selectListByUser", method = RequestMethod.POST)
-    public Result selectListByUser(HttpRequest request,Users record) {
+    public Result selectListByUser(HttpServletRequest request, Users record) {
     	PageHelper.startPage(record.getCurrent(), record.getPageSize());
     	PageInfo<Users> page=usersService.selectListByUser(record);
 		return Result.ok("查询成功", page);
     }
     
     @RequestMapping(value = "/selectById", method = RequestMethod.GET)
-    public Result selectById(HttpRequest request,int id) {
+    public Result selectById(HttpServletRequest request,int id) {
     	Users user=usersService.selectByPrimaryKey(id);
 		return Result.ok("查询成功", user);
     }
     
     @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public Result update(HttpRequest request,Users record) {
+    public Result update(HttpServletRequest request,Users record) {
     	record.setPassword(null);
     	usersService.updateByPrimaryKey(record);
 		return Result.ok("修改成功");
     }
     
     @RequestMapping(value = "/modifyPwd", method = RequestMethod.POST)
-    public Result modifyPwd(HttpRequest request,Users record) {
+    public Result modifyPwd(HttpServletRequest request,Users record) {
     	try {
 			record.setPassword(MD5Encryption.getEncryption("111111"));
 			usersService.updateByPrimaryKey(record);
@@ -55,7 +57,7 @@ public class UserController {
     }
     
     @RequestMapping(value = "/addUser", method = RequestMethod.POST)
-    public Result addUser(HttpRequest request,Users record) {
+    public Result addUser(HttpServletRequest request,Users record) {
     	Users user=new Users();
     	user.setUsername(record.getUsername()==null?null:record.getUsername());
     	user.setPhone(record.getPhone()==null?null:record.getPhone());

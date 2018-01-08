@@ -1,6 +1,6 @@
 package com.kdkj.intelligent.websocket;
 
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSON;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 
@@ -36,9 +36,9 @@ public class MyWebSocketHandler implements WebSocketHandler {
     //发送信息前的处理
     public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage) throws Exception {
         // 把客户端的消息解析为JSON对象
-        JSONObject jsonObject = JSONObject.fromObject(webSocketMessage.getPayload().toString());
+        JSON json=JSON.parseObject(webSocketMessage.getPayload().toString());
         //调用普通信息的发送方法
-        sendUsualMessage(webSocketSession,webSocketMessage,jsonObject);
+        sendUsualMessage(webSocketSession,webSocketMessage,json);
 
     }
 
@@ -73,7 +73,7 @@ public class MyWebSocketHandler implements WebSocketHandler {
      * @param webSocketSession
      * @param webSocketMessage
      */
-    public void sendUsualMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage,JSONObject jsonObject){
+    public void sendUsualMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage,JSON json){
 //遍历map集合，将消息发送至同一个房间下的session
         Iterator<Map.Entry<String, List<WebSocketSession>>> iterator = sessionPools.entrySet().iterator();
         while (iterator.hasNext()) {
@@ -82,9 +82,8 @@ public class MyWebSocketHandler implements WebSocketHandler {
                 //判断若是为同一个房间，则遍历房间内的session，并发送消息
                 for (WebSocketSession item : entry.getValue()) {
                     try {
-
-                        // 添加本条消息是否为当前会话本身发的标志
-                        item.sendMessage(new TextMessage(jsonObject.toString()));
+                        //将本条消息通过WebSocketSession发送至客户端
+                        item.sendMessage(new TextMessage(json.toString()));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

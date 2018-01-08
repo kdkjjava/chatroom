@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kdkj.intelligent.dao.FriendshipMapper">
+  <cache  eviction="LRU" flushInterval="500" size="50" readOnly="true"></cache>
   <resultMap id="BaseResultMap" type="com.kdkj.intelligent.entity.Friendship">
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="uid1" jdbcType="INTEGER" property="uid1" />

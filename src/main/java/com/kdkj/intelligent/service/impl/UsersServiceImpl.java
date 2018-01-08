@@ -48,7 +48,7 @@ public class UsersServiceImpl implements UsersService{
 
 	@Override
 	public PageInfo<Users> selectListByUser(Users record) {
-		List<Users> list=usersMapper.selectListByUser(record);
+		List<Users> list= usersMapper.selectListByUser(record);
 		PageInfo<Users> page = new PageInfo<Users>(list);
 		return page;
 	}

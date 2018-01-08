@@ -70,7 +70,7 @@
 
 
 
-  <!-- durid -->
+  <!-- druid -->
   <servlet>
     <servlet-name>DruidStatView</servlet-name>
     <servlet-class>com.alibaba.druid.support.http.StatViewServlet</servlet-class>

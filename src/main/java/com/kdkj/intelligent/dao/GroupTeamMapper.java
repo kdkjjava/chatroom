@@ -1,8 +1,10 @@
 package com.kdkj.intelligent.dao;
 
 import com.kdkj.intelligent.entity.GroupTeam;
-import java.util.List;
+import org.springframework.stereotype.Repository;
 
+import java.util.List;
+@Repository
 public interface GroupTeamMapper {
     int deleteByPrimaryKey(Integer id);
 
