@@ -32,15 +32,17 @@
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.kdkj.intelligent.entity.Users">
     update users
-    set username = #{username,jdbcType=VARCHAR},
-      password = #{password,jdbcType=VARCHAR},
-      nickname = #{nickname,jdbcType=VARCHAR},
-      type = #{type,jdbcType=VARCHAR},
-      status = #{status,jdbcType=VARCHAR},
-      score = #{score,jdbcType=BIGINT},
-      regist_time = #{registTime,jdbcType=TIMESTAMP},
-      picture_address = #{pictureAddress,jdbcType=VARCHAR},
-      phone = #{phone,jdbcType=VARCHAR}
+    <set>
+    <if test="username !=null and username !='' ">and username = #{username,jdbcType=VARCHAR}</if>
+    <if test="nickname !=null and nickname !='' ">and nickname = #{nickname,jdbcType=VARCHAR}</if>
+    <if test="password !=null and password !='' ">and password = #{password,jdbcType=VARCHAR}</if>
+    <if test="type !=null and type !=''">and type = #{type,jdbcType=VARCHAR}</if>
+    <if test="status !=null and status !=''">and status = #{status,jdbcType=VARCHAR}</if>
+    <if test="score !=null and score !=''">and score = #{score,jdbcType=VARCHAR}</if>
+    <if test="registTime !=null">and regist_time = #{registTime,jdbcType=TIMESTAMP}</if>
+    <if test="pictureAddress !=null and picture_address !=''">and picture_address = #{pictureAddress,jdbcType=VARCHAR}</if>
+    <if test="phone !=null and phone !=''">and phone = #{phone,jdbcType=VARCHAR}</if>
+    </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
