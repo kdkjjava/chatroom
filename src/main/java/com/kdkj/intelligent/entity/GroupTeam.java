@@ -1,8 +1,9 @@
 package com.kdkj.intelligent.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class GroupTeam {
+public class GroupTeam extends Pageinfo implements Serializable{
     private Integer id;
     /*
 	 * 群号

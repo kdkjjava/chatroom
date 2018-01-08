@@ -1,9 +1,15 @@
 package com.kdkj.intelligent.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Friendship {
-    private Long id;
+public class Friendship extends Pageinfo implements Serializable{
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 6007427632004714139L;
+
+	private Long id;
 
     private Integer uid1;
 

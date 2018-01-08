@@ -1,6 +1,8 @@
 package com.kdkj.intelligent.entity;
 
-public class KeyWord {
+import java.io.Serializable;
+
+public class KeyWord extends Pageinfo implements Serializable{
     private Integer id;
 
     private Integer masterId;

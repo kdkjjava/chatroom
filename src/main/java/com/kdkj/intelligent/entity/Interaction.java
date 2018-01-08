@@ -1,6 +1,8 @@
 package com.kdkj.intelligent.entity;
 
-public class Interaction {
+import java.io.Serializable;
+
+public class Interaction extends Pageinfo implements Serializable{
     private Integer id;
     /*
 	 * 群主账号

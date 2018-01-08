@@ -1,8 +1,9 @@
 package com.kdkj.intelligent.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Members {
+public class Members extends Pageinfo implements Serializable{
     private Long id;
     /*
 	 * 用户id
