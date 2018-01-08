@@ -4,13 +4,21 @@ import java.util.Date;
 
 public class Members {
     private Long id;
-
+    /*
+	 * 用户id
+	 */
     private Integer userId;
-
+    /*
+	 * 群id
+	 */
     private Integer groupId;
-
+    /*
+	 * 当前用户在群中是否能玩游戏
+	 */
     private String status;
-
+    /*
+	 * 加群时间
+	 */
     private Date buildTime;
 
     public Long getId() {

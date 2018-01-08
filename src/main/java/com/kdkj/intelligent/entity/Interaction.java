@@ -2,13 +2,21 @@ package com.kdkj.intelligent.entity;
 
 public class Interaction {
     private Integer id;
-
+    /*
+	 * 群主账号
+	 */
     private Integer masterId;
-
+    /*
+	 * 添加用户后@对方
+	 */
     private String afterAdd;
-
+    /*
+	 * 删除用户后@对方
+	 */
     private String afterDelete;
-
+    /*
+	 * 修改用户后@对方
+	 */
     private String modifyProvision;
 
     private String modifyPlaying;

@@ -4,21 +4,37 @@ import java.util.Date;
 
 public class GroupTeam {
     private Integer id;
-
+    /*
+	 * 群号
+	 */
     private String groupId;
-
+    /*
+	 * 群名称
+	 */
     private String groupName;
-
+    /*
+	 * 群主账号
+	 */
     private Integer masterId;
-
+    /*
+	 * 群等级？
+	 */
     private Integer upperLimit;
-
+    /*
+	 * 群状态
+	 */
     private String status;
-
+    /*
+	 * 群类型
+	 */
     private String type;
-
+    /*
+	 * 创建时间
+	 */
     private Date buildTime;
-
+    /*
+	 * 标题
+	 */
     private Integer gameId;
 
     public Integer getId() {

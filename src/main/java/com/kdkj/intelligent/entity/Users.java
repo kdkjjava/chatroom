@@ -10,23 +10,39 @@ public class Users extends Pageinfo implements Serializable{
 	private static final long serialVersionUID = -8543965219359179064L;
 
 	private Integer id;
-
+	/*
+	 * 用户名
+	 */
     private String username;
 
     private String password;
-
+    /*
+	 * 昵称
+	 */
     private String nickname;
-
+    /*
+	 * 用户类型 0-普通用户 1-代理商 2-管理员
+	 */
     private String type;
-
+    /*
+	 * 状态
+	 */
     private String status;
-
+    /*
+	 * 积分
+	 */
     private Long score;
-
+    /*
+	 * 注册时间
+	 */
     private Date registTime;
-
+    /*
+	 * 头像
+	 */
     private String pictureAddress;
-
+    /*
+	 * 电话
+	 */
     private String phone;
 
     public Integer getId() {
