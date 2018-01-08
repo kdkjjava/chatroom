@@ -75,7 +75,19 @@
       <artifactId>spring-tx</artifactId>
       <version>4.3.11.RELEASE</version>
     </dependency>
-
+    <!--spring整合websocket-->
+    <!-- https://mvnrepository.com/artifact/org.springframework/spring-websocket -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-websocket</artifactId>
+      <version>4.3.11.RELEASE</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.springframework/spring-messaging -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-messaging</artifactId>
+      <version>4.3.11.RELEASE</version>
+    </dependency>
     <!-- mysql -->
     <dependency>
       <groupId>mysql</groupId>
@@ -234,7 +246,7 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>${junit.version}</version>
-      <scope>test</scope> <!-- 这句是打包正式时不导入的包，不知idea对这有冲突 -->
+      <!--<scope>test</scope> &lt;!&ndash; 这句是打包正式时不导入的包，不知idea对这有冲突 &ndash;&gt;-->
     </dependency>
     <!-- kaptcha验证码插件 -->
     <dependency>
@@ -242,6 +254,14 @@
       <artifactId>kaptcha</artifactId>
       <version>${kaptcha-version}</version>
     </dependency>
+    <!-- json解析工具 -->
+    <dependency>
+      <groupId>net.sf.json-lib</groupId>
+      <artifactId>json-lib</artifactId>
+      <version>2.4</version>
+      <classifier>jdk15</classifier>
+    </dependency>
+
   </dependencies>
   <build>
     <finalName>chatroom</finalName>
