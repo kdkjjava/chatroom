@@ -9,7 +9,7 @@ package com.kdkj.intelligent.service;
  **/
 public interface MessageHandlerService {
 
-    String isCommand(String message,Integer proxyId);
+    String handleMessage(String message,Integer proxyId);
 
 
 }

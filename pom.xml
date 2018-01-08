@@ -246,7 +246,7 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>${junit.version}</version>
-      <scope>test</scope> <!-- 这句是打包正式时不导入的包，不知idea对这有冲突 -->
+      <!--<scope>test</scope> &lt;!&ndash; 这句是打包正式时不导入的包，不知idea对这有冲突 &ndash;&gt;-->
     </dependency>
     <!-- kaptcha验证码插件 -->
     <dependency>
