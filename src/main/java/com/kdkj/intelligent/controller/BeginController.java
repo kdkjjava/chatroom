@@ -5,10 +5,7 @@ import com.kdkj.intelligent.service.BaseService;
 import com.kdkj.intelligent.service.MessageHandlerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +14,7 @@ import java.util.Date;
 import java.util.Map;
 
 @Controller
+@RequestMapping("test")
 public class BeginController {
     @Autowired
     private BaseService baseService;
@@ -46,5 +44,6 @@ public class BeginController {
         map.put("roomNum",roomNum);
         return "webSocket";
     }
+
 
 }

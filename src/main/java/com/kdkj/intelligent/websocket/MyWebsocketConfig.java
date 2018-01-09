@@ -1,4 +1,4 @@
-package com.kdkj.intelligent.controller;
+package com.kdkj.intelligent.websocket;
 
 import com.kdkj.intelligent.interceptor.ChatRoomInterceptor;
 import com.kdkj.intelligent.websocket.MyWebSocketHandler;
