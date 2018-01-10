@@ -10,7 +10,11 @@ public interface GroupTeamMapper {
 
     GroupTeam selectByPrimaryKey(Integer id);
 
+    List<GroupTeam> selectListByGroup(GroupTeam record);
+    
     List<GroupTeam> selectAll();
 
     int updateByPrimaryKey(GroupTeam record);
+    
+    List<GroupTeam> selectGroupByUserId(Integer id);
 }

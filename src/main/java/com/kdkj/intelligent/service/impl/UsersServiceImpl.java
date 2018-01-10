@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.github.pagehelper.PageInfo;
+import com.kdkj.intelligent.dao.GroupTeamMapper;
 import com.kdkj.intelligent.dao.UsersMapper;
+import com.kdkj.intelligent.entity.GroupTeam;
 import com.kdkj.intelligent.entity.Users;
 import com.kdkj.intelligent.service.UsersService;
 import com.kdkj.intelligent.util.MD5Encryption;
@@ -18,6 +20,8 @@ public class UsersServiceImpl implements UsersService{
 
 	@Autowired
 	UsersMapper usersMapper;
+	@Autowired
+	GroupTeamMapper groupTeamMapper;
 	
 	@Override
 	public int deleteByPrimaryKey(Integer id) {
@@ -47,10 +51,15 @@ public class UsersServiceImpl implements UsersService{
 	}
 
 	@Override
-	public PageInfo<Users> selectListByUser(Users record) {
+	public List<Users> selectListByUser(Users record) {
 		List<Users> list=usersMapper.selectListByUser(record);
-		PageInfo<Users> page = new PageInfo<Users>(list);
-		return page;
+		return list;
 	}
+
+	@Override
+	public List<GroupTeam> selectGroupByUserId(Integer userId) {
+		return groupTeamMapper.selectGroupByUserId(userId);
+	}
+
 
 }

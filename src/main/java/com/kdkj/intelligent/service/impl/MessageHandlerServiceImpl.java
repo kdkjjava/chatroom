@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentMap;
  * @Date: 2018/1/8 11:56
  * @Description: 本类用于对消息的处理
  **/
-@Service
+//@Service
 public class MessageHandlerServiceImpl implements MessageHandlerService {
 
     @Autowired
@@ -45,7 +45,7 @@ public class MessageHandlerServiceImpl implements MessageHandlerService {
     /**
      * 该方法用于初始化keyWordList的值，当spring容器一加载即将数据库的参数查询出放到该变量中
      */
-    @PostConstruct
+  /*  @PostConstruct
     private void initialKeyWord() {
         List<KeyWord> keyWords = keyWordMapper.selectAll();
         for (KeyWord keyWord : keyWords) {
@@ -62,7 +62,7 @@ public class MessageHandlerServiceImpl implements MessageHandlerService {
             commandList.addAll(Arrays.asList(keyWord.getCountKey().split(" ")));
         }
 
-    }
+    }*/
 
 
     /**
