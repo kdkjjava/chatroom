@@ -33,15 +33,15 @@
   <update id="updateByPrimaryKey" parameterType="com.kdkj.intelligent.entity.Users">
     update users
     <set>
-    <if test="username !=null and username !='' ">and username = #{username,jdbcType=VARCHAR}</if>
-    <if test="nickname !=null and nickname !='' ">and nickname = #{nickname,jdbcType=VARCHAR}</if>
-    <if test="password !=null and password !='' ">and password = #{password,jdbcType=VARCHAR}</if>
-    <if test="type !=null and type !=''">and type = #{type,jdbcType=VARCHAR}</if>
-    <if test="status !=null and status !=''">and status = #{status,jdbcType=VARCHAR}</if>
-    <if test="score !=null and score !=''">and score = #{score,jdbcType=VARCHAR}</if>
-    <if test="registTime !=null">and regist_time = #{registTime,jdbcType=TIMESTAMP}</if>
-    <if test="pictureAddress !=null and picture_address !=''">and picture_address = #{pictureAddress,jdbcType=VARCHAR}</if>
-    <if test="phone !=null and phone !=''">and phone = #{phone,jdbcType=VARCHAR}</if>
+    <if test="username !=null and username !='' "> username = #{username,jdbcType=VARCHAR},</if>
+    <if test="nickname !=null and nickname !='' "> nickname = #{nickname,jdbcType=VARCHAR},</if>
+    <if test="password !=null and password !='' "> password = #{password,jdbcType=VARCHAR},</if>
+    <if test="type !=null and type !=''"> type = #{type,jdbcType=VARCHAR},</if>
+    <if test="status !=null and status !=''"> status = #{status,jdbcType=VARCHAR},</if>
+    <if test="score !=null and score !=''"> score = #{score,jdbcType=VARCHAR},</if>
+    <if test="registTime !=null"> regist_time = #{registTime,jdbcType=TIMESTAMP}</if>
+    <if test="pictureAddress !=null and picture_address !=''"> picture_address = #{pictureAddress,jdbcType=VARCHAR},</if>
+    <if test="phone !=null and phone !=''"> phone = #{phone,jdbcType=VARCHAR},</if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -65,6 +65,14 @@
     <if test="registTime !=null">and regist_time = #{registTime,jdbcType=TIMESTAMP}</if>
     <if test="pictureAddress !=null and picture_address !=''">and picture_address = #{pictureAddress,jdbcType=VARCHAR}</if>
     <if test="phone !=null and phone !=''">and phone = #{phone,jdbcType=VARCHAR}</if>
+  </select>
+  
+  <select id="selectUserByGroupId"  parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select u.id, username,u.nickname, u.type, u.status, 
+      u.score, u.regist_time, u.picture_address,u.phone
+    from users u,members m
+    where m.group_id=#{id,jdbcType=INTEGER}
+       and u.id=m.user_id
   </select>
   
   <select id="selectAll" resultMap="BaseResultMap">

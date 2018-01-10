@@ -1,52 +1,86 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kdkj.intelligent.dao.GroupTeamMapper">
-  <resultMap id="BaseResultMap" type="com.kdkj.intelligent.entity.GroupTeam">
-    <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="group_id" jdbcType="VARCHAR" property="groupId" />
-    <result column="group_name" jdbcType="VARCHAR" property="groupName" />
-    <result column="master_id" jdbcType="INTEGER" property="masterId" />
-    <result column="upper_limit" jdbcType="INTEGER" property="upperLimit" />
-    <result column="status" jdbcType="VARCHAR" property="status" />
-    <result column="type" jdbcType="VARCHAR" property="type" />
-    <result column="build_time" jdbcType="TIMESTAMP" property="buildTime" />
-    <result column="game_id" jdbcType="INTEGER" property="gameId" />
-  </resultMap>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from group_team
-    where id = #{id,jdbcType=INTEGER}
-  </delete>
-  <insert id="insert" parameterType="com.kdkj.intelligent.entity.GroupTeam">
-    insert into group_team (id, group_id, group_name, 
-      master_id, upper_limit, status, 
-      type, build_time, game_id
-      )
-    values (#{id,jdbcType=INTEGER}, #{groupId,jdbcType=VARCHAR}, #{groupName,jdbcType=VARCHAR}, 
-      #{masterId,jdbcType=INTEGER}, #{upperLimit,jdbcType=INTEGER}, #{status,jdbcType=VARCHAR}, 
-      #{type,jdbcType=VARCHAR}, #{buildTime,jdbcType=TIMESTAMP}, #{gameId,jdbcType=INTEGER}
-      )
-  </insert>
-  <update id="updateByPrimaryKey" parameterType="com.kdkj.intelligent.entity.GroupTeam">
-    update group_team
-    set group_id = #{groupId,jdbcType=VARCHAR},
-      group_name = #{groupName,jdbcType=VARCHAR},
-      master_id = #{masterId,jdbcType=INTEGER},
-      upper_limit = #{upperLimit,jdbcType=INTEGER},
-      status = #{status,jdbcType=VARCHAR},
-      type = #{type,jdbcType=VARCHAR},
-      build_time = #{buildTime,jdbcType=TIMESTAMP},
-      game_id = #{gameId,jdbcType=INTEGER}
-    where id = #{id,jdbcType=INTEGER}
-  </update>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select id, group_id, group_name, master_id, upper_limit, status, type, build_time, 
-    game_id
-    from group_team
-    where id = #{id,jdbcType=INTEGER}
-  </select>
-  <select id="selectAll" resultMap="BaseResultMap">
-    select id, group_id, group_name, master_id, upper_limit, status, type, build_time, 
-    game_id
-    from group_team
-  </select>
+	<resultMap id="BaseResultMap" type="com.kdkj.intelligent.entity.GroupTeam">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="group_id" jdbcType="VARCHAR" property="groupId" />
+		<result column="group_name" jdbcType="VARCHAR" property="groupName" />
+		<result column="master_id" jdbcType="INTEGER" property="masterId" />
+		<result column="upper_limit" jdbcType="INTEGER" property="upperLimit" />
+		<result column="status" jdbcType="VARCHAR" property="status" />
+		<result column="type" jdbcType="VARCHAR" property="type" />
+		<result column="build_time" jdbcType="TIMESTAMP" property="buildTime" />
+		<result column="game_id" jdbcType="INTEGER" property="gameId" />
+	</resultMap>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from group_team
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.kdkj.intelligent.entity.GroupTeam">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into group_team (id, group_id, group_name,
+		master_id, upper_limit, status,
+		type, build_time, game_id
+		)
+		values (#{id,jdbcType=INTEGER}, #{groupId,jdbcType=VARCHAR},
+		#{groupName,jdbcType=VARCHAR},
+		#{masterId,jdbcType=INTEGER}, #{upperLimit,jdbcType=INTEGER}, #{status,jdbcType=VARCHAR},
+		#{type,jdbcType=VARCHAR}, #{buildTime,jdbcType=TIMESTAMP},
+		#{gameId,jdbcType=INTEGER}
+		)
+	</insert>
+	<update id="updateByPrimaryKey" parameterType="com.kdkj.intelligent.entity.GroupTeam">
+		update group_team
+		<set>
+			<if test="groupId !=null and groupId !='' "> group_id = #{groupId,jdbcType=VARCHAR},</if>
+			<if test="groupName !=null and groupName !='' "> group_name = #{groupName,jdbcType=VARCHAR},</if>
+			<if test="masterId !=null and masterId !='' "> master_id = #{masterId,jdbcType=INTEGER},</if>
+			<if test="upperLimit !=null and upperLimit !='' "> upper_limit = #{upperLimit,jdbcType=INTEGER},</if>
+			<if test="status !=null and status !='' "> status = #{status,jdbcType=VARCHAR},</if>
+			<if test="type !=null and type !='' "> type = #{type,jdbcType=VARCHAR},</if>
+			<if test="buildTime !=null "> build_time = #{buildTime,jdbcType=TIMESTAMP},</if>
+			<if test="gameId !=null and gameId !='' "> game_id = #{gameId,jdbcType=INTEGER},</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<select id="selectByPrimaryKey" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		select id, group_id, group_name, master_id, upper_limit, status, type,
+		build_time,
+		game_id
+		from group_team
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+	<select id="selectListByGroup" resultMap="BaseResultMap"
+		parameterType="com.kdkj.intelligent.entity.GroupTeam">
+		select id, group_id, group_name, master_id, upper_limit, status, type,
+		build_time,
+		game_id
+		from group_team
+		where 1=1
+		<if test="groupId !=null and groupId !='' ">and group_id = #{groupId,jdbcType=VARCHAR}</if>
+		<if test="groupName !=null and groupName !='' ">and group_name = #{groupName,jdbcType=VARCHAR}</if>
+		<if test="masterId !=null and masterId !='' ">and master_id = #{masterId,jdbcType=INTEGER}</if>
+		<if test="upperLimit !=null and upperLimit !='' ">and upper_limit = #{upperLimit,jdbcType=INTEGER}</if>
+		<if test="status !=null and status !='' ">and status = #{status,jdbcType=VARCHAR}</if>
+		<if test="type !=null and type !='' ">and type = #{type,jdbcType=VARCHAR}</if>
+		<if test="buildTime !=null ">and build_time = #{buildTime,jdbcType=TIMESTAMP}</if>
+		<if test="gameId !=null and gameId !='' ">and game_id = #{gameId,jdbcType=INTEGER}</if>
+	</select>
+
+	<select id="selectGroupByUserId" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		select id, group_id, group_name
+		from members m,group_team g
+		where m.user_id= #{id,jdbcType=INTEGER}
+		and g.group_id=m.group_id
+	</select>
+
+	<select id="selectAll" resultMap="BaseResultMap">
+		select id, group_id, group_name, master_id, upper_limit, status, type,
+		build_time,game_id
+		from group_team
+	</select>
 </mapper>
