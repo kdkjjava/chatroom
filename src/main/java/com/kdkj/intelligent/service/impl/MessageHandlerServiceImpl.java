@@ -142,19 +142,19 @@ public class MessageHandlerServiceImpl implements MessageHandlerService {
         String inner=keyWord.getInnerSpace();
         if (message.split("["+group+"]").length==1){
             //通过验证方法判断是否为攻击指令，若是则返回字符串
-            String volidate = volidate(message, group, type, inner);
+            String volidate = volidate(message, group, type, inner,keyWord);
             if (volidate!=null)
                 return volidate;
         }else {
             int flag=1;
             for (String msg : message.split("["+group+"]")){
-                if (volidate(msg, group, type, inner)==null){
+                if (volidate(msg, group, type, inner,keyWord)==null){
                     flag=0;
                     break;
                 }
             }
            if (flag==1)
-                return message.replaceAll("[和合特]","冠亚").replaceAll("[" + inner + "]", ",").replaceAll("[" + type + "]", "/").replaceAll("[" + group + "]", "#");
+                return message.replaceAll("[和合特]","冠亚").replaceAll("[" + inner + "]", keyWord.getInnerFinal()).replaceAll("[" + type + "]", keyWord.getTypeFinal()).replaceAll("[" + group + "]", keyWord.getGroupFinal());
         }
 
         return null;
@@ -168,16 +168,16 @@ public class MessageHandlerServiceImpl implements MessageHandlerService {
      * @param inner 同种类型中间的分隔符
      * @return
      */
-    public String volidate(String message,String group,String type,String inner){
+    public String volidate(String message,String group,String type,String inner,KeyWord keyWord){
         Pattern attackPattern = Pattern.compile(regix1(group,type,inner));
         if (message.matches(attackPattern.pattern()))
-            return message.replaceAll("[" + inner + "]", ",").replaceAll("[" + type + "]", "/").replaceAll("[" + group + "]", "#");
-        Pattern attackPattern2 = Pattern.compile(regix3(group,type,inner));
+            return message.replaceAll("[" + inner + "]", keyWord.getInnerFinal()).replaceAll("[" + type + "]", keyWord.getTypeFinal()).replaceAll("[" + group + "]", keyWord.getGroupFinal());
+        Pattern attackPattern2 = Pattern.compile(regix3(type,inner));
         if (message.matches(attackPattern2.pattern()))
-            return message.replaceAll("[" + inner + "]", ",").replaceAll("[" + type + "]", "/").replaceAll("[" + group + "]", "#");
-        Pattern attackPattern3 = Pattern.compile(regix4(group,type,inner));
+            return message.replaceAll("[" + inner + "]", keyWord.getInnerFinal()).replaceAll("[" + type + "]", keyWord.getTypeFinal()).replaceAll("[" + group + "]", keyWord.getGroupFinal());
+        Pattern attackPattern3 = Pattern.compile(regix4(type,inner));
         if (message.matches(attackPattern3.pattern()))
-            return message.replaceAll("[和合特]","冠亚").replaceAll("[" + inner + "]", ",").replaceAll("[" + type + "]", "/").replaceAll("[" + group + "]", "#");
+            return message.replaceAll("[和合特]","冠亚").replaceAll("[" + inner + "]", keyWord.getTypeFinal()).replaceAll("[" + type + "]", keyWord.getTypeFinal()).replaceAll("[" + group + "]", keyWord.getGroupFinal());
         return null;
     }
 
@@ -207,30 +207,29 @@ public class MessageHandlerServiceImpl implements MessageHandlerService {
     private String regix1(String group,String type,String inner){
         return "^((\\d*([" + inner + "]{0,1}\\d*)*){0,1}(["
                 + inner + "]{0,1}[前后][1-9])*[" + type + "]{0,1}" +
-                "[大小单双龙虎0-9]([" + inner + "]{0,1}[大小单双龙虎1-9])*" +
+                "[大小单双龙虎0-9]([" + inner + "]{0,1}[大小单双龙虎0-9])*" +
                 "[" + type + "]{0,1}\\d+)$";
     }
     private String regix2(String group,String type,String inner){
         return  "^((\\d*([" + inner + "]{0,1}\\d*)*){0,1}(["
                 + inner + "]{0,1}[前后][1-9])*[" + type + "]{0,1}" +
-                "[大小单双龙虎0-9]([" + inner + "]{0,1}[大小单双龙虎1-9])*" +
+                "[大小单双龙虎0-9]([" + inner + "]{0,1}[大小单双龙虎0-9])*" +
                 "[" + type + "]{0,1}\\d+[" + group + "]{0,1})+$";
     }
-    private String regix3(String group,String type,String inner){
+    private String regix3(String type,String inner){
         return  "^(((冠亚){0,1})[" + type + "]{0,1}" +
-                "[大小单双龙虎0-9]([" + inner + "]{0,1}[大小单双龙虎1-9])*" +
+                "[大小单双龙虎0-9]([" + inner + "]{0,1}[大小单双龙虎0-9])*" +
                 "[" + type + "]{0,1}\\d+)$";
     }
-    private String regix4(String group,String type,String inner){
+    private String regix4(String type,String inner){
         return  "^(([合和特])[" + type + "]{0,1}" +
-                "[大小单双龙虎0-9]([" + inner + "]{0,1}[大小单双龙虎1-9])*" +
+                "[大小单双龙虎0-9]([" + inner + "]{0,1}[大小单双龙虎0-9])*" +
                 "[" + type + "]{0,1}\\d+)$";
     }
 
     @Test
     public void test() {
-
-
+        System.out.println("+a.,zs".replaceAll("[:;,.+，]", "Q"));
     }
 
 }
