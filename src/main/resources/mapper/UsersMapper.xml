@@ -1,76 +1,94 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kdkj.intelligent.dao.UsersMapper">
-  <cache  eviction="LRU" flushInterval="500" size="50" readOnly="true"></cache>
-  <resultMap id="BaseResultMap" type="com.kdkj.intelligent.entity.Users">
-    <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="username" jdbcType="VARCHAR" property="username" />
-    <result column="password" jdbcType="VARCHAR" property="password" />
-    <result column="nickname" jdbcType="VARCHAR" property="nickname" />
-    <result column="type" jdbcType="VARCHAR" property="type" />
-    <result column="status" jdbcType="VARCHAR" property="status" />
-    <result column="score" jdbcType="BIGINT" property="score" />
-    <result column="regist_time" jdbcType="TIMESTAMP" property="registTime" />
-    <result column="picture_address" jdbcType="VARCHAR" property="pictureAddress" />
-    <result column="phone" jdbcType="VARCHAR" property="phone" />
-  </resultMap>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from users
-    where id = #{id,jdbcType=INTEGER}
-  </delete>
-  <insert id="insert" parameterType="com.kdkj.intelligent.entity.Users">
-       <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">  
-            SELECT LAST_INSERT_ID()  
-        </selectKey> 
-    insert into users (username, password, 
-      nickname, type, status, 
-      score, regist_time, picture_address, 
-      phone)
-    values (#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
-      #{nickname,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, 
-      #{score,jdbcType=BIGINT}, #{registTime,jdbcType=TIMESTAMP}, #{pictureAddress,jdbcType=VARCHAR}, 
-      #{phone,jdbcType=VARCHAR})
-  </insert>
-  <update id="updateByPrimaryKey" parameterType="com.kdkj.intelligent.entity.Users">
-    update users
-    <set>
-    <if test="username !=null and username !='' ">and username = #{username,jdbcType=VARCHAR}</if>
-    <if test="nickname !=null and nickname !='' ">and nickname = #{nickname,jdbcType=VARCHAR}</if>
-    <if test="password !=null and password !='' ">and password = #{password,jdbcType=VARCHAR}</if>
-    <if test="type !=null and type !=''">and type = #{type,jdbcType=VARCHAR}</if>
-    <if test="status !=null and status !=''">and status = #{status,jdbcType=VARCHAR}</if>
-    <if test="score !=null and score !=''">and score = #{score,jdbcType=VARCHAR}</if>
-    <if test="registTime !=null">and regist_time = #{registTime,jdbcType=TIMESTAMP}</if>
-    <if test="pictureAddress !=null and picture_address !=''">and picture_address = #{pictureAddress,jdbcType=VARCHAR}</if>
-    <if test="phone !=null and phone !=''">and phone = #{phone,jdbcType=VARCHAR}</if>
-    </set>
-    where id = #{id,jdbcType=INTEGER}
-  </update>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 'true' as QUERYID,id, username, password, nickname, type, status, score, regist_time, 
-    picture_address, phone
-    from users
-    where id = #{id,jdbcType=INTEGER}
-  </select>
-  
-  <select id="selectListByUser" resultMap="BaseResultMap" parameterType="com.kdkj.intelligent.entity.Users">
-     select id, username, password,nickname, type, status, 
-      score, regist_time, picture_address,phone
-     from users
-     where 1=1
-    <if test="username !=null and username !='' ">and username = #{username,jdbcType=VARCHAR}</if>
-    <if test="nickname !=null and nickname !='' ">and nickname = #{nickname,jdbcType=VARCHAR}</if>
-    <if test="type !=null and type !=''">and type = #{type,jdbcType=VARCHAR}</if>
-    <if test="status !=null and status !=''">and status = #{status,jdbcType=VARCHAR}</if>
-    <if test="score !=null and score !=''">and score = #{score,jdbcType=VARCHAR}</if>
-    <if test="registTime !=null">and regist_time = #{registTime,jdbcType=TIMESTAMP}</if>
-    <if test="pictureAddress !=null and picture_address !=''">and picture_address = #{pictureAddress,jdbcType=VARCHAR}</if>
-    <if test="phone !=null and phone !=''">and phone = #{phone,jdbcType=VARCHAR}</if>
-  </select>
-  
-  <select id="selectAll" resultMap="BaseResultMap">
-    select id, username, password, nickname, type, status, score, regist_time, picture_address, 
-    phone
-    from users
-  </select>
+	<resultMap id="BaseResultMap" type="com.kdkj.intelligent.entity.Users">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="username" jdbcType="VARCHAR" property="username" />
+		<result column="password" jdbcType="VARCHAR" property="password" />
+		<result column="nickname" jdbcType="VARCHAR" property="nickname" />
+		<result column="type" jdbcType="VARCHAR" property="type" />
+		<result column="status" jdbcType="VARCHAR" property="status" />
+		<result column="score" jdbcType="BIGINT" property="score" />
+		<result column="regist_time" jdbcType="TIMESTAMP" property="registTime" />
+		<result column="picture_address" jdbcType="VARCHAR" property="pictureAddress" />
+		<result column="phone" jdbcType="VARCHAR" property="phone" />
+		<result column="token" jdbcType="VARCHAR" property="token" />
+		<result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime" />
+	</resultMap>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from users
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.kdkj.intelligent.entity.Users">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into users (username, password,
+		nickname, type, status,
+		score, regist_time, picture_address,
+		phone,token,last_login_time)
+		values (#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
+		#{nickname,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR},
+		#{status,jdbcType=VARCHAR},
+		#{score,jdbcType=BIGINT}, #{registTime,jdbcType=TIMESTAMP}, #{pictureAddress,jdbcType=VARCHAR},
+		#{phone,jdbcType=VARCHAR},#{token,jdbcType=VARCHAR},#{registTime,jdbcType=TIMESTAMP})
+	</insert>
+	<update id="updateByPrimaryKey" parameterType="com.kdkj.intelligent.entity.Users">
+		update users
+		<set>
+			<if test="username !=null and username !='' "> username = #{username,jdbcType=VARCHAR},</if>
+			<if test="nickname !=null and nickname !='' "> nickname = #{nickname,jdbcType=VARCHAR},</if>
+			<if test="password !=null and password !='' "> password = #{password,jdbcType=VARCHAR},</if>
+			<if test="type !=null and type !=''"> type = #{type,jdbcType=VARCHAR},</if>
+			<if test="status !=null and status !=''"> status = #{status,jdbcType=VARCHAR},</if>
+			<if test="score !=null and score !=''"> score = #{score,jdbcType=VARCHAR},</if>
+			<if test="registTime !=null"> regist_time = #{registTime,jdbcType=TIMESTAMP},</if>
+			<if test="pictureAddress !=null and picture_address !=''"> picture_address = #{pictureAddress,jdbcType=VARCHAR},</if>
+			<if test="phone !=null and phone !=''"> phone = #{phone,jdbcType=VARCHAR},</if>
+			<if test="token=='newToken'"> token=REPLACE(uuid(),'-',''),</if>
+			<if test="lastLoginTime !=null"> last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP},</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<select id="selectByPrimaryKey" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		select 'true' as QUERYID,id, username, password, nickname, type, status,
+		score, regist_time,token,last_login_time,
+		picture_address, phone
+		from users
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="selectListByUser" resultMap="BaseResultMap"
+		parameterType="com.kdkj.intelligent.entity.Users">
+		select id, username, password,nickname, type, status,
+		score, regist_time, picture_address,phone,token,last_login_time
+		from users
+		where 1=1
+		<if test="username !=null and username !='' ">and username = #{username,jdbcType=VARCHAR}</if>
+		<if test="nickname !=null and nickname !='' ">and nickname = #{nickname,jdbcType=VARCHAR}</if>
+		<if test="type !=null and type !=''">and type = #{type,jdbcType=VARCHAR}</if>
+		<if test="status !=null and status !=''">and status = #{status,jdbcType=VARCHAR}</if>
+		<if test="score !=null and score !=''">and score = #{score,jdbcType=VARCHAR}</if>
+		<if test="registTime !=null">and regist_time = #{registTime,jdbcType=TIMESTAMP}</if>
+		<if test="pictureAddress !=null and picture_address !=''">and picture_address = #{pictureAddress,jdbcType=VARCHAR}</if>
+		<if test="phone !=null and phone !=''">and phone = #{phone,jdbcType=VARCHAR}</if>
+	    <if test="token !=null and token !=''"> token = #{token,jdbcType=VARCHAR}</if>
+		<if test="lastLoginTime !=null"> last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP}</if>
+	</select>
+
+	<select id="selectUserByGroupId" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		select u.id, username,u.nickname, u.type, u.status,
+		u.score, u.regist_time, u.picture_address,u.phone
+		from users u,members m
+		where m.group_id=#{id,jdbcType=INTEGER}
+		and u.id=m.user_id
+	</select>
+
+	<select id="selectAll" resultMap="BaseResultMap">
+		select id, username, password, nickname, type, status, score, regist_time,
+		picture_address, phone,token,last_login_time
+		from users
+	</select>
 </mapper>

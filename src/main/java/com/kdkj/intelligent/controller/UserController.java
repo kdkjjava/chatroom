@@ -3,21 +3,24 @@ package com.kdkj.intelligent.controller;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.kdkj.intelligent.entity.GroupTeam;
 import com.kdkj.intelligent.entity.Users;
 import com.kdkj.intelligent.service.UsersService;
 import com.kdkj.intelligent.util.MD5Encryption;
 import com.kdkj.intelligent.util.Result;
 
-import javax.servlet.http.HttpServletRequest;
-
+@CrossOrigin(origins="*")
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -25,9 +28,10 @@ public class UserController {
     private UsersService usersService;
 
     @RequestMapping(value = "/selectListByUser", method = RequestMethod.POST)
-    public Result selectListByUser(HttpServletRequest request, Users record) {
+    public Result selectListByUser(HttpServletRequest request,Users record) {
     	PageHelper.startPage(record.getCurrent(), record.getPageSize());
-    	PageInfo<Users> page=usersService.selectListByUser(record);
+    	List<Users> list=usersService.selectListByUser(record);
+    	PageInfo<Users> page=new PageInfo<Users>(list);
 		return Result.ok("查询成功", page);
     }
     
@@ -44,8 +48,12 @@ public class UserController {
 		return Result.ok("修改成功");
     }
     
-    @RequestMapping(value = "/modifyPwd", method = RequestMethod.POST)
-    public Result modifyPwd(HttpServletRequest request,Users record) {
+    @RequestMapping(value = "/resetPwd", method = RequestMethod.POST)
+    public Result resetPwd(HttpServletRequest request,Users record) {
+    	Users nowUser=getUser(request);
+    	if(!"1".equals(nowUser.getType())) {
+    		return Result.error("当前用户无此权限!");
+    	}
     	try {
 			record.setPassword(MD5Encryption.getEncryption("111111"));
 			usersService.updateByPrimaryKey(record);
@@ -57,12 +65,12 @@ public class UserController {
     }
     
     @RequestMapping(value = "/addUser", method = RequestMethod.POST)
-    public Result addUser(HttpServletRequest request,Users record) {
+    public Result addUser(HttpServletRequest request,@RequestBody Users record) {
     	Users user=new Users();
     	user.setUsername(record.getUsername()==null?null:record.getUsername());
     	user.setPhone(record.getPhone()==null?null:record.getPhone());
-    	List<Users> list=usersService.selectListByUser(user).getList();
-    	if(list.size()>0)
+    	List<Users> list=usersService.selectListByUser(user);
+    	if(list!=null && list.size()>0)
     	return Result.error("用户名或电话号码已存在！");
     	try {
 			usersService.insert(record);
@@ -73,7 +81,16 @@ public class UserController {
 		}
     }
     
+    @RequestMapping(value = "/findGroups", method = RequestMethod.POST)
+    public Result findGroups(HttpServletRequest request,Integer userId) {
+    	List<GroupTeam> list=usersService.selectGroupByUserId(userId);
+    	if(list!=null && list.size()>0)
+    		return Result.ok("", list);
+			return Result.ok();
+    }
     
-    
-    
+    private Users getUser(HttpServletRequest request) {
+    	Users user=(Users)request.getSession().getAttribute("user");
+    	return user;
+    }
 }

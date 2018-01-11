@@ -45,7 +45,32 @@ public class Users extends Pageinfo implements Serializable{
 	 */
     private String phone;
 
-    public Integer getId() {
+	/*
+	 * token
+	 */
+    private String token;
+    /*
+	 * 最后登录时间
+	 */
+    private Date lastLoginTime;
+
+    public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+
+	public Date getLastLoginTime() {
+		return lastLoginTime;
+	}
+
+	public void setLastLoginTime(Date lastLoginTime) {
+		this.lastLoginTime = lastLoginTime;
+	}
+
+	public Integer getId() {
         return id;
     }
 
@@ -124,4 +149,11 @@ public class Users extends Pageinfo implements Serializable{
     public void setPhone(String phone) {
         this.phone = phone == null ? null : phone.trim();
     }
+    
+    @Override
+	public String toString() {
+		return "Users [id=" + id + ", username=" + username + ", nickname=" + nickname + ", type=" + type + ", status="
+				+ status + ", score=" + score + ", registTime=" + registTime + ", pictureAddress=" + pictureAddress
+				+ ", phone=" + phone + ", token=" + token + ", lastLoginTime=" + lastLoginTime + "]";
+	}
 }

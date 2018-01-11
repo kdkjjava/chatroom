@@ -6,13 +6,11 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 @Repository
 public interface MembersMapper {
-    int deleteByPrimaryKey(Long id);
+    int deleteMemberShip(Members record);
 
     int insert(Members record);
+    
+    List<Members> findMemberShip(Members record);
 
-    Members selectByPrimaryKey(Long id);
-
-    List<Members> selectAll();
-
-    int updateByPrimaryKey(Members record);
+    int update(Members record);
 }

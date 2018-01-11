@@ -4,7 +4,11 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class GroupTeam extends Pageinfo implements Serializable{
-    private Integer id;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -5292702707857401694L;
+	private Integer id;
     /*
 	 * 群号
 	 */
@@ -34,7 +38,7 @@ public class GroupTeam extends Pageinfo implements Serializable{
 	 */
     private Date buildTime;
     /*
-	 * 标题
+	 * 游戏id
 	 */
     private Integer gameId;
 

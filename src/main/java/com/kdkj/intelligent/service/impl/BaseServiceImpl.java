@@ -8,11 +8,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class BaseServiceImpl implements BaseService{
-    @Autowired
-    private MembersMapper membersMapper;
+    
 
     @Override
     public Integer add(Members members) {
-        return membersMapper.insert(members);
+        return null;
     }
 }

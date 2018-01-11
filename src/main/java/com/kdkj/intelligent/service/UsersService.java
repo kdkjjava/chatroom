@@ -3,7 +3,7 @@ package com.kdkj.intelligent.service;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
-import com.github.pagehelper.PageInfo;
+import com.kdkj.intelligent.entity.GroupTeam;
 import com.kdkj.intelligent.entity.Users;
 
 public interface UsersService {
@@ -13,9 +13,11 @@ public interface UsersService {
 
     Users selectByPrimaryKey(Integer id);
     
-    PageInfo<Users> selectListByUser(Users record);
+    List<Users> selectListByUser(Users record);
 
     List<Users> selectAll();
+    
+    List<GroupTeam> selectGroupByUserId(Integer id);
 
     int updateByPrimaryKey(Users record);
 }
