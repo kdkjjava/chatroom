@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://java.sun.com/xml/ns/javaee"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-         id="WebApp_ID" version="3.0">
-
-  <!-- 显示名称 + 描述 -->
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="WebApp_ID" version="3.0">
   <display-name>intelligent</display-name>
   <description>head</description>
-
-  <!-- 编码UTF-8 -->
+  
+  <filter>
+    <filter-name>visitFilter</filter-name>
+    <filter-class>com.kdkj.intelligent.filter.VisitFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>visitFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
   <filter>
     <description>Character set filters</description>
     <filter-name>encodingFilter</filter-name>
@@ -27,8 +29,6 @@
     <filter-name>encodingFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
-
-  <!-- 如果配置了webAppRootKey,就可以用System.getProperty("webapp.root")来动态获项目的运行路径 -->
   <context-param>
     <param-name>webAppRootKey</param-name>
     <param-value>webapp.root</param-value>
@@ -36,15 +36,12 @@
   <listener>
     <listener-class>org.springframework.web.util.WebAppRootListener</listener-class>
   </listener>
-
-  <!-- ContextLoaderListener的作用就是启动Web容器时，自动装配ApplicationContext的配置信息 -->
   <listener>
     <listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
   </listener>
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
-  <!--1、启动Spring的容器 -->
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
@@ -52,8 +49,6 @@
       classpath*:applicationContext-*.xml
     </param-value>
   </context-param>
-
-  <!-- springmvc -->
   <servlet>
     <servlet-name>springmvc</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -61,16 +56,11 @@
       <param-name>contextConfigLocation</param-name>
       <param-value>classpath:springmvc-servlet.xml</param-value>
     </init-param>
-    <!-- <load-on-startup>1</load-on-startup> -->
   </servlet>
   <servlet-mapping>
     <servlet-name>springmvc</servlet-name>
     <url-pattern>/</url-pattern>
   </servlet-mapping>
-
-
-
-  <!-- durid -->
   <servlet>
     <servlet-name>DruidStatView</servlet-name>
     <servlet-class>com.alibaba.druid.support.http.StatViewServlet</servlet-class>
@@ -99,7 +89,6 @@
     <filter-name>druidWebStatFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
-  <!-- 4、使用Rest风格的URI，将页面普通的post请求转为指定的delete或者put请求 -->
   <filter>
     <filter-name>HiddenHttpMethodFilter</filter-name>
     <filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
@@ -116,8 +105,6 @@
     <filter-name>HttpPutFormContentFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
-
-  <!-- 初始化调用首页 -->
   <welcome-file-list>
     <welcome-file>/index.jsp</welcome-file>
     <welcome-file>/index.htm</welcome-file>
@@ -126,8 +113,6 @@
     <welcome-file>/default.htm</welcome-file>
     <welcome-file>/default.html</welcome-file>
   </welcome-file-list>
-
-  <!-- 抛异常调用页面 -->
   <error-page>
     <exception-type>java.lang.Throwable</exception-type>
     <location>/error/error_page.html</location>
@@ -148,10 +133,4 @@
     <error-code>401</error-code>
     <location>/error/error_page_access_denied.html</location>
   </error-page>
-
-  <!-- 配置session超时时间，单位分钟 -->
-  <!-- <session-config>
-      <session-timeout>60</session-timeout>
-  </session-config> -->
-
 </web-app>
