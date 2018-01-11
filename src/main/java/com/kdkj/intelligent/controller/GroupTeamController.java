@@ -5,6 +5,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,6 +18,7 @@ import com.kdkj.intelligent.entity.Users;
 import com.kdkj.intelligent.service.GroupTeamService;
 import com.kdkj.intelligent.util.Result;
 
+@CrossOrigin(origins="*")
 @RestController
 @RequestMapping("/group")
 public class GroupTeamController {

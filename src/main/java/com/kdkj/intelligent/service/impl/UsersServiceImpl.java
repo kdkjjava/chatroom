@@ -7,7 +7,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.github.pagehelper.PageInfo;
 import com.kdkj.intelligent.dao.GroupTeamMapper;
 import com.kdkj.intelligent.dao.UsersMapper;
 import com.kdkj.intelligent.entity.GroupTeam;
@@ -32,6 +31,7 @@ public class UsersServiceImpl implements UsersService{
 	public int insert(Users record) throws UnsupportedEncodingException {
 		record.setRegistTime(new Date());
 		record.setPassword(MD5Encryption.getEncryption(record.getPassword()));
+		record.setType(record.getType()!=null?record.getType():"0");
 		return usersMapper.insert(record);
 	}
 

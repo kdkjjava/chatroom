@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,6 +20,7 @@ import com.kdkj.intelligent.service.UsersService;
 import com.kdkj.intelligent.util.MD5Encryption;
 import com.kdkj.intelligent.util.Result;
 
+@CrossOrigin(origins="*")
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -48,6 +50,10 @@ public class UserController {
     
     @RequestMapping(value = "/resetPwd", method = RequestMethod.POST)
     public Result resetPwd(HttpServletRequest request,Users record) {
+    	Users nowUser=getUser(request);
+    	if(!"1".equals(nowUser.getType())) {
+    		return Result.error("当前用户无此权限!");
+    	}
     	try {
 			record.setPassword(MD5Encryption.getEncryption("111111"));
 			usersService.updateByPrimaryKey(record);
@@ -83,7 +89,8 @@ public class UserController {
 			return Result.ok();
     }
     
-    
-    
-    
+    private Users getUser(HttpServletRequest request) {
+    	Users user=(Users)request.getSession().getAttribute("user");
+    	return user;
+    }
 }
