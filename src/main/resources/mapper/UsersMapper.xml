@@ -52,9 +52,8 @@
 	</update>
 	<select id="selectByPrimaryKey" parameterType="java.lang.Integer"
 		resultMap="BaseResultMap">
-		select 'true' as QUERYID,id, username, password, nickname, type, status,
-		score, regist_time,token,last_login_time,
-		picture_address, phone
+		select 'true' as QUERYID,id, username, nickname, type, status,
+		score, regist_time,token,picture_address, phone
 		from users
 		where id = #{id,jdbcType=INTEGER}
 	</select>
@@ -62,7 +61,7 @@
 	<select id="selectListByUser" resultMap="BaseResultMap"
 		parameterType="com.kdkj.intelligent.entity.Users">
 		select id, username, password,nickname, type, status,
-		score, regist_time, picture_address,phone,token,last_login_time
+		score, regist_time, picture_address,phone,last_login_time
 		from users
 		where 1=1
 		<if test="username !=null and username !='' ">and username = #{username,jdbcType=VARCHAR}</if>
@@ -73,7 +72,6 @@
 		<if test="registTime !=null">and regist_time = #{registTime,jdbcType=TIMESTAMP}</if>
 		<if test="pictureAddress !=null and picture_address !=''">and picture_address = #{pictureAddress,jdbcType=VARCHAR}</if>
 		<if test="phone !=null and phone !=''">and phone = #{phone,jdbcType=VARCHAR}</if>
-	    <if test="token !=null and token !=''"> token = #{token,jdbcType=VARCHAR}</if>
 		<if test="lastLoginTime !=null"> last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP}</if>
 	</select>
 
@@ -88,7 +86,7 @@
 
 	<select id="selectAll" resultMap="BaseResultMap">
 		select id, username, password, nickname, type, status, score, regist_time,
-		picture_address, phone,token,last_login_time
+		picture_address, phone
 		from users
 	</select>
 </mapper>
