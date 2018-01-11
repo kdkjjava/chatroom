@@ -19,13 +19,13 @@ import com.kdkj.intelligent.service.UsersService;
 import com.kdkj.intelligent.util.MD5Encryption;
 import com.kdkj.intelligent.util.Result;
 
-@CrossOrigin(origins="*")
+@CrossOrigin(origins = "*")
 @RestController
 public class LoginController {
 	@Autowired
 	private UsersService usersService;
 
-	@RequestMapping(value = "/login", method = RequestMethod.GET)
+	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public Result login(HttpServletRequest request,@RequestBody Users record) {
 		Users user = new Users();
 		user.setUsername(record.getUsername() != null ? record.getUsername() : null);
@@ -38,16 +38,17 @@ public class LoginController {
 			return Result.error("用户名或密码错误，请重新登录!");
 		}
 		user = list.get(0);
-		user.setPassword(null);
 		try {
 			String newpassword = MD5Encryption.getEncryption(record.getPassword());
 			if (newpassword.equals(user.getPassword())) {
 				user.setToken("newToken");
 				user.setLastLoginTime(new Date());
 				usersService.updateByPrimaryKey(user);
+				user=usersService.selectByPrimaryKey(user.getId());
 				HttpSession session = request.getSession();
+				user.setPassword(null);
 				session.setAttribute("user", user);
-				return Result.ok("登录成功",user);
+				return Result.ok("登录成功", user);
 			} else {
 				return Result.error("用户名或密码错误，请重新登录!");
 			}
@@ -55,7 +56,17 @@ public class LoginController {
 			e.printStackTrace();
 			return Result.error("密码加密错误，请重试！");
 		}
-
 	}
 
+	@RequestMapping(value = "/logout", method = RequestMethod.GET)
+	public Result logout(HttpServletRequest request) {
+		HttpSession session=request.getSession();
+		if(session.getAttribute("user")!=null) {
+			session.removeAttribute("user");
+		}
+		if(request.getAttribute("token")!=null) {
+			request.removeAttribute("token");
+		}
+		return Result.ok();
+	}
 }
