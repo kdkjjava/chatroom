@@ -1,15 +1,21 @@
 package com.kdkj.intelligent.entity;
 
-public class KeyWord extends Pageinfo{
+public class KeyWord {
     private Integer id;
 
     private Integer masterId;
 
     private String groupSpace;
 
+    private String groupFinal;
+
     private String typeSpace;
 
+    private String typeFinal;
+
     private String innerSpace;
+
+    private String innerFinal;
 
     private String upperKey;
 
@@ -47,6 +53,14 @@ public class KeyWord extends Pageinfo{
         this.groupSpace = groupSpace == null ? null : groupSpace.trim();
     }
 
+    public String getGroupFinal() {
+        return groupFinal;
+    }
+
+    public void setGroupFinal(String groupFinal) {
+        this.groupFinal = groupFinal == null ? null : groupFinal.trim();
+    }
+
     public String getTypeSpace() {
         return typeSpace;
     }
@@ -55,12 +69,28 @@ public class KeyWord extends Pageinfo{
         this.typeSpace = typeSpace == null ? null : typeSpace.trim();
     }
 
+    public String getTypeFinal() {
+        return typeFinal;
+    }
+
+    public void setTypeFinal(String typeFinal) {
+        this.typeFinal = typeFinal == null ? null : typeFinal.trim();
+    }
+
     public String getInnerSpace() {
         return innerSpace;
     }
 
     public void setInnerSpace(String innerSpace) {
         this.innerSpace = innerSpace == null ? null : innerSpace.trim();
+    }
+
+    public String getInnerFinal() {
+        return innerFinal;
+    }
+
+    public void setInnerFinal(String innerFinal) {
+        this.innerFinal = innerFinal == null ? null : innerFinal.trim();
     }
 
     public String getUpperKey() {

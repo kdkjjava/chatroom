@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kdkj.intelligent.dao.KeyWordMapper">
-  <cache  eviction="LRU" flushInterval="500" size="50" readOnly="true"></cache>
   <resultMap id="BaseResultMap" type="com.kdkj.intelligent.entity.KeyWord">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="master_id" jdbcType="INTEGER" property="masterId" />
     <result column="group_space" jdbcType="VARCHAR" property="groupSpace" />
+    <result column="group_final" jdbcType="VARCHAR" property="groupFinal" />
     <result column="type_space" jdbcType="VARCHAR" property="typeSpace" />
+    <result column="type_final" jdbcType="VARCHAR" property="typeFinal" />
     <result column="inner_space" jdbcType="VARCHAR" property="innerSpace" />
+    <result column="inner_final" jdbcType="VARCHAR" property="innerFinal" />
     <result column="upper_key" jdbcType="VARCHAR" property="upperKey" />
     <result column="lower_key" jdbcType="VARCHAR" property="lowerKey" />
     <result column="modify_attack" jdbcType="VARCHAR" property="modifyAttack" />
@@ -21,11 +23,13 @@
   </delete>
   <insert id="insert" parameterType="com.kdkj.intelligent.entity.KeyWord">
     insert into key_word (id, master_id, group_space, 
-      type_space, inner_space, upper_key, 
+      group_final, type_space, type_final, 
+      inner_space, inner_final, upper_key, 
       lower_key, modify_attack, delete_attack, 
       query_attack, count_key)
     values (#{id,jdbcType=INTEGER}, #{masterId,jdbcType=INTEGER}, #{groupSpace,jdbcType=VARCHAR}, 
-      #{typeSpace,jdbcType=VARCHAR}, #{innerSpace,jdbcType=VARCHAR}, #{upperKey,jdbcType=VARCHAR}, 
+      #{groupFinal,jdbcType=VARCHAR}, #{typeSpace,jdbcType=VARCHAR}, #{typeFinal,jdbcType=VARCHAR}, 
+      #{innerSpace,jdbcType=VARCHAR}, #{innerFinal,jdbcType=VARCHAR}, #{upperKey,jdbcType=VARCHAR}, 
       #{lowerKey,jdbcType=VARCHAR}, #{modifyAttack,jdbcType=VARCHAR}, #{deleteAttack,jdbcType=VARCHAR}, 
       #{queryAttack,jdbcType=VARCHAR}, #{countKey,jdbcType=VARCHAR})
   </insert>
@@ -33,8 +37,11 @@
     update key_word
     set master_id = #{masterId,jdbcType=INTEGER},
       group_space = #{groupSpace,jdbcType=VARCHAR},
+      group_final = #{groupFinal,jdbcType=VARCHAR},
       type_space = #{typeSpace,jdbcType=VARCHAR},
+      type_final = #{typeFinal,jdbcType=VARCHAR},
       inner_space = #{innerSpace,jdbcType=VARCHAR},
+      inner_final = #{innerFinal,jdbcType=VARCHAR},
       upper_key = #{upperKey,jdbcType=VARCHAR},
       lower_key = #{lowerKey,jdbcType=VARCHAR},
       modify_attack = #{modifyAttack,jdbcType=VARCHAR},
@@ -44,14 +51,14 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select id, master_id, group_space, type_space, inner_space, upper_key, lower_key, 
-    modify_attack, delete_attack, query_attack, count_key
+    select id, master_id, group_space, group_final, type_space, type_final, inner_space, 
+    inner_final, upper_key, lower_key, modify_attack, delete_attack, query_attack, count_key
     from key_word
     where id = #{id,jdbcType=INTEGER}
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
-    select id, master_id, group_space, type_space, inner_space, upper_key, lower_key, 
-    modify_attack, delete_attack, query_attack, count_key
+    select id, master_id, group_space, group_final, type_space, type_final, inner_space, 
+    inner_final, upper_key, lower_key, modify_attack, delete_attack, query_attack, count_key
     from key_word
   </select>
 </mapper>

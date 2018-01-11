@@ -60,12 +60,12 @@
             <!-- 指定列的java数据类型 -->
             <!-- <columnOverride column="sex" jdbcType="VARCHAR" /> -->
         <!--</table>-->
-        <table tableName="friendship" enableUpdateByExample="true" enableCountByExample="true" enableUpdateByPrimaryKey="true"/>
+        <!--<table tableName="friendship" enableUpdateByExample="true" enableCountByExample="true" enableUpdateByPrimaryKey="true"/>
         <table tableName="group_team" enableUpdateByExample="true" enableCountByExample="true" enableUpdateByPrimaryKey="true"/>
-        <table tableName="interaction" enableUpdateByExample="true" enableCountByExample="true" enableUpdateByPrimaryKey="true"/>
+        <table tableName="interaction" enableUpdateByExample="true" enableCountByExample="true" enableUpdateByPrimaryKey="true"/>-->
         <table tableName="key_word" enableUpdateByExample="true" enableCountByExample="true" enableUpdateByPrimaryKey="true"/>
-        <table tableName="members" enableUpdateByExample="true" enableCountByExample="true" enableUpdateByPrimaryKey="true"/>
-        <table tableName="users" enableUpdateByExample="true" enableCountByExample="true" enableUpdateByPrimaryKey="true" selectByPrimaryKeyQueryId="true"/>
+        <!--<table tableName="members" enableUpdateByExample="true" enableCountByExample="true" enableUpdateByPrimaryKey="true"/>
+        <table tableName="users" enableUpdateByExample="true" enableCountByExample="true" enableUpdateByPrimaryKey="true" selectByPrimaryKeyQueryId="true"/>-->
 
         <!--1，schema：数据库的schema；-->
         <!--2，catalog：数据库的catalog；-->
