@@ -226,18 +226,11 @@ public class MessageHandlerServiceImpl implements MessageHandlerService {
                 "[大小单双龙虎0-9]([" + inner + "]{0,1}[大小单双龙虎1-9])*" +
                 "[" + type + "]{0,1}\\d+)$";
     }
-    @Test
-    public void test1() {
-        KeyWord keyWord = keyWordList.get(2);
 
-        //验证用户输入信息是否为攻击指令，若为攻击指令，则替换相应的分隔符
-
-    }
     @Test
-    public void test2() {
+    public void test() {
 
 
     }
-
 
 }
