@@ -19,7 +19,7 @@
     <result column="commit_false" jdbcType="VARCHAR" property="commitFalse" />
     <result column="lack_provision" jdbcType="VARCHAR" property="lackProvision" />
     <result column="limit_provision" jdbcType="VARCHAR" property="limitProvision" />
-    <result column="game_stoped" jdbcType="VARCHAR" property="gameStoped" />
+    <result column="game_stopped" jdbcType="VARCHAR" property="gameStopped" />
     <result column="undo_message" jdbcType="VARCHAR" property="undoMessage" />
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
@@ -32,14 +32,14 @@
       truncate_playing, modify_nickname, using_image, 
       cancel_message, receive_request, ensure_request,
       ensure_playing, commit_false, lack_provision, 
-      limit_provision, game_stoped, undo_message
+      limit_provision, game_stopped, undo_message
       )
     values (#{id,jdbcType=INTEGER}, #{masterId,jdbcType=INTEGER}, #{afterAdd,jdbcType=VARCHAR}, 
       #{afterDelete,jdbcType=VARCHAR}, #{modifyProvision,jdbcType=VARCHAR}, #{modifyPlaying,jdbcType=VARCHAR}, 
       #{truncatePlaying,jdbcType=VARCHAR}, #{modifyNickname,jdbcType=VARCHAR}, #{usingImage,jdbcType=VARCHAR}, 
       #{cancelMessage,jdbcType=VARCHAR}, #{receiveRequest,jdbcType=VARCHAR}, #{ensureRequest,jdbcType=VARCHAR},
       #{ensurePlaying,jdbcType=VARCHAR}, #{commitFalse,jdbcType=VARCHAR}, #{lackProvision,jdbcType=VARCHAR}, 
-      #{limitProvision,jdbcType=VARCHAR}, #{gameStoped,jdbcType=VARCHAR}, #{undoMessage,jdbcType=VARCHAR}
+      #{limitProvision,jdbcType=VARCHAR}, #{gameStopped,jdbcType=VARCHAR}, #{undoMessage,jdbcType=VARCHAR}
       )
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.kdkj.intelligent.entity.Interaction">
@@ -59,14 +59,14 @@
       commit_false = #{commitFalse,jdbcType=VARCHAR},
       lack_provision = #{lackProvision,jdbcType=VARCHAR},
       limit_provision = #{limitProvision,jdbcType=VARCHAR},
-      game_stoped = #{gameStoped,jdbcType=VARCHAR},
+      game_stopped = #{gameStopped,jdbcType=VARCHAR},
       undo_message = #{undoMessage,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select id, master_id, after_add, after_delete, modify_provision, modify_playing, 
     truncate_playing, modify_nickname, using_image, cancel_message, receive_request,
-    ensure_request, ensure_playing, commit_false, lack_provision, limit_provision, game_stoped, 
+    ensure_request, ensure_playing, commit_false, lack_provision, limit_provision, game_stopped,
     undo_message
     from interaction
     where id = #{id,jdbcType=INTEGER}
@@ -74,7 +74,7 @@
   <select id="selectAll" resultMap="BaseResultMap">
     select id, master_id, after_add, after_delete, modify_provision, modify_playing, 
     truncate_playing, modify_nickname, using_image, cancel_message, receive_request,
-    ensure_request, ensure_playing, commit_false, lack_provision, limit_provision, game_stoped, 
+    ensure_request, ensure_playing, commit_false, lack_provision, limit_provision, game_stopped,
     undo_message
     from interaction
   </select>

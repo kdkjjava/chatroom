@@ -3,7 +3,6 @@ package com.kdkj.intelligent.service.impl;
 import com.kdkj.intelligent.dao.KeyWordMapper;
 import com.kdkj.intelligent.entity.KeyWord;
 import com.kdkj.intelligent.service.MessageHandlerService;
-import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,21 +25,21 @@ public class MessageHandlerServiceImpl implements MessageHandlerService {
     private KeyWordMapper keyWordMapper;
 
     //声明一个map集合用于存储关键字信息
-    private volatile static Map<String, KeyWord> keyWordList;
+    private static volatile Map<String, KeyWord> keyWordList;
 
     //声明一个map集合用于储存各个代理的命令关键字(命令后不接数字)
-    private volatile static Map<String, ArrayList<String>> commandNoNum;
+    private static volatile Map<String, ArrayList<String>> commandNoNum;
 
     //声明一个map集合用于储存各个代理的命令关键字(命令后接数字)
-    private volatile static Map<String, ArrayList<String>> commandWithNum;
+    private static volatile Map<String, ArrayList<String>> commandWithNum;
 
     //用于存储汉字和数字之间的映射关系
-    public static Map<String, String> chineseMap;
+    protected static Map<String, String> chineseMap;
 
     static {
-        keyWordList = new ConcurrentHashMap<String, KeyWord>();
-        commandNoNum = new ConcurrentHashMap<String, ArrayList<String>>();
-        commandWithNum = new ConcurrentHashMap<String, ArrayList<String>>();
+        keyWordList = new ConcurrentHashMap();
+        commandNoNum = new ConcurrentHashMap();
+        commandWithNum = new ConcurrentHashMap();
         chineseMap = new HashMap<>();
         chineseMap.put("一", "1");
         chineseMap.put("元", "1");
@@ -117,12 +116,10 @@ public class MessageHandlerServiceImpl implements MessageHandlerService {
         Pattern noNumPattern = Pattern.compile("^[\\u4e00-\\u9fa5]+$");
         Pattern withNumPattern = Pattern.compile("^[\\u4e00-\\u9fa5]+\\d+$");
 
-        if (message.matches(noNumPattern.pattern())) {
-            if (commandNoNum.get(proxyId).contains(message))
+        if (message.matches(noNumPattern.pattern())&&commandNoNum.get(proxyId).contains(message)) {
                 return message;
         }
-        if (message.matches(withNumPattern.pattern())) {
-            if (commandWithNum.get(proxyId).contains(message.split("\\d")[0]))
+        if (message.matches(withNumPattern.pattern())&&commandWithNum.get(proxyId).contains(message.split("\\d")[0])) {
                 return message;
         }
         return null;
@@ -169,7 +166,7 @@ public class MessageHandlerServiceImpl implements MessageHandlerService {
      * @return
      */
     public String volidate(String message,String group,String type,String inner,KeyWord keyWord){
-        Pattern attackPattern = Pattern.compile(regix1(group,type,inner));
+        Pattern attackPattern = Pattern.compile(regix1(type,inner));
         if (message.matches(attackPattern.pattern()))
             return message.replaceAll("[" + inner + "]", keyWord.getInnerFinal()).replaceAll("[" + type + "]", keyWord.getTypeFinal()).replaceAll("[" + group + "]", keyWord.getGroupFinal());
         Pattern attackPattern2 = Pattern.compile(regix3(type,inner));
@@ -199,37 +196,27 @@ public class MessageHandlerServiceImpl implements MessageHandlerService {
     }
     /**
      * 以下的regix*的方法用于返回正则验证表达式
-     * @param group 每组攻击之间的间隔符
      * @param type  单组攻击之间的类型分割符
      * @param inner 单种类型的分隔符
      * @return
      */
-    private String regix1(String group,String type,String inner){
+    private String regix1(String type,String inner){
         return "^((\\d*([" + inner + "]{0,1}\\d*)*){0,1}(["
-                + inner + "]{0,1}[前后][1-9])*[" + type + "]{0,1}" +
-                "[大小单双龙虎0-9]([" + inner + "]{0,1}[大小单双龙虎0-9])*" +
-                "[" + type + "]{0,1}\\d+)$";
+                + inner + "]{0,1}[前后][1-9])*"+regixCommon(type,inner);
     }
-    private String regix2(String group,String type,String inner){
-        return  "^((\\d*([" + inner + "]{0,1}\\d*)*){0,1}(["
-                + inner + "]{0,1}[前后][1-9])*[" + type + "]{0,1}" +
-                "[大小单双龙虎0-9]([" + inner + "]{0,1}[大小单双龙虎0-9])*" +
-                "[" + type + "]{0,1}\\d+[" + group + "]{0,1})+$";
-    }
+
     private String regix3(String type,String inner){
-        return  "^(((冠亚){0,1})[" + type + "]{0,1}" +
-                "[大小单双龙虎0-9]([" + inner + "]{0,1}[大小单双龙虎0-9])*" +
-                "[" + type + "]{0,1}\\d+)$";
+        return  "^(((冠亚){0,1})"+regixCommon(type,inner);
     }
     private String regix4(String type,String inner){
-        return  "^(([合和特])[" + type + "]{0,1}" +
+        return  "^(([合和特])"+regixCommon(type,inner);
+    }
+
+    private String regixCommon(String type,String inner){
+        return "[" + type + "]{0,1}" +
                 "[大小单双龙虎0-9]([" + inner + "]{0,1}[大小单双龙虎0-9])*" +
                 "[" + type + "]{0,1}\\d+)$";
     }
 
-    @Test
-    public void test() {
-        System.out.println("+a.,zs".replaceAll("[:;,.+，]", "Q"));
-    }
 
 }

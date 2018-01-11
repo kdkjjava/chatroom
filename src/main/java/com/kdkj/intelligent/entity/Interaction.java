@@ -43,7 +43,7 @@ public class Interaction extends Pageinfo implements Serializable{
 
     private String limitProvision;
 
-    private String gameStoped;
+    private String gameStopped;
 
     private String undoMessage;
 
@@ -175,12 +175,12 @@ public class Interaction extends Pageinfo implements Serializable{
         this.limitProvision = limitProvision == null ? null : limitProvision.trim();
     }
 
-    public String getGameStoped() {
-        return gameStoped;
+    public String getGameStopped() {
+        return gameStopped;
     }
 
-    public void setGameStoped(String gameStoped) {
-        this.gameStoped = gameStoped == null ? null : gameStoped.trim();
+    public void setGameStopped(String gameStoped) {
+        this.gameStopped = gameStopped == null ? null : gameStopped.trim();
     }
 
     public String getUndoMessage() {
