@@ -12,7 +12,7 @@
     <result column="truncate_playing" jdbcType="VARCHAR" property="truncatePlaying" />
     <result column="modify_nickname" jdbcType="VARCHAR" property="modifyNickname" />
     <result column="using_image" jdbcType="VARCHAR" property="usingImage" />
-    <result column="cancle_message" jdbcType="VARCHAR" property="cancleMessage" />
+    <result column="cancel_message" jdbcType="VARCHAR" property="cancelMessage" />
     <result column="receive_request" jdbcType="VARCHAR" property="receiveRequest" />
     <result column="ensure_request" jdbcType="VARCHAR" property="ensureRequest" />
     <result column="ensure_playing" jdbcType="VARCHAR" property="ensurePlaying" />
@@ -30,14 +30,14 @@
     insert into interaction (id, master_id, after_add, 
       after_delete, modify_provision, modify_playing, 
       truncate_playing, modify_nickname, using_image, 
-      cancle_message, receive_request, ensure_request, 
+      cancel_message, receive_request, ensure_request,
       ensure_playing, commit_false, lack_provision, 
       limit_provision, game_stoped, undo_message
       )
     values (#{id,jdbcType=INTEGER}, #{masterId,jdbcType=INTEGER}, #{afterAdd,jdbcType=VARCHAR}, 
       #{afterDelete,jdbcType=VARCHAR}, #{modifyProvision,jdbcType=VARCHAR}, #{modifyPlaying,jdbcType=VARCHAR}, 
       #{truncatePlaying,jdbcType=VARCHAR}, #{modifyNickname,jdbcType=VARCHAR}, #{usingImage,jdbcType=VARCHAR}, 
-      #{cancleMessage,jdbcType=VARCHAR}, #{receiveRequest,jdbcType=VARCHAR}, #{ensureRequest,jdbcType=VARCHAR}, 
+      #{cancelMessage,jdbcType=VARCHAR}, #{receiveRequest,jdbcType=VARCHAR}, #{ensureRequest,jdbcType=VARCHAR},
       #{ensurePlaying,jdbcType=VARCHAR}, #{commitFalse,jdbcType=VARCHAR}, #{lackProvision,jdbcType=VARCHAR}, 
       #{limitProvision,jdbcType=VARCHAR}, #{gameStoped,jdbcType=VARCHAR}, #{undoMessage,jdbcType=VARCHAR}
       )
@@ -52,7 +52,7 @@
       truncate_playing = #{truncatePlaying,jdbcType=VARCHAR},
       modify_nickname = #{modifyNickname,jdbcType=VARCHAR},
       using_image = #{usingImage,jdbcType=VARCHAR},
-      cancle_message = #{cancleMessage,jdbcType=VARCHAR},
+      cancel_message = #{cancelMessage,jdbcType=VARCHAR},
       receive_request = #{receiveRequest,jdbcType=VARCHAR},
       ensure_request = #{ensureRequest,jdbcType=VARCHAR},
       ensure_playing = #{ensurePlaying,jdbcType=VARCHAR},
@@ -65,7 +65,7 @@
   </update>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select id, master_id, after_add, after_delete, modify_provision, modify_playing, 
-    truncate_playing, modify_nickname, using_image, cancle_message, receive_request, 
+    truncate_playing, modify_nickname, using_image, cancel_message, receive_request,
     ensure_request, ensure_playing, commit_false, lack_provision, limit_provision, game_stoped, 
     undo_message
     from interaction
@@ -73,7 +73,7 @@
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
     select id, master_id, after_add, after_delete, modify_provision, modify_playing, 
-    truncate_playing, modify_nickname, using_image, cancle_message, receive_request, 
+    truncate_playing, modify_nickname, using_image, cancel_message, receive_request,
     ensure_request, ensure_playing, commit_false, lack_provision, limit_provision, game_stoped, 
     undo_message
     from interaction

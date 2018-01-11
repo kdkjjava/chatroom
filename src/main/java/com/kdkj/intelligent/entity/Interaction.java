@@ -29,7 +29,7 @@ public class Interaction extends Pageinfo implements Serializable{
 
     private String usingImage;
 
-    private String cancleMessage;
+    private String cancelMessage;
 
     private String receiveRequest;
 
@@ -119,12 +119,12 @@ public class Interaction extends Pageinfo implements Serializable{
         this.usingImage = usingImage == null ? null : usingImage.trim();
     }
 
-    public String getCancleMessage() {
-        return cancleMessage;
+    public String getCancelMessage() {
+        return cancelMessage;
     }
 
-    public void setCancleMessage(String cancleMessage) {
-        this.cancleMessage = cancleMessage == null ? null : cancleMessage.trim();
+    public void setCancelMessage(String cancelMessage) {
+        this.cancelMessage = cancelMessage == null ? null : cancelMessage.trim();
     }
 
     public String getReceiveRequest() {

@@ -3,7 +3,7 @@ package com.kdkj.intelligent.entity;
 public class KeyWord {
     private Integer id;
 
-    private Integer masterId;
+    private String masterId;
 
     private String groupSpace;
 
@@ -37,11 +37,11 @@ public class KeyWord {
         this.id = id;
     }
 
-    public Integer getMasterId() {
+    public String getMasterId() {
         return masterId;
     }
 
-    public void setMasterId(Integer masterId) {
+    public void setMasterId(String masterId) {
         this.masterId = masterId;
     }
 

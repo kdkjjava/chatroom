@@ -13,4 +13,11 @@ public interface KeyWordMapper {
     List<KeyWord> selectAll();
 
     int updateByPrimaryKey(KeyWord record);
+
+    Integer updateByMasterId(KeyWord keyWord);
+
+    KeyWord selectByMasterId(String masterId);
+
+    Integer deleteByMasterId(String masterId);
+
 }

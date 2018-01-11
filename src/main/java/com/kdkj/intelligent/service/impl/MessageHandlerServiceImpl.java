@@ -26,21 +26,21 @@ public class MessageHandlerServiceImpl implements MessageHandlerService {
     private KeyWordMapper keyWordMapper;
 
     //声明一个map集合用于存储关键字信息
-    private volatile static Map<Integer, KeyWord> keyWordList;
+    private volatile static Map<String, KeyWord> keyWordList;
 
     //声明一个map集合用于储存各个代理的命令关键字(命令后不接数字)
-    private volatile static Map<Integer, ArrayList<String>> commandNoNum;
+    private volatile static Map<String, ArrayList<String>> commandNoNum;
 
     //声明一个map集合用于储存各个代理的命令关键字(命令后接数字)
-    private volatile static Map<Integer, ArrayList<String>> commandWithNum;
+    private volatile static Map<String, ArrayList<String>> commandWithNum;
 
     //用于存储汉字和数字之间的映射关系
     public static Map<String, String> chineseMap;
 
     static {
-        keyWordList = new ConcurrentHashMap<Integer, KeyWord>();
-        commandNoNum = new ConcurrentHashMap<Integer, ArrayList<String>>();
-        commandWithNum = new ConcurrentHashMap<Integer, ArrayList<String>>();
+        keyWordList = new ConcurrentHashMap<String, KeyWord>();
+        commandNoNum = new ConcurrentHashMap<String, ArrayList<String>>();
+        commandWithNum = new ConcurrentHashMap<String, ArrayList<String>>();
         chineseMap = new HashMap<>();
         chineseMap.put("一", "1");
         chineseMap.put("元", "1");
