@@ -21,6 +21,6 @@
     <label>状态</label><input type="text" name="status">
     <button>添加</button>
 </form>
-<a href="${pageContext.request.contextPath}/socket">socket测试</a><br>
+<a href="${pageContext.request.contextPath}/test/socket">socket测试</a><br>
 </body>
 </html>
