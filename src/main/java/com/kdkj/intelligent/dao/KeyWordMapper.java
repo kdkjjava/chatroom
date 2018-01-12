@@ -19,5 +19,4 @@ public interface KeyWordMapper {
     KeyWord selectByMasterId(String masterId);
 
     Integer deleteByMasterId(String masterId);
-
 }

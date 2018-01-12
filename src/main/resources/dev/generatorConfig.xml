@@ -61,8 +61,7 @@
             <!-- <columnOverride column="sex" jdbcType="VARCHAR" /> -->
         <!--</table>-->
         <!--<table tableName="friendship" enableUpdateByExample="true" enableCountByExample="true" enableUpdateByPrimaryKey="true"/>
-        <table tableName="group_team" enableUpdateByExample="true" enableCountByExample="true" enableUpdateByPrimaryKey="true"/>
-        <table tableName="interaction" enableUpdateByExample="true" enableCountByExample="true" enableUpdateByPrimaryKey="true"/>-->
+        <table tableName="group_team" enableUpdateByExample="true" enableCountByExample="true" enableUpdateByPrimaryKey="true"/>-->
         <table tableName="key_word" enableUpdateByExample="true" enableCountByExample="true" enableUpdateByPrimaryKey="true"/>
         <!--<table tableName="members" enableUpdateByExample="true" enableCountByExample="true" enableUpdateByPrimaryKey="true"/>
         <table tableName="users" enableUpdateByExample="true" enableCountByExample="true" enableUpdateByPrimaryKey="true" selectByPrimaryKeyQueryId="true"/>-->

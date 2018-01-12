@@ -2,6 +2,8 @@ package com.kdkj.intelligent.service;
 
 import com.kdkj.intelligent.entity.KeyWord;
 
+import java.util.List;
+
 /**
  * powered by IntelliJ IDEA
  *
