@@ -13,7 +13,7 @@ import java.util.List;
  **/
 public interface MessageHandlerService {
 
-    String handleMessage(String message,Integer proxyId);
+    String handleMessage(String message,String masterId);
 
     List<KeyWord> getKeyWordList();
 }

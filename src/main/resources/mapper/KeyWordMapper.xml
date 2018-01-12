@@ -37,7 +37,7 @@
     delete from key_word
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <delete id="deleteByMasterId" parameterType="java.lang.Integer">
+  <delete id="deleteByMasterId" parameterType="java.lang.String">
     delete from key_word
     where master_id = #{masterId,jdbcType=VARCHAR}
   </delete>
@@ -133,14 +133,14 @@
     from key_word
     where id = #{id,jdbcType=INTEGER}
   </select>
-  <select id="selectByMasterId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+  <select id="selectByMasterId" parameterType="java.lang.String" resultMap="BaseResultMap">
     select id, master_id, group_space, group_final, type_space, type_final, inner_space,
     inner_final, upper_key, lower_key, modify_attack, delete_attack, query_attack, count_key,
     after_add, after_delete, modify_provision, modify_playing, truncate_playing, modify_nickname,
     using_image, cancel_message, receive_request, ensure_request, ensure_playing, commit_false,
     lack_provision, limit_provision, game_stopped, undo_message
     from key_word
-    where master_id = #{masterId,jdbcType=INTEGER}
+    where master_id = #{masterId,jdbcType=VARCHAR}
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
     select id, master_id, group_space, group_final, type_space, type_final, inner_space, 

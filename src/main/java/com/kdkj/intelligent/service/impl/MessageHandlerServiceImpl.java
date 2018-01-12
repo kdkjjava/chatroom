@@ -42,7 +42,6 @@ public class MessageHandlerServiceImpl implements MessageHandlerService {
         commandWithNum = new ConcurrentHashMap();
         chineseMap = new HashMap<>();
         chineseMap.put("一", "1");
-        chineseMap.put("元", "1");
         chineseMap.put("二", "2");
         chineseMap.put("三", "3");
         chineseMap.put("四", "4");
@@ -53,8 +52,6 @@ public class MessageHandlerServiceImpl implements MessageHandlerService {
         chineseMap.put("九", "9");
         chineseMap.put("〇", "0");
         chineseMap.put("○", "0");
-        chineseMap.put("十", "10");
-        chineseMap.put("百", "100");
     }
 
     /**
@@ -88,18 +85,18 @@ public class MessageHandlerServiceImpl implements MessageHandlerService {
      * 本方法用于判断用户发送的消息是否是特殊指令，若是则返回转换格式后的字符串，若不是则返回null
      *
      * @param message 用户输入的消息
-     * @param proxyId 代理的id
+     * @param masterId 代理的id
      * @return 返回转换格式后的字符串
      */
     @Override
-    public String handleMessage(String message, Integer proxyId) {
+    public String handleMessage(String message, String masterId) {
         message = cn2num(message);
         //验证用户输入的信息是否为命令指令，若是则返回该指令
-        if (isCommand(message, proxyId) != null)
+        if (isCommand(message, masterId) != null)
             return message;
 
         //验证用户输入信息是否为攻击指令，若为攻击指令，则替换相应的分隔符
-        String msg = isAttack(message, proxyId);
+        String msg = isAttack(message, masterId);
         if (msg != null)
             return msg;
         return null;
@@ -109,17 +106,17 @@ public class MessageHandlerServiceImpl implements MessageHandlerService {
      * 本方法用于判断客户发送的信息是否为操作互动识别关键字，若是则返回该字符串，若不是则返回null
      *
      * @param message 用户输入的消息
-     * @param proxyId 代理商的id
+     * @param masterId 代理商的id
      * @return
      */
-    private String isCommand(String message, Integer proxyId) {
+    private String isCommand(String message, String masterId) {
         Pattern noNumPattern = Pattern.compile("^[\\u4e00-\\u9fa5]+$");
         Pattern withNumPattern = Pattern.compile("^[\\u4e00-\\u9fa5]+\\d+$");
 
-        if (message.matches(noNumPattern.pattern())&&commandNoNum.get(proxyId).contains(message)) {
+        if (message.matches(noNumPattern.pattern())&&commandNoNum.get(masterId).contains(message)) {
                 return message;
         }
-        if (message.matches(withNumPattern.pattern())&&commandWithNum.get(proxyId).contains(message.split("\\d")[0])) {
+        if (message.matches(withNumPattern.pattern())&&commandWithNum.get(masterId).contains(message.split("\\d")[0])) {
                 return message;
         }
         return null;
@@ -129,11 +126,11 @@ public class MessageHandlerServiceImpl implements MessageHandlerService {
      * 本方法用于判断客户发送的信息是否为攻击指令，若是则返回替换分隔符后的字符串，若不是则返回null
      *
      * @param message 用户输入的消息
-     * @param proxyId 代理的id
+     * @param masterId 代理的id
      * @return
      */
-    private String isAttack(String message, Integer proxyId) {
-        KeyWord keyWord = keyWordList.get(proxyId);
+    private String isAttack(String message, String masterId) {
+        KeyWord keyWord = keyWordList.get(masterId);
         String group=keyWord.getGroupSpace();
         String type=keyWord.getTypeSpace();
         String inner=keyWord.getInnerSpace();
@@ -166,13 +163,13 @@ public class MessageHandlerServiceImpl implements MessageHandlerService {
      * @return
      */
     public String volidate(String message,String group,String type,String inner,KeyWord keyWord){
-        Pattern attackPattern = Pattern.compile(regix1(type,inner));
+        Pattern attackPattern = Pattern.compile(regExp1(type,inner));
         if (message.matches(attackPattern.pattern()))
             return message.replaceAll("[" + inner + "]", keyWord.getInnerFinal()).replaceAll("[" + type + "]", keyWord.getTypeFinal()).replaceAll("[" + group + "]", keyWord.getGroupFinal());
-        Pattern attackPattern2 = Pattern.compile(regix3(type,inner));
+        Pattern attackPattern2 = Pattern.compile(regExp3(type,inner));
         if (message.matches(attackPattern2.pattern()))
             return message.replaceAll("[" + inner + "]", keyWord.getInnerFinal()).replaceAll("[" + type + "]", keyWord.getTypeFinal()).replaceAll("[" + group + "]", keyWord.getGroupFinal());
-        Pattern attackPattern3 = Pattern.compile(regix4(type,inner));
+        Pattern attackPattern3 = Pattern.compile(regExp4(type,inner));
         if (message.matches(attackPattern3.pattern()))
             return message.replaceAll("[和合特]","冠亚").replaceAll("[" + inner + "]", keyWord.getTypeFinal()).replaceAll("[" + type + "]", keyWord.getTypeFinal()).replaceAll("[" + group + "]", keyWord.getGroupFinal());
         return null;
@@ -195,28 +192,27 @@ public class MessageHandlerServiceImpl implements MessageHandlerService {
         return message;
     }
     /**
-     * 以下的regix*的方法用于返回正则验证表达式
+     * 以下的regExp*的方法用于返回正则验证表达式
      * @param type  单组攻击之间的类型分割符
      * @param inner 单种类型的分隔符
      * @return
      */
-    private String regix1(String type,String inner){
+    private String regExp1(String type,String inner){
         return "^((\\d*([" + inner + "]{0,1}\\d*)*){0,1}(["
-                + inner + "]{0,1}[前后][1-9])*"+regixCommon(type,inner);
+                + inner + "]{0,1}[前后][1-9])*"+regExpCommon(type,inner);
     }
 
-    private String regix3(String type,String inner){
-        return  "^(((冠亚){0,1})"+regixCommon(type,inner);
+    private String regExp3(String type,String inner){
+        return  "^(((冠亚){0,1})"+regExpCommon(type,inner);
     }
-    private String regix4(String type,String inner){
-        return  "^(([合和特])"+regixCommon(type,inner);
+    private String regExp4(String type,String inner){
+        return  "^(([合和特])"+regExpCommon(type,inner);
     }
 
-    private String regixCommon(String type,String inner){
+    private String regExpCommon(String type,String inner){
         return "[" + type + "]{0,1}" +
                 "[大小单双龙虎0-9]([" + inner + "]{0,1}[大小单双龙虎0-9])*" +
                 "[" + type + "]{0,1}\\d+)$";
     }
-
 
 }

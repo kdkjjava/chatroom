@@ -32,8 +32,8 @@ public class BeginController {
     }
     @ResponseBody
     @PostMapping("/testSend")
-    public String testSend(@RequestParam(value = "proxyId",required = false)Integer id,@RequestParam(value = "message",required = false)String message){
-        String str=messageHandlerService.handleMessage(message,id);
+    public String testSend(@RequestParam(value = "masterId",required = false)String masterId,@RequestParam(value = "message",required = false)String message){
+        String str=messageHandlerService.handleMessage(message,masterId);
         if (str==null)
             return "false";
         return str;

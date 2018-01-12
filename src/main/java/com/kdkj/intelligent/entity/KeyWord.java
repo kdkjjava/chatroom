@@ -1,6 +1,6 @@
 package com.kdkj.intelligent.entity;
 
-public class KeyWord {
+public class KeyWord extends Pageinfo{
     private Integer id;
 
     private String masterId;

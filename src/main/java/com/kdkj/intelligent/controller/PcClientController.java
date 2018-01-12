@@ -30,8 +30,8 @@ public class PcClientController {
     }
 
     @GetMapping("getKeyWords")
-    public Result getKeyWords(String masterId){
-        return Result.ok("success",keyWordService.getByMaster(masterId));
+    public Result getKeyWords(@RequestParam("masterId") String masterId){
+        return Result.ok("success",keyWordService.getByMaster(masterId)).put("status","select");
     }
 
 }

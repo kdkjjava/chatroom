@@ -1,6 +1,8 @@
 package com.kdkj.intelligent.dao;
 
 import com.kdkj.intelligent.entity.KeyWord;
+import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 
 public interface KeyWordMapper {
