@@ -1,6 +1,9 @@
 package com.kdkj.intelligent.websocket;
 
 import com.alibaba.fastjson.JSON;
+import com.kdkj.intelligent.entity.SocketMsg;
+import com.kdkj.intelligent.service.MessageHandlerService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 
@@ -14,39 +17,47 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class MyWebSocketHandler implements WebSocketHandler {
 
+    @Autowired
+    private MessageHandlerService messageHandlerService;
+
     //concurrent包的线程安全Map，用来存放每个客户端对应的MyWebSocket对象。其中key为房间号标识
-    private volatile static Map<String, List<WebSocketSession>> sessionPools;
+    private static volatile Map<String, List<WebSocketSession>> sessionPools;
     static {
         sessionPools = new ConcurrentHashMap();
     }
     //握手实现连接后
+    @Override
     public void afterConnectionEstablished(WebSocketSession webSocketSession) throws Exception {
-        String roomCode= (String) webSocketSession.getAttributes().get("roomNum");
+        String roomNum= (String) webSocketSession.getAttributes().get("roomNum");
         //将连接地址的参数roomcode的值放入变量roomCode中
-        if (sessionPools.containsKey(roomCode)) {
-            sessionPools.get(roomCode).add(webSocketSession);
+        if (sessionPools.containsKey(roomNum)) {
+            sessionPools.get(roomNum).add(webSocketSession);
         } else {
-            sessionPools.put(roomCode, new LinkedList<WebSocketSession>());
-            sessionPools.get(roomCode).add(webSocketSession);
+            sessionPools.put(roomNum, new LinkedList());
+            sessionPools.get(roomNum).add(webSocketSession);
         }
 
 
     }
 
     //发送信息前的处理
+    @Override
     public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage) throws Exception {
         // 把客户端的消息解析为JSON对象
         JSON json=JSON.parseObject(webSocketMessage.getPayload().toString());
+        SocketMsg socketMsg = JSON.parseObject(webSocketMessage.getPayload().toString(), SocketMsg.class);
+        messageHandlerService.handleMessage(socketMsg.getMsg(),socketMsg.getRoomNum());
+
+
         //调用普通信息的发送方法
         sendUsualMessage(webSocketSession,webSocketMessage,json);
 
     }
 
 
-
-
-    public  void  handleTransportError(WebSocketSession webSocketSession, Throwable throwable) throws Exception {
-
+    @Override
+    public  void  handleTransportError(WebSocketSession webSocketSession, Throwable throwable){
+        throw new UnsupportedOperationException("发生handleTransportError错误！");
     }
 
     /**
@@ -59,11 +70,12 @@ public class MyWebSocketHandler implements WebSocketHandler {
      * @param closeStatus
      * @throws Exception
      */
+    @Override
     public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus) throws Exception {
         sessionPools.get(webSocketSession.getAttributes().get("roomNum")).remove(webSocketSession);
         webSocketSession.close();
     }
-
+    @Override
     public boolean supportsPartialMessages() {
         return false;
     }
@@ -73,6 +85,7 @@ public class MyWebSocketHandler implements WebSocketHandler {
      * @param webSocketSession
      * @param webSocketMessage
      */
+
     public void sendUsualMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage,JSON json){
 //遍历map集合，将消息发送至同一个房间下的session
         Iterator<Map.Entry<String, List<WebSocketSession>>> iterator = sessionPools.entrySet().iterator();
@@ -98,7 +111,7 @@ public class MyWebSocketHandler implements WebSocketHandler {
      * @param webSocketMessage
      */
     public void sendCommandMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage){
-
+        //TODO
     }
 
     /**
@@ -107,7 +120,7 @@ public class MyWebSocketHandler implements WebSocketHandler {
      * @param webSocketMessage
      */
     public void sendAdviceMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage){
-
+        //TODO
     }
 
     /**
@@ -116,7 +129,7 @@ public class MyWebSocketHandler implements WebSocketHandler {
      * @param webSocketMessage
      */
     public void usualFromClient(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage){
-
+        //TODO
     }
 
     /**
@@ -125,6 +138,6 @@ public class MyWebSocketHandler implements WebSocketHandler {
      * @param webSocketMessage
      */
     public void pictureFromClient(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage){
-
+        //TODO
     }
 }

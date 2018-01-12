@@ -43,18 +43,16 @@ function setMessageInnerHTML(innerHTML){
     innerHTML=eval("("+innerHTML+")")
    // if(innerHTML.address==roomAddress) {
         // 把滚动条滚动到底部
-        $(".d_show").append("<div id='" + index + "'>" + innerHTML.msgsss + "</div>");
+        $(".d_show").append("<div id='" + index + "'>" + innerHTML.msg + "</div>");
         launch();
     //}
 }
 
 //发送消息
 function send(){
-    //var message = document.getElementById('text').value;
     var message = $(".s_text").val();
     $(".s_text").val("");
     websocket.send(JSON.stringify({
-        msgsss:message,
-        address:roomNum
+        msg:message,
     }));
 }

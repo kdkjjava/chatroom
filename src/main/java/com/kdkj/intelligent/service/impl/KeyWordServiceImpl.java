@@ -45,7 +45,7 @@ public class KeyWordServiceImpl implements KeyWordService{
      * @return
      */
     @Override
-    public KeyWord getByMaster(String masterId) {
+    public KeyWord getByMaster(Integer masterId) {
         return keyWordMapper.selectByMasterId(masterId);
     }
 
@@ -55,7 +55,7 @@ public class KeyWordServiceImpl implements KeyWordService{
     }
 
     @Override
-    public Integer delete(String masterId) {
+    public Integer delete(Integer masterId) {
         return keyWordMapper.deleteByMasterId(masterId);
     }
 }

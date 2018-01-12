@@ -3,7 +3,7 @@ package com.kdkj.intelligent.entity;
 public class KeyWord extends Pageinfo{
     private Integer id;
 
-    private String masterId;
+    private Integer masterId;
 
     private String groupSpace;
 
@@ -69,12 +69,12 @@ public class KeyWord extends Pageinfo{
         this.id = id;
     }
 
-    public String getMasterId() {
+    public Integer getMasterId() {
         return masterId;
     }
 
-    public void setMasterId(String masterId) {
-        this.masterId = masterId == null ? null : masterId.trim();
+    public void setMasterId(Integer masterId) {
+        this.masterId = masterId;
     }
 
     public String getGroupSpace() {

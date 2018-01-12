@@ -27,7 +27,7 @@ public class MyWebsocketConfig extends WebMvcConfigurerAdapter implements WebSoc
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {
         //添加websocket处理器，添加握手拦截器
-        webSocketHandlerRegistry.addHandler(handler, "/ws").addInterceptors(new ChatRoomInterceptor());
+        webSocketHandlerRegistry.addHandler(handler, "/ws").addInterceptors(new ChatRoomInterceptor()).setAllowedOrigins("*");
 
         //添加websocket处理器，添加握手拦截器
         webSocketHandlerRegistry.addHandler(handler, "/ws/sockjs").addInterceptors(new ChatRoomInterceptor()).withSockJS();

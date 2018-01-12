@@ -3,7 +3,7 @@
 <mapper namespace="com.kdkj.intelligent.dao.KeyWordMapper">
   <resultMap id="BaseResultMap" type="com.kdkj.intelligent.entity.KeyWord">
     <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="master_id" jdbcType="VARCHAR" property="masterId" />
+    <result column="master_id" jdbcType="INTEGER" property="masterId" />
     <result column="group_space" jdbcType="VARCHAR" property="groupSpace" />
     <result column="group_final" jdbcType="VARCHAR" property="groupFinal" />
     <result column="type_space" jdbcType="VARCHAR" property="typeSpace" />
@@ -37,9 +37,9 @@
     delete from key_word
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <delete id="deleteByMasterId" parameterType="java.lang.String">
+  <delete id="deleteByMasterId" parameterType="java.lang.Integer">
     delete from key_word
-    where master_id = #{masterId,jdbcType=VARCHAR}
+    where master_id = #{masterId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.kdkj.intelligent.entity.KeyWord">
     insert into key_word (id, master_id, group_space, 
@@ -53,7 +53,7 @@
       ensure_playing, commit_false, lack_provision, 
       limit_provision, game_stopped, undo_message
       )
-    values (#{id,jdbcType=INTEGER}, #{masterId,jdbcType=VARCHAR}, #{groupSpace,jdbcType=VARCHAR}, 
+    values (#{id,jdbcType=INTEGER}, #{masterId,jdbcType=INTEGER}, #{groupSpace,jdbcType=VARCHAR},
       #{groupFinal,jdbcType=VARCHAR}, #{typeSpace,jdbcType=VARCHAR}, #{typeFinal,jdbcType=VARCHAR}, 
       #{innerSpace,jdbcType=VARCHAR}, #{innerFinal,jdbcType=VARCHAR}, #{upperKey,jdbcType=VARCHAR}, 
       #{lowerKey,jdbcType=VARCHAR}, #{modifyAttack,jdbcType=VARCHAR}, #{deleteAttack,jdbcType=VARCHAR}, 
@@ -65,10 +65,15 @@
       #{limitProvision,jdbcType=CHAR}, #{gameStopped,jdbcType=CHAR}, #{undoMessage,jdbcType=CHAR}
       )
   </insert>
+  <insert id="insertBlank" parameterType="Integer">
+    insert into key_word (master_id)
+    values (#{masterId,jdbcType=INTEGER}
+    )
+  </insert>
   <update id="updateByPrimaryKey" parameterType="com.kdkj.intelligent.entity.KeyWord">
     update key_word
     <set>
-      <if test="masterId !=null and masterId != '' ">master_id = #{masterId,jdbcType=VARCHAR},</if>
+      <if test="masterId !=null and masterId != '' ">master_id = #{masterId,jdbcType=INTEGER},</if>
       <if test="groupSpace !=null and groupSpace !='' ">group_space = #{groupSpace,jdbcType=VARCHAR},</if>
       <if test="groupFinal !=null and groupFinal !='' ">group_final = #{groupFinal,jdbcType=VARCHAR},</if>
       <if test="typeSpace !=null and typeSpace !='' ">type_space = #{typeSpace,jdbcType=VARCHAR},</if>
@@ -100,7 +105,7 @@
       <if test="queryAttack !=null and queryAttack !='' ">query_attack = #{queryAttack,jdbcType=VARCHAR},</if>
       <if test="countKey !=null and countKey !='' ">count_key = #{countKey,jdbcType=VARCHAR}</if>
     </set>
-    where master_id = #{masterId,jdbcType=VARCHAR}
+    where master_id = #{masterId,jdbcType=INTEGER}
   </update>
   <update id="updateInteraction" parameterType="KeyWord">
     update key_word
@@ -122,7 +127,7 @@
       <if test="gameStopped !=null and gameStopped !='' ">game_stopped = #{gameStopped,jdbcType=VARCHAR}</if>
       <if test="undoMessage !=null and undoMessage !='' ">undo_message = #{undoMessage,jdbcType=VARCHAR}</if>
     </set>
-    where master_id = #{masterId,jdbcType=VARCHAR}
+    where master_id = #{masterId,jdbcType=INTEGER}
   </update>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select id, master_id, group_space, group_final, type_space, type_final, inner_space, 
@@ -133,14 +138,14 @@
     from key_word
     where id = #{id,jdbcType=INTEGER}
   </select>
-  <select id="selectByMasterId" parameterType="java.lang.String" resultMap="BaseResultMap">
+  <select id="selectByMasterId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select id, master_id, group_space, group_final, type_space, type_final, inner_space,
     inner_final, upper_key, lower_key, modify_attack, delete_attack, query_attack, count_key,
     after_add, after_delete, modify_provision, modify_playing, truncate_playing, modify_nickname,
     using_image, cancel_message, receive_request, ensure_request, ensure_playing, commit_false,
     lack_provision, limit_provision, game_stopped, undo_message
     from key_word
-    where master_id = #{masterId,jdbcType=VARCHAR}
+    where master_id = #{masterId,jdbcType=INTEGER}
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
     select id, master_id, group_space, group_final, type_space, type_final, inner_space, 

@@ -27,12 +27,13 @@ public class ChatRoomInterceptor implements HandshakeInterceptor{
         if (serverHttpRequest instanceof ServletServerHttpRequest) {
             HttpServletRequest request = ((ServletServerHttpRequest) serverHttpRequest).getServletRequest();
             map.put("roomNum",request.getParameter("roomNum"));
+
         }
         return true;
     }
 
     @Override
     public void afterHandshake(ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse, WebSocketHandler webSocketHandler, Exception e) {
-
+        //该方法用握手成功后
     }
 }

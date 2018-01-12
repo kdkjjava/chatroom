@@ -18,7 +18,9 @@ public interface KeyWordMapper {
 
     Integer updateByMasterId(KeyWord keyWord);
 
-    KeyWord selectByMasterId(String masterId);
+    KeyWord selectByMasterId(Integer masterId);
 
-    Integer deleteByMasterId(String masterId);
+    Integer deleteByMasterId(Integer masterId);
+
+    Integer insertBlank(Integer masterId);
 }

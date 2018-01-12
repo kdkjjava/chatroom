@@ -13,7 +13,9 @@ import java.util.List;
  **/
 public interface MessageHandlerService {
 
-    String handleMessage(String message,String masterId);
+    String handleMessage(String message,Integer masterId);
 
     List<KeyWord> getKeyWordList();
+
+    Integer insertBlank(Integer masterId);
 }

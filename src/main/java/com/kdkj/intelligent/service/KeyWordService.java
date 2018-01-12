@@ -14,7 +14,7 @@ import java.util.List;
 public interface KeyWordService {
     Integer add(KeyWord keyWord);
     Integer update(KeyWord keyWord);
-    KeyWord getByMaster(String masterId);
+    KeyWord getByMaster(Integer masterId);
     Integer insert(KeyWord keyWord);
-    Integer delete(String masterId);
+    Integer delete(Integer masterId);
 }
