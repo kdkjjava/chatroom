@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.kdkj.intelligent.entity.Users;
 import com.kdkj.intelligent.service.UsersService;
 import com.kdkj.intelligent.util.MD5Encryption;
@@ -26,7 +28,7 @@ public class LoginController {
 	private UsersService usersService;
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public Result login(HttpServletRequest request,@RequestBody Users record) {
+	public Result login(HttpServletRequest request, @RequestBody Users record) {
 		Users user = new Users();
 		user.setUsername(record.getUsername() != null ? record.getUsername() : null);
 		user.setPhone(record.getPhone() != null ? record.getPhone() : null);
@@ -44,7 +46,7 @@ public class LoginController {
 				user.setToken("newToken");
 				user.setLastLoginTime(new Date());
 				usersService.updateByPrimaryKey(user);
-				user=usersService.selectByPrimaryKey(user.getId());
+				user = usersService.selectByPrimaryKey(user.getId());
 				HttpSession session = request.getSession();
 				user.setPassword(null);
 				session.setAttribute("user", user);
@@ -58,13 +60,26 @@ public class LoginController {
 		}
 	}
 
+	@RequestMapping(value = "/tokenLogin", method = RequestMethod.GET)
+	public Result getUserByToken(HttpServletRequest request,String token) {
+		HttpSession session=request.getSession();
+		Users user = new Users();
+		//user.setToken((String)request.getAttribute("token"));
+		user.setToken(token);
+		List<Users> list = usersService.selectListByUser(user);
+		user=list.get(0);
+		user.setPassword(null);
+		session.setAttribute("user", user);
+		return Result.ok("", user);
+	}
+
 	@RequestMapping(value = "/logout", method = RequestMethod.GET)
 	public Result logout(HttpServletRequest request) {
-		HttpSession session=request.getSession();
-		if(session.getAttribute("user")!=null) {
+		HttpSession session = request.getSession();
+		if (session.getAttribute("user") != null) {
 			session.removeAttribute("user");
 		}
-		if(request.getAttribute("token")!=null) {
+		if (request.getAttribute("token") != null) {
 			request.removeAttribute("token");
 		}
 		return Result.ok();

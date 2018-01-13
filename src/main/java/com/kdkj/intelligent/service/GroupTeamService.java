@@ -30,4 +30,6 @@ public interface GroupTeamService {
      * 根据群号查找群成员
      */
     List<Users> selectUserByGroupId(Integer groupId);
+    
+    int selectMasterIdByGroupId(Integer groupId);
 }

@@ -3,7 +3,7 @@ package com.kdkj.intelligent.entity;
 import java.io.Serializable;
 import java.util.Date;
 
-public class GroupTeam extends Pageinfo implements Serializable{
+public class GroupTeam implements Serializable{
     /**
 	 * 
 	 */
@@ -41,6 +41,32 @@ public class GroupTeam extends Pageinfo implements Serializable{
 	 * 游戏id
 	 */
     private Integer gameId;
+    /*
+	 * 头像
+	 */
+    private String icon;
+    /*
+	 * 群公告
+	 */
+    private String notice;
+    
+    public String getIcon() {
+		return icon;
+	}
+
+	public void setIcon(String icon) {
+		this.icon = icon;
+	}
+
+	public String getNotice() {
+		return notice;
+	}
+
+	public void setNotice(String notice) {
+		this.notice = notice;
+	}
+
+	
 
     public Integer getId() {
         return id;
