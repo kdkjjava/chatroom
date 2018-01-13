@@ -20,13 +20,7 @@ public class FriendshipServiceImpl implements FriendshipService {
 
 	@Override
 	public int insert(Friendship record) {
-		// TODO Auto-generated method stub
-		record.setBuildTime(null);
-		List<Friendship> selectByAttribute = friendshipMapper.selectByAttribute(record);
-		if(selectByAttribute.size()==0) {
 			return friendshipMapper.insert(record);
-		}
-		return -1;
 	}
 
 	@Override

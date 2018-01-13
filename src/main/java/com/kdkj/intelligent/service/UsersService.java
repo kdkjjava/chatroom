@@ -3,6 +3,7 @@ package com.kdkj.intelligent.service;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
+import com.kdkj.intelligent.entity.Friendship;
 import com.kdkj.intelligent.entity.GroupTeam;
 import com.kdkj.intelligent.entity.Users;
 
@@ -23,4 +24,5 @@ public interface UsersService {
     
     String selectTypeByUserName(String userName);
     
+    List<Users> findMyFriends(Long id);
 }

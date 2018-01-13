@@ -11,6 +11,7 @@ import org.springframework.util.StringUtils;
 import com.kdkj.intelligent.dao.GroupTeamMapper;
 import com.kdkj.intelligent.dao.KeyWordMapper;
 import com.kdkj.intelligent.dao.UsersMapper;
+import com.kdkj.intelligent.entity.Friendship;
 import com.kdkj.intelligent.entity.GroupTeam;
 import com.kdkj.intelligent.entity.KeyWord;
 import com.kdkj.intelligent.entity.Users;
@@ -78,5 +79,9 @@ public class UsersServiceImpl implements UsersService{
 		return usersMapper.selectListByUser(user).get(0).getType();
 	}
 
-
+	@Override
+	public List<Users> findMyFriends(Long id) {
+		// TODO Auto-generated method stub
+		return usersMapper.findMyFriends(id);
+	}
 }

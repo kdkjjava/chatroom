@@ -1,45 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kdkj.intelligent.dao.FriendshipMapper">
-  <cache  eviction="LRU" flushInterval="500" size="50" readOnly="true"></cache>
-  <resultMap id="BaseResultMap" type="com.kdkj.intelligent.entity.Friendship">
-    <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="uid1" jdbcType="INTEGER" property="uid1" />
-    <result column="uid2" jdbcType="INTEGER" property="uid2" />
-    <result column="build_time" jdbcType="TIMESTAMP" property="buildTime" />
-  </resultMap>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from friendship
-    where id = #{id,jdbcType=BIGINT}
-  </delete>
-  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.kdkj.intelligent.entity.Friendship">
-    insert into friendship (uid1, uid2, 
-      build_time)
-    values (#{uid1,jdbcType=INTEGER}, #{uid2,jdbcType=INTEGER}, 
-      #{buildTime,jdbcType=TIMESTAMP})
-  </insert>
-  <update id="updateByPrimaryKey" parameterType="com.kdkj.intelligent.entity.Friendship">
-    update friendship
-    set uid1 = #{uid1,jdbcType=INTEGER},
-      uid2 = #{uid2,jdbcType=INTEGER},
-      build_time = #{buildTime,jdbcType=TIMESTAMP}
-    where id = #{id,jdbcType=BIGINT}
-  </update>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select id, uid1, uid2, build_time
-    from friendship
-    where id = #{id,jdbcType=BIGINT}
-  </select>
-  <select id="selectByAttribute" resultMap="BaseResultMap">
-  	select id,uid1,uid2,build_time 
-  	from friendship where 1=1
-  	<if test="id!=null">and id=#{id}</if>
-  	<if test="uid1!=null">and uid1=#{uid1}</if>
-  	<if test="uid2!=null">and uid2=#{uid2}</if>
-  	<if test="buildTime!=null">and build_time=#{buildTime}</if>
-  </select>
-  <select id="selectAll" resultMap="BaseResultMap">
-    select id, uid1, uid2, build_time
-    from friendship
-  </select>
+	<cache eviction="LRU" flushInterval="500" size="50" readOnly="true"></cache>
+	<resultMap id="BaseResultMap" type="com.kdkj.intelligent.entity.Friendship">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="uid1" jdbcType="INTEGER" property="uid1" />
+		<result column="uid2" jdbcType="INTEGER" property="uid2" />
+		<result column="build_time" jdbcType="TIMESTAMP" property="buildTime" />
+		<result column="remark_name1" jdbcType="VARCHAR" property="remarkName1" />
+		<result column="remark_name2" jdbcType="VARCHAR" property="remarkName2" />
+	</resultMap>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		delete from friendship
+		where id = #{id,jdbcType=BIGINT}
+	</delete>
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id"
+		parameterType="com.kdkj.intelligent.entity.Friendship">
+		insert into friendship (uid1, uid2,
+		build_time,remark_name1,remark_name2)
+		values (#{uid1,jdbcType=INTEGER}, #{uid2,jdbcType=INTEGER},
+		#{buildTime,jdbcType=TIMESTAMP}, #{remarkName1,jdbcType=VARCHAR},
+		#{remarkName2,jdbcType=VARCHAR})
+	</insert>
+	<update id="updateByPrimaryKey" parameterType="com.kdkj.intelligent.entity.Friendship">
+		update friendship
+		<set>
+		<if test="remarkName1 !=null and remarkName1 !='' "> remark_name1 = #{remarkName1,jdbcType=VARCHAR},</if>
+		<if test="remarkName2 !=null and remarkName2 !='' "> remarkName2 = #{remarkName2,jdbcType=VARCHAR},</if>
+		</set>
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+	<select id="selectByPrimaryKey" parameterType="java.lang.Long"
+		resultMap="BaseResultMap">
+		select id, uid1, uid2, build_time
+		from friendship
+		where id = #{id,jdbcType=BIGINT}
+	</select>
+	<select id="selectByAttribute" resultMap="BaseResultMap">
+		select id,uid1,uid2,build_time
+		from friendship where 1=1
+		<if test="id!=null">and id=#{id}</if>
+		<if test="uid1!=null">and uid1=#{uid1}</if>
+		<if test="uid2!=null">and uid2=#{uid2}</if>
+		<if test="buildTime!=null">and build_time=#{buildTime}</if>
+	</select>
+
+	<select id="selectAll" resultMap="BaseResultMap">
+		select id, uid1, uid2, build_time
+		from friendship
+	</select>
 </mapper>

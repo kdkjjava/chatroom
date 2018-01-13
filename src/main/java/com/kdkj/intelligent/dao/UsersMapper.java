@@ -1,9 +1,10 @@
 package com.kdkj.intelligent.dao;
 
-import com.kdkj.intelligent.entity.Users;
+import java.util.List;
+
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import com.kdkj.intelligent.entity.Users;
 @Repository
 public interface UsersMapper {
     int deleteByPrimaryKey(Integer id);
@@ -19,4 +20,6 @@ public interface UsersMapper {
     List<Users> selectAll();
 
     int updateByPrimaryKey(Users record);
+    
+    List<Users> findMyFriends(Long id);
 }

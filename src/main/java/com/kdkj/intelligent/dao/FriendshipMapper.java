@@ -17,4 +17,5 @@ public interface FriendshipMapper {
     List<Friendship> selectAll();
 
     int updateByPrimaryKey(Friendship record);
+    
 }

@@ -3,7 +3,7 @@ package com.kdkj.intelligent.entity;
 import java.io.Serializable;
 import java.util.Date;
 
-public class Friendship extends Pageinfo implements Serializable{
+public class Friendship implements Serializable{
     /**
 	 * 
 	 */
@@ -16,6 +16,26 @@ public class Friendship extends Pageinfo implements Serializable{
     private Integer uid2;
 
     private Date buildTime;
+    
+    private String remarkName1;
+    
+    private String remarkName2;
+    
+    public String getRemarkName1() {
+		return remarkName1;
+	}
+
+	public void setRemarkName1(String remarkName1) {
+		this.remarkName1 = remarkName1;
+	}
+
+	public String getRemarkName2() {
+		return remarkName2;
+	}
+
+	public void setRemarkName2(String remarkName2) {
+		this.remarkName2 = remarkName2;
+	}
 
     public Long getId() {
         return id;

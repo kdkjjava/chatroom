@@ -21,16 +21,20 @@
 	</delete>
 	<insert id="insert" parameterType="com.kdkj.intelligent.entity.Users">
 		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
-			SELECT LAST_INSERT_ID()
+			SELECT
+			LAST_INSERT_ID()
 		</selectKey>
 		insert into users (username, password,
 		nickname, type, status,
-		score, regist_time, picture_address,
+		score,
+		regist_time, picture_address,
 		phone,token,last_login_time)
-		values (#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
+		values
+		(#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
 		#{nickname,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR},
 		#{status,jdbcType=VARCHAR},
-		#{score,jdbcType=BIGINT}, #{registTime,jdbcType=TIMESTAMP}, #{pictureAddress,jdbcType=VARCHAR},
+		#{score,jdbcType=BIGINT},
+		#{registTime,jdbcType=TIMESTAMP}, #{pictureAddress,jdbcType=VARCHAR},
 		#{phone,jdbcType=VARCHAR},#{token,jdbcType=VARCHAR},#{registTime,jdbcType=TIMESTAMP})
 	</insert>
 	<update id="updateByPrimaryKey" parameterType="com.kdkj.intelligent.entity.Users">
@@ -43,16 +47,19 @@
 			<if test="status !=null and status !=''"> status = #{status,jdbcType=VARCHAR},</if>
 			<if test="score !=null and score !=''"> score = #{score,jdbcType=VARCHAR},</if>
 			<if test="registTime !=null"> regist_time = #{registTime,jdbcType=TIMESTAMP},</if>
-			<if test="pictureAddress !=null and pictureAddress !=''"> picture_address = #{pictureAddress,jdbcType=VARCHAR},</if>
+			<if test="pictureAddress !=null and pictureAddress !=''"> picture_address = #{pictureAddress,jdbcType=VARCHAR},
+			</if>
 			<if test="phone !=null and phone !=''"> phone = #{phone,jdbcType=VARCHAR},</if>
 			<if test="token=='newToken'"> token=REPLACE(uuid(),'-',''),</if>
-			<if test="lastLoginTime !=null"> last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP},</if>
+			<if test="lastLoginTime !=null"> last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP},
+			</if>
 		</set>
 		where id = #{id,jdbcType=INTEGER}
 	</update>
 	<select id="selectByPrimaryKey" parameterType="java.lang.Integer"
 		resultMap="BaseResultMap">
-		select 'true' as QUERYID,id, username, password,nickname, type, status,
+		select 'true' as QUERYID,id, username, password,nickname,
+		type, status,
 		score, regist_time,token,picture_address, phone
 		from users
 		where id = #{id,jdbcType=INTEGER}
@@ -61,7 +68,8 @@
 	<select id="selectListByUser" resultMap="BaseResultMap"
 		parameterType="com.kdkj.intelligent.entity.Users">
 		select id, username, password,nickname, type, status,
-		score, regist_time, picture_address,phone,last_login_time
+		score,
+		regist_time, picture_address,phone,last_login_time
 		from users
 		where 1=1
 		<if test="username !=null and username !='' ">and username = #{username,jdbcType=VARCHAR}</if>
@@ -70,24 +78,38 @@
 		<if test="status !=null and status !=''">and status = #{status,jdbcType=VARCHAR}</if>
 		<if test="score !=null and score !=''">and score = #{score,jdbcType=VARCHAR}</if>
 		<if test="registTime !=null">and regist_time = #{registTime,jdbcType=TIMESTAMP}</if>
-		<if test="pictureAddress !=null and pictureAddress !=''">and picture_address = #{pictureAddress,jdbcType=VARCHAR}</if>
+		<if test="pictureAddress !=null and pictureAddress !=''">and picture_address = #{pictureAddress,jdbcType=VARCHAR}
+		</if>
 		<if test="phone !=null and phone !=''">and phone = #{phone,jdbcType=VARCHAR}</if>
 		<if test="token !=null and token !=''">and token = #{token,jdbcType=VARCHAR}</if>
-		<if test="lastLoginTime !=null"> last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP}</if>
+		<if test="lastLoginTime !=null"> last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP}
+		</if>
 	</select>
 
 	<select id="selectUserByGroupId" parameterType="java.lang.Integer"
 		resultMap="BaseResultMap">
 		select u.id, username,u.nickname, u.type, u.status,
-		u.score, u.regist_time, u.picture_address,u.phone
+		u.score,
+		u.regist_time, u.picture_address,u.phone
 		from users u,members m
-		where m.group_id=#{id,jdbcType=INTEGER}
+		where
+		m.group_id=#{id,jdbcType=INTEGER}
 		and u.id=m.user_id
 	</select>
 
+	<select id="findMyFriends" parameterType="java.lang.Long" resultMap="BaseResultMap">
+		select u.id,u.nickname,u.username,u.phone,u.picture_address from
+		users u,(select uid1 as uid2 from friendship where
+		uid2=#{id,jdbcType=BIGINT} Union all
+		select uid2 as uid2 from friendship where uid1=#{id,jdbcType=BIGINT}) f
+		where u.id=f.uid2
+	</select>
+
 	<select id="selectAll" resultMap="BaseResultMap">
-		select id, username, password, nickname, type, status, score, regist_time,
+		select id, username, password,
+		nickname, type, status, score, regist_time,
 		picture_address, phone
-		from users
+		from
+		users
 	</select>
 </mapper>
