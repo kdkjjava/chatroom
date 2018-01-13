@@ -21,4 +21,7 @@ public interface GroupTeamMapper {
     List<GroupTeam> selectGroupByUserId(Integer id);
     
     int selectMasterIdByGroupId(Integer groupId);
+
+    List<String> isPlayer(String username);
+
 }

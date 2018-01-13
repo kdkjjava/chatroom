@@ -20,6 +20,8 @@ public interface GroupTeamService {
     int updateByPrimaryKey(GroupTeam record);
     
     Boolean findMembership(Members record);
+
+    Boolean findMembership(String username,String groupId);
     
     int addMember(Members record);
     

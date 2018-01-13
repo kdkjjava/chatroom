@@ -47,6 +47,7 @@ public class MyWebSocketHandler implements WebSocketHandler {
         for (Users u :masters){
             sessionPools.put(u.getId(),new ConcurrentHashMap());
         }
+        System.out.println(groupTeamService.findMembership("proxy","2237519"));
     }
 
 

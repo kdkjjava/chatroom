@@ -13,4 +13,5 @@ public interface MembersMapper {
     List<Members> findMemberShip(Members record);
 
     int update(Members record);
+
 }
