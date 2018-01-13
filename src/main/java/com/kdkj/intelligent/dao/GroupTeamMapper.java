@@ -19,4 +19,6 @@ public interface GroupTeamMapper {
     int updateByPrimaryKey(GroupTeam record);
     
     List<GroupTeam> selectGroupByUserId(Integer id);
+    
+    int selectMasterIdByGroupId(Integer groupId);
 }

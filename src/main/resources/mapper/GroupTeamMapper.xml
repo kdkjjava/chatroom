@@ -11,6 +11,8 @@
 		<result column="type" jdbcType="VARCHAR" property="type" />
 		<result column="build_time" jdbcType="TIMESTAMP" property="buildTime" />
 		<result column="game_id" jdbcType="INTEGER" property="gameId" />
+		<result column="icon" jdbcType="VARCHAR" property="icon" />
+		<result column="notice" jdbcType="VARCHAR" property="notice" />
 	</resultMap>
 	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
 		delete from group_team
@@ -22,13 +24,13 @@
 		</selectKey>
 		insert into group_team (id, group_id, group_name,
 		master_id, upper_limit, status,
-		type, build_time, game_id
+		type, build_time, game_id,icon,notice
 		)
 		values (#{id,jdbcType=INTEGER}, #{groupId,jdbcType=VARCHAR},
 		#{groupName,jdbcType=VARCHAR},
 		#{masterId,jdbcType=INTEGER}, #{upperLimit,jdbcType=INTEGER}, #{status,jdbcType=VARCHAR},
 		#{type,jdbcType=VARCHAR}, #{buildTime,jdbcType=TIMESTAMP},
-		#{gameId,jdbcType=INTEGER}
+		#{gameId,jdbcType=INTEGER},#{icon,jdbcType=VARCHAR},#{notice,jdbcType=VARCHAR}
 		)
 	</insert>
 	<update id="updateByPrimaryKey" parameterType="com.kdkj.intelligent.entity.GroupTeam">
@@ -42,22 +44,28 @@
 			<if test="type !=null and type !='' "> type = #{type,jdbcType=VARCHAR},</if>
 			<if test="buildTime !=null "> build_time = #{buildTime,jdbcType=TIMESTAMP},</if>
 			<if test="gameId !=null and gameId !='' "> game_id = #{gameId,jdbcType=INTEGER},</if>
+			<if test="icon !=null and icon !='' "> icon = #{icon,jdbcType=VARCHAR},</if>
+			<if test="notice !=null and notice !='' "> notice = #{notice,jdbcType=VARCHAR},</if>
 		</set>
 		where id = #{id,jdbcType=INTEGER}
 	</update>
+	<select id="selectMasterIdByGroupId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		select master_id
+		from group_team
+		where group_id = #{groupId,jdbcType=INTEGER}
+	</select>
+	
 	<select id="selectByPrimaryKey" parameterType="java.lang.Integer"
 		resultMap="BaseResultMap">
 		select id, group_id, group_name, master_id, upper_limit, status, type,
-		build_time,
-		game_id
+		build_time,game_id,icon,notice
 		from group_team
 		where id = #{id,jdbcType=INTEGER}
 	</select>
 	<select id="selectListByGroup" resultMap="BaseResultMap"
 		parameterType="com.kdkj.intelligent.entity.GroupTeam">
 		select id, group_id, group_name, master_id, upper_limit, status, type,
-		build_time,
-		game_id
+		build_time,game_id,icon,notice
 		from group_team
 		where 1=1
 		<if test="groupId !=null and groupId !='' ">and group_id = #{groupId,jdbcType=VARCHAR}</if>
@@ -72,15 +80,15 @@
 
 	<select id="selectGroupByUserId" parameterType="java.lang.Integer"
 		resultMap="BaseResultMap">
-		select id, group_id, group_name
+		select g.id, g.group_id, g.group_name,g.icon,g.notice
 		from members m,group_team g
 		where m.user_id= #{id,jdbcType=INTEGER}
-		and g.group_id=m.group_id
+		and g.id=m.group_id
 	</select>
 
 	<select id="selectAll" resultMap="BaseResultMap">
 		select id, group_id, group_name, master_id, upper_limit, status, type,
-		build_time,game_id
+		build_time,game_id,icon,notice
 		from group_team
 	</select>
 </mapper>

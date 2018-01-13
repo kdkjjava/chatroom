@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,7 +29,7 @@ public class UserController {
     private UsersService usersService;
 
     @RequestMapping(value = "/selectListByUser", method = RequestMethod.POST)
-    public Result selectListByUser(HttpServletRequest request,Users record) {
+    public Result selectListByUser(HttpServletRequest request,@RequestBody Users record) {
     	PageHelper.startPage(record.getCurrent(), record.getPageSize());
     	List<Users> list=usersService.selectListByUser(record);
     	PageInfo<Users> page=new PageInfo<Users>(list);
@@ -42,14 +43,32 @@ public class UserController {
     }
     
     @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public Result update(HttpServletRequest request,Users record) {
+    public Result update(HttpServletRequest request,@RequestBody Users record) {
     	record.setPassword(null);
     	usersService.updateByPrimaryKey(record);
 		return Result.ok("修改成功");
     }
     
+    @RequestMapping(value = "/modifyPwd", method = RequestMethod.POST)
+    public Result modifyPwd(HttpServletRequest request,@RequestBody Users record) {
+    	Users user=usersService.selectByPrimaryKey(record.getId());
+    	try {
+			String newPwd=MD5Encryption.getEncryption(record.getPassword());
+			if(newPwd.equals(user.getPassword())) {
+				user.setPassword(MD5Encryption.getEncryption(record.getNickname()));
+				usersService.updateByPrimaryKey(user);
+				return Result.ok("修改成功");
+			}else {
+				return Result.error("密码不正确");
+			}
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			return Result.error("修改密码失败");
+		}
+    }
+    
     @RequestMapping(value = "/resetPwd", method = RequestMethod.POST)
-    public Result resetPwd(HttpServletRequest request,Users record) {
+    public Result resetPwd(HttpServletRequest request,@RequestBody  Users record) {
     	Users nowUser=getUser(request);
     	if(!"1".equals(nowUser.getType())) {
     		return Result.error("当前用户无此权限!");
@@ -73,6 +92,17 @@ public class UserController {
     	if(list!=null && list.size()>0)
     	return Result.error("用户名或电话号码已存在！");
     	try {
+    		if(StringUtils.isEmpty(record.getType())) {
+    			record.setType("0");
+    			}else {
+    				if("1".equals(record.getType())){
+    					if(!"2".equals(getUser(request).getType())) {
+    						return Result.error("你无权限添加代理商!");
+    					}
+    				}else if(!"0".equals(record.getType())) {
+						return Result.error("添加的用户类型有误！");
+					}
+    			}
 			usersService.insert(record);
 			return Result.ok("新增用户成功",record);
 		} catch (UnsupportedEncodingException e) {
@@ -81,7 +111,7 @@ public class UserController {
 		}
     }
     
-    @RequestMapping(value = "/findGroups", method = RequestMethod.POST)
+    @RequestMapping(value = "/findGroups", method = RequestMethod.GET)
     public Result findGroups(HttpServletRequest request,Integer userId) {
     	List<GroupTeam> list=usersService.selectGroupByUserId(userId);
     	if(list!=null && list.size()>0)

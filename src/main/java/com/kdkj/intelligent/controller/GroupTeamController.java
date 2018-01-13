@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,11 +27,9 @@ public class GroupTeamController {
 	private GroupTeamService groupTeamService;
 
 	@RequestMapping(value = "/selectListByGroup", method = RequestMethod.POST)
-	public Result selectListByGroup(HttpServletRequest request, GroupTeam record) {
-		PageHelper.startPage(record.getCurrent(), record.getPageSize());
+	public Result selectListByGroup(HttpServletRequest request,@RequestBody GroupTeam record) {
 		List<GroupTeam> list = groupTeamService.selectListByGroup(record);
-		PageInfo<GroupTeam> page = new PageInfo<GroupTeam>(list);
-		return Result.ok("查询成功", page);
+		return Result.ok("查询成功", list);
 	}
 
 	@RequestMapping(value = "/selectById", method = RequestMethod.GET)
@@ -41,14 +40,14 @@ public class GroupTeamController {
 	}
 
 	@RequestMapping(value = "/update", method = RequestMethod.POST)
-	public Result update(HttpServletRequest request, GroupTeam record) {
+	public Result update(HttpServletRequest request,@RequestBody GroupTeam record) {
 		// 需要管理员权限
 		groupTeamService.updateByPrimaryKey(record);
 		return Result.ok("修改成功");
 	}
 
 	@RequestMapping(value = "/updateGroupName", method = RequestMethod.POST)
-	public Result updateGroupName(HttpServletRequest request, GroupTeam record) {
+	public Result updateGroupName(HttpServletRequest request,@RequestBody GroupTeam record) {
 		// 需要代理商本人权限
 		GroupTeam group = new GroupTeam();
 		group.setId(record.getId());
@@ -58,13 +57,11 @@ public class GroupTeamController {
 	}
 
 	@RequestMapping(value = "/addGroup", method = RequestMethod.POST)
-	public Result addGroup(HttpServletRequest request, GroupTeam record) {
+	public Result addGroup(HttpServletRequest request,@RequestBody GroupTeam record) {
 		// 需要代理商权限   群号必填，且不能重复
-		GroupTeam groupTeam = new GroupTeam();
-		groupTeam.setGroupId(record.getGroupId() == null ? null : record.getGroupId());
-		List<GroupTeam> list = groupTeamService.selectListByGroup(groupTeam);
-		if (list != null && list.size() > 0)
-			return Result.error("该群号已存在！");
+		if(record.getMasterId()==null || record.getGroupName()==null) {
+			return Result.error("请检查参数是否填写完整");
+		}
 		groupTeamService.insert(record);
 		return Result.ok("新建群成功", record);
 	}
@@ -76,7 +73,7 @@ public class GroupTeamController {
 	 * @return
 	 */
 	@RequestMapping(value = "/addMembers", method = RequestMethod.POST)
-	public Result addMembers(HttpServletRequest request, Members record) {
+	public Result addMembers(HttpServletRequest request,@RequestBody Members record) {
 		if (groupTeamService.findMembership(record))
 			return Result.error("该用户已在群中，请勿多次添加");
 		groupTeamService.addMember(record);
@@ -90,7 +87,7 @@ public class GroupTeamController {
 	 * @return
 	 */
 	@RequestMapping(value = "/delMembers", method = RequestMethod.POST)
-	public Result delMembers(HttpServletRequest request, Members record) {
+	public Result delMembers(HttpServletRequest request,@RequestBody Members record) {
 		if (groupTeamService.findMembership(record)) {
 			groupTeamService.deleteMemberShip(record);
 			return Result.ok();
@@ -105,7 +102,7 @@ public class GroupTeamController {
 	 * @return
 	 */
 	@RequestMapping(value = "/modifyMembers", method = RequestMethod.POST)
-	public Result modifyMembers(HttpServletRequest request, Members record) {
+	public Result modifyMembers(HttpServletRequest request,@RequestBody Members record) {
 		if (groupTeamService.findMembership(record)) {
 			groupTeamService.updateMemberShip(record);
 			return Result.ok();
@@ -126,4 +123,5 @@ public class GroupTeamController {
 		return Result.ok("",list);
 		return Result.error("群成员列表为空");
 	}
+	
 }

@@ -53,49 +53,51 @@ public class VisitFilter implements Filter {
 			throws IOException, ServletException {
 		// TODO Auto-generated method stub
 		// place your code here
-		String s=JSON.toJSONString((Result.error("用户尚未登录或者登录已过期，请重新登录！")));
+		String s = JSON.toJSONString((Result.error("用户尚未登录或者登录已过期，请重新登录！")));
 		HttpServletRequest req = (HttpServletRequest) request;
-		HttpServletResponse rep=(HttpServletResponse) response;
+		HttpServletResponse rep = (HttpServletResponse) response;
 		rep.setCharacterEncoding("UTF-8");
 		HttpSession session = req.getSession();
-		String path=req.getServletPath();
-		String path1="/login";
-		String path2="/user/addUser";
-		if(path1.equals(path) || path2.equals(path)) {
+		String path = req.getServletPath();
+		String path1 = "/login";
+		String path2 = "/user/addUser";
+		String path3 = "/tokenLogin";
+		
+		if (path1.equals(path) || path2.equals(path) || path3.equals(path)) {
 			chain.doFilter(request, response);
 			return;
 		}
 		if (session.getAttribute("user") == null) {
-			if(req.getAttribute("token")!=null) {
-			String token = (String) req.getAttribute("token");
-			Users user = new Users();
-			user.setToken(token);
-			List<Users> list  = usersService.selectListByUser(user);
-			if(list!=null && list.size()>0) {
-				Users olduser=list.get(0);
-				Date date=olduser.getLastLoginTime();
-				Calendar cal=Calendar.getInstance();
-				cal.setTime(date);
-				cal.add(2, 3);                      //加三个月后看时间有无过期
-				boolean bl=cal.after(new Date());
-				if(bl) {
-					olduser.setLastLoginTime(new Date());
-					usersService.updateByPrimaryKey(olduser);
-					chain.doFilter(request, response);
-					return;
-				}else {
+			if (req.getAttribute("token") != null) {
+				String token = (String) req.getAttribute("token");
+				Users user = new Users();
+				user.setToken(token);
+				List<Users> list = usersService.selectListByUser(user);
+				if (list != null && list.size() > 0) {
+					Users olduser = list.get(0);
+					Date date = olduser.getLastLoginTime();
+					Calendar cal = Calendar.getInstance();
+					cal.setTime(date);
+					cal.add(2, 3); // 加三个月后看时间有无过期
+					boolean bl = cal.after(new Date());
+					if (bl) {
+						olduser.setLastLoginTime(new Date());
+						usersService.updateByPrimaryKey(olduser);
+						chain.doFilter(request, response);
+						return;
+					} else {
+						rep.getWriter().write(s);
+						return;
+					}
+
+				} else {
 					rep.getWriter().write(s);
 					return;
 				}
-			
-		}else {
+			}
 			rep.getWriter().write(s);
 			return;
 		}
-			}
-			rep.getWriter().write(s);
-			return;
-			}
 		chain.doFilter(request, response);
 		// pass the request along the filter chain
 	}

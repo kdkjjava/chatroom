@@ -6,10 +6,13 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.kdkj.intelligent.dao.GroupTeamMapper;
+import com.kdkj.intelligent.dao.KeyWordMapper;
 import com.kdkj.intelligent.dao.UsersMapper;
 import com.kdkj.intelligent.entity.GroupTeam;
+import com.kdkj.intelligent.entity.KeyWord;
 import com.kdkj.intelligent.entity.Users;
 import com.kdkj.intelligent.service.UsersService;
 import com.kdkj.intelligent.util.MD5Encryption;
@@ -21,6 +24,8 @@ public class UsersServiceImpl implements UsersService{
 	UsersMapper usersMapper;
 	@Autowired
 	GroupTeamMapper groupTeamMapper;
+	@Autowired
+	KeyWordMapper keyWordMapper;
 	
 	@Override
 	public int deleteByPrimaryKey(Integer id) {
@@ -29,6 +34,11 @@ public class UsersServiceImpl implements UsersService{
 
 	@Override
 	public int insert(Users record) throws UnsupportedEncodingException {
+		if("1".equals(record.getType())) {
+			KeyWord keyword=new KeyWord();
+			keyword.setMasterId(String.valueOf(record.getId()));
+			keyWordMapper.insert(keyword);
+		}
 		record.setRegistTime(new Date());
 		record.setPassword(MD5Encryption.getEncryption(record.getPassword()));
 		record.setType(record.getType()!=null?record.getType():"0");
