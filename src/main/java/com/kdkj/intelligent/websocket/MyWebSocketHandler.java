@@ -1,17 +1,19 @@
 package com.kdkj.intelligent.websocket;
 
 import com.alibaba.fastjson.JSON;
+import com.kdkj.intelligent.entity.Members;
 import com.kdkj.intelligent.entity.SocketMsg;
+import com.kdkj.intelligent.entity.Users;
+import com.kdkj.intelligent.service.GroupTeamService;
 import com.kdkj.intelligent.service.MessageHandlerService;
+import com.kdkj.intelligent.service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
@@ -20,29 +22,69 @@ public class MyWebSocketHandler implements WebSocketHandler {
     @Autowired
     private MessageHandlerService messageHandlerService;
 
+    @Autowired
+    private UsersService usersService;
+
+    @Autowired
+    private GroupTeamService groupTeamService;
+
     //concurrent包的线程安全Map，用来存放每个客户端对应的MyWebSocket对象。其中key为房间号标识
-    private static volatile Map<String, List<WebSocketSession>> sessionPools;
+    private static volatile Map<Integer, Map<String,List<WebSocketSession>>> sessionPools;
+
+
+    private static volatile Map<String, WebSocketSession> masterSessionPools;
+
     static {
         sessionPools = new ConcurrentHashMap();
+        masterSessionPools = new ConcurrentHashMap();
     }
+
+    @PostConstruct
+    public void sessionPoolsInitial(){
+        Users user =new Users();
+        user.setType("1");
+        List<Users> masters = usersService.selectListByUser(user);
+        for (Users u :masters){
+            sessionPools.put(u.getId(),new ConcurrentHashMap());
+        }
+    }
+
+
     //握手实现连接后
     @Override
     public void afterConnectionEstablished(WebSocketSession webSocketSession) throws Exception {
-        String roomNum= (String) webSocketSession.getAttributes().get("roomNum");
-        //将连接地址的参数roomcode的值放入变量roomCode中
-        if (sessionPools.containsKey(roomNum)) {
-            sessionPools.get(roomNum).add(webSocketSession);
-        } else {
-            sessionPools.put(roomNum, new LinkedList());
-            sessionPools.get(roomNum).add(webSocketSession);
-        }
+        String groupId= (String) webSocketSession.getAttributes().get("groupId");
+        Integer masterId = groupTeamService.selectMasterIdByGroupId(Integer.parseInt(groupId));
 
+        String username = (String) webSocketSession.getAttributes().get("username");
 
+       /* if (){
+            if (!masterSessionPools.containsKey(username))
+                masterSessionPools.put(username,webSocketSession);
+        }else if(){
+
+        }else{
+            //将连接地址的参数groupId的值放入变量roomCode中
+            if (sessionPools.get(masterId).containsKey(groupId)) {
+                sessionPools.get(masterId).get(groupId).add(webSocketSession);
+            } else {
+                sessionPools.get(masterId).put(groupId, new ArrayList<>());
+                sessionPools.get(masterId).get(groupId).add(webSocketSession);
+            }
+        }*/
     }
 
     //发送信息前的处理
     @Override
     public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage) throws Exception {
+        String groupId= (String) webSocketSession.getAttributes().get("groupId");
+        Integer masterId = groupTeamService.selectMasterIdByGroupId(Integer.parseInt(groupId));
+
+
+        if (groupTeamService.findMembership(new Members())){
+
+        }
+
         // 把客户端的消息解析为JSON对象
         JSON json=JSON.parseObject(webSocketMessage.getPayload().toString());
         SocketMsg socketMsg = JSON.parseObject(webSocketMessage.getPayload().toString(), SocketMsg.class);
@@ -88,7 +130,7 @@ public class MyWebSocketHandler implements WebSocketHandler {
 
     public void sendUsualMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage,JSON json){
 //遍历map集合，将消息发送至同一个房间下的session
-        Iterator<Map.Entry<String, List<WebSocketSession>>> iterator = sessionPools.entrySet().iterator();
+       /* Iterator<Map.Entry<String, List<WebSocketSession>>> iterator = sessionPools.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<String, List<WebSocketSession>> entry = iterator.next();
             if (entry.getKey().equals(webSocketSession.getAttributes().get("roomNum"))) {
@@ -103,7 +145,7 @@ public class MyWebSocketHandler implements WebSocketHandler {
                 }
                 break;
             }
-        }
+        }*/
     }
     /**
      * 本方法用于处理玩家发送的指令消息

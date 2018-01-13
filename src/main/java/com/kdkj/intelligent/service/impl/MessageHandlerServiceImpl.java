@@ -51,9 +51,7 @@ public class MessageHandlerServiceImpl implements MessageHandlerService {
         chineseMap.put("七", "7");
         chineseMap.put("八", "8");
         chineseMap.put("九", "9");
-        chineseMap.put("單", "单");
-        chineseMap.put("雙", "双");
-        chineseMap.put("龍", "龙");
+
     }
 
     /**
@@ -240,7 +238,7 @@ public class MessageHandlerServiceImpl implements MessageHandlerService {
 
     private String regExpCommon(String type, String inner) {
         return "[" + type + "]{0,1}" +
-                "[大小单双龙虎0-9]([" + inner + "]{0,1}[大小单双龙虎0-9])*" +
+                "[\\u4e00-\\u9fa50-9]([" + inner + "]{0,1}[\\u4e00-\\u9fa50-9])*" +
                 "[" + type + "]{0,1}\\d+)$";
     }
 
