@@ -15,7 +15,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-public class GroupWebSocketHandler implements WebSocketHandler {
+public class GroupHandler implements WebSocketHandler {
 
     @Autowired
     private UsersService usersService;

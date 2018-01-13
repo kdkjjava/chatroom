@@ -21,14 +21,21 @@ import javax.annotation.Resource;
 public class MyWebsocketConfig extends WebMvcConfigurerAdapter implements WebSocketConfigurer{
 
     @Resource
-    private GroupWebSocketHandler grouphandler;
+    private GroupHandler grouphandler;
+
+    @Resource
+    private FriendHandler friendHandler;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {
-        //添加websocket处理器，添加握手拦截器
+        //给群聊添加websocket处理器，添加握手拦截器
         webSocketHandlerRegistry.addHandler(grouphandler, "/groupWs").addInterceptors(new ChatRoomInterceptor()).setAllowedOrigins("*");
+        //添加群聊websocket处理器，添加握手拦截器
+        webSocketHandlerRegistry.addHandler(grouphandler, "/groupWs/sockjs").addInterceptors(new ChatRoomInterceptor()).setAllowedOrigins("*").withSockJS();
 
-        //添加websocket处理器，添加握手拦截器
-        webSocketHandlerRegistry.addHandler(grouphandler, "/groupWs/sockjs").addInterceptors(new ChatRoomInterceptor()).withSockJS();
+        //给好友聊天添加websocket处理器，添加握手拦截器
+        webSocketHandlerRegistry.addHandler(friendHandler, "/friendWs").addInterceptors(new ChatRoomInterceptor()).setAllowedOrigins("*");
+        //添加好友聊天websocket处理器，添加握手拦截器
+        webSocketHandlerRegistry.addHandler(friendHandler, "/friendWs/sockjs").addInterceptors(new ChatRoomInterceptor()).setAllowedOrigins("*").withSockJS();
     }
 }
