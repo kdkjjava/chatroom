@@ -5,7 +5,7 @@ var host=window.location.host;
 console.log(host);
 //判断当前浏览器是否支持WebSocket
 if('WebSocket' in window){
-    websocket=new WebSocket("ws://"+host+"/chatroom/ws?groupId="+groupId+"msgFrom=");
+    websocket=new WebSocket("ws://"+host+"/chatroom/groupWs?groupId="+groupId+"msgFrom=");
 
 }
 else{

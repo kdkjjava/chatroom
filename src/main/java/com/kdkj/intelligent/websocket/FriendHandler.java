@@ -6,6 +6,8 @@ import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 
+import java.util.Map;
+
 /**
  * powered by IntelliJ IDEA
  *
@@ -15,8 +17,18 @@ import org.springframework.web.socket.WebSocketSession;
  **/
 @Component
 public class FriendHandler implements WebSocketHandler {
+
+    //创建一个保存好友聊天的WebSocketSession
+    private static volatile Map<String,WebSocketSession> friendSessionPools;
+
     @Override
     public void afterConnectionEstablished(WebSocketSession webSocketSession) throws Exception {
+        String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
+        String msgTo = (String) webSocketSession.getAttributes().get("msgTo");
+
+        if (friendSessionPools.containsKey(msgFrom+"_"+msgTo)){
+
+        }
 
     }
 
