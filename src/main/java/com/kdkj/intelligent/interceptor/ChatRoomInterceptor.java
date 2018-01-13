@@ -26,8 +26,11 @@ public class ChatRoomInterceptor implements HandshakeInterceptor{
     public boolean beforeHandshake(ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse, WebSocketHandler webSocketHandler, Map<String, Object> map) throws Exception {
         if (serverHttpRequest instanceof ServletServerHttpRequest) {
             HttpServletRequest request = ((ServletServerHttpRequest) serverHttpRequest).getServletRequest();
-            map.put("groupId",request.getParameter("groupId"));
-            map.put("username",request.getParameter("username"));
+            map.put("msgFrom",request.getParameter("msgFrom"));
+            if (request.getParameter("groupId")!=null)
+                map.put("groupId",request.getParameter("groupId"));
+            if (request.getParameter("msgTo")!=null)
+                map.put("msgTo",request.getParameter("msgTo"));
         }
         return true;
     }

@@ -13,9 +13,29 @@ public class SocketMsg {
 
     private String status;
 
-    private Integer roomNum;
+    private String groupId;
+
+    private String msgFrom;
+
+    private String msgTo;
 
     public SocketMsg() {
+    }
+
+    public String getMsgFrom() {
+        return msgFrom;
+    }
+
+    public void setMsgFrom(String msgFrom) {
+        this.msgFrom = msgFrom;
+    }
+
+    public String getMsgTo() {
+        return msgTo;
+    }
+
+    public void setMsgTo(String msgTo) {
+        this.msgTo = msgTo;
     }
 
     public String getMsg() {
@@ -34,11 +54,11 @@ public class SocketMsg {
         this.status = status;
     }
 
-    public Integer getRoomNum() {
-        return roomNum;
+    public String getGroupId() {
+        return groupId;
     }
 
-    public void setRoomNum(Integer roomNum) {
-        this.roomNum = roomNum;
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
     }
 }

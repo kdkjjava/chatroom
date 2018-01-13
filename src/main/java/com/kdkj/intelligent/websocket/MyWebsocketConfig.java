@@ -1,7 +1,6 @@
 package com.kdkj.intelligent.websocket;
 
 import com.kdkj.intelligent.interceptor.ChatRoomInterceptor;
-import com.kdkj.intelligent.websocket.MyWebSocketHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
@@ -22,14 +21,14 @@ import javax.annotation.Resource;
 public class MyWebsocketConfig extends WebMvcConfigurerAdapter implements WebSocketConfigurer{
 
     @Resource
-    private MyWebSocketHandler handler;
+    private GroupWebSocketHandler grouphandler;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {
         //添加websocket处理器，添加握手拦截器
-        webSocketHandlerRegistry.addHandler(handler, "/ws").addInterceptors(new ChatRoomInterceptor()).setAllowedOrigins("*");
+        webSocketHandlerRegistry.addHandler(grouphandler, "/groupWs").addInterceptors(new ChatRoomInterceptor()).setAllowedOrigins("*");
 
         //添加websocket处理器，添加握手拦截器
-        webSocketHandlerRegistry.addHandler(handler, "/ws/sockjs").addInterceptors(new ChatRoomInterceptor()).withSockJS();
+        webSocketHandlerRegistry.addHandler(grouphandler, "/groupWs/sockjs").addInterceptors(new ChatRoomInterceptor()).withSockJS();
     }
 }
