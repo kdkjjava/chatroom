@@ -43,7 +43,7 @@
 			<if test="status !=null and status !=''"> status = #{status,jdbcType=VARCHAR},</if>
 			<if test="score !=null and score !=''"> score = #{score,jdbcType=VARCHAR},</if>
 			<if test="registTime !=null"> regist_time = #{registTime,jdbcType=TIMESTAMP},</if>
-			<if test="pictureAddress !=null and picture_address !=''"> picture_address = #{pictureAddress,jdbcType=VARCHAR},</if>
+			<if test="pictureAddress !=null and pictureAddress !=''"> picture_address = #{pictureAddress,jdbcType=VARCHAR},</if>
 			<if test="phone !=null and phone !=''"> phone = #{phone,jdbcType=VARCHAR},</if>
 			<if test="token=='newToken'"> token=REPLACE(uuid(),'-',''),</if>
 			<if test="lastLoginTime !=null"> last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP},</if>
@@ -70,7 +70,7 @@
 		<if test="status !=null and status !=''">and status = #{status,jdbcType=VARCHAR}</if>
 		<if test="score !=null and score !=''">and score = #{score,jdbcType=VARCHAR}</if>
 		<if test="registTime !=null">and regist_time = #{registTime,jdbcType=TIMESTAMP}</if>
-		<if test="pictureAddress !=null and picture_address !=''">and picture_address = #{pictureAddress,jdbcType=VARCHAR}</if>
+		<if test="pictureAddress !=null and pictureAddress !=''">and picture_address = #{pictureAddress,jdbcType=VARCHAR}</if>
 		<if test="phone !=null and phone !=''">and phone = #{phone,jdbcType=VARCHAR}</if>
 		<if test="token !=null and token !=''">and token = #{token,jdbcType=VARCHAR}</if>
 		<if test="lastLoginTime !=null"> last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP}</if>

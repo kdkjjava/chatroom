@@ -34,11 +34,11 @@ public class UsersServiceImpl implements UsersService{
 
 	@Override
 	public int insert(Users record) throws UnsupportedEncodingException {
-		if("1".equals(record.getType())) {
+		/*if("1".equals(record.getType())) {
 			KeyWord keyword=new KeyWord();
 			keyword.setMasterId(String.valueOf(record.getId()));
 			keyWordMapper.insert(keyword);
-		}
+		}*/
 		record.setRegistTime(new Date());
 		record.setPassword(MD5Encryption.getEncryption(record.getPassword()));
 		record.setType(record.getType()!=null?record.getType():"0");
@@ -69,6 +69,13 @@ public class UsersServiceImpl implements UsersService{
 	@Override
 	public List<GroupTeam> selectGroupByUserId(Integer userId) {
 		return groupTeamMapper.selectGroupByUserId(userId);
+	}
+
+	@Override
+	public String selectTypeByUserName(String userName) {
+		Users user=new Users();
+		user.setUsername(userName);
+		return usersMapper.selectListByUser(user).get(0).getType();
 	}
 
 
