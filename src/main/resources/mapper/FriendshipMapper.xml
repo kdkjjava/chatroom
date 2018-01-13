@@ -12,10 +12,10 @@
     delete from friendship
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.kdkj.intelligent.entity.Friendship">
-    insert into friendship (id, uid1, uid2, 
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.kdkj.intelligent.entity.Friendship">
+    insert into friendship (uid1, uid2, 
       build_time)
-    values (#{id,jdbcType=BIGINT}, #{uid1,jdbcType=INTEGER}, #{uid2,jdbcType=INTEGER}, 
+    values (#{uid1,jdbcType=INTEGER}, #{uid2,jdbcType=INTEGER}, 
       #{buildTime,jdbcType=TIMESTAMP})
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.kdkj.intelligent.entity.Friendship">
@@ -29,6 +29,14 @@
     select id, uid1, uid2, build_time
     from friendship
     where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectByAttribute" resultMap="BaseResultMap">
+  	select id,uid1,uid2,build_time 
+  	from friendship where 1=1
+  	<if test="id!=null">and id=#{id}</if>
+  	<if test="uid1!=null">and uid1=#{uid1}</if>
+  	<if test="uid2!=null">and uid2=#{uid2}</if>
+  	<if test="buildTime!=null">and build_time=#{buildTime}</if>
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
     select id, uid1, uid2, build_time

@@ -20,4 +20,7 @@ public interface UsersService {
     List<GroupTeam> selectGroupByUserId(Integer id);
 
     int updateByPrimaryKey(Users record);
+    
+    String selectTypeByUserName(String userName);
+    
 }
