@@ -26,7 +26,7 @@ public class FriendHandler implements WebSocketHandler {
     private static volatile Map<String,List<WebSocketSession>> friendSessionPools;
 
     //该变量存储好友不在线时发送的消息
-    protected static volatile Map<String,List<SocketMsg>> unsentMessages;
+    protected static volatile Map<String,Map<String,List<SocketMsg>>> unsentMessages;
 
     static {
         friendSessionPools=new ConcurrentHashMap();
@@ -54,10 +54,16 @@ public class FriendHandler implements WebSocketHandler {
         //如果对方用户不在线，则保存到缓存中
         if (friendSessionPools.get(key).size()<2){
             if (unsentMessages.containsKey(socketMsg.getMsgTo())){
-                unsentMessages.get(socketMsg.getMsgTo()).add(socketMsg);
+                if (unsentMessages.get(socketMsg.getMsgTo()).containsKey(socketMsg.getMsgFrom())){
+                    unsentMessages.get(socketMsg.getMsgTo()).get(socketMsg.getMsgFrom()).add(socketMsg);
+                }else {
+                    unsentMessages.get(socketMsg.getMsgTo()).put(socketMsg.getMsgFrom(),new ArrayList<>());
+                    unsentMessages.get(socketMsg.getMsgTo()).get(socketMsg.getMsgFrom()).add(socketMsg);
+                }
             }else {
-                unsentMessages.put(socketMsg.getMsgTo(),new ArrayList());
-                unsentMessages.get(socketMsg.getMsgTo()).add(socketMsg);
+                unsentMessages.put(socketMsg.getMsgTo(),new ConcurrentHashMap<>());
+                unsentMessages.get(socketMsg.getMsgTo()).put(socketMsg.getMsgFrom(),new ArrayList<>());
+                unsentMessages.get(socketMsg.getMsgTo()).get(socketMsg.getMsgFrom()).add(socketMsg);
             }
         }
 
