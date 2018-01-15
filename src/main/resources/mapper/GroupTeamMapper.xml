@@ -33,6 +33,11 @@
         #{gameId,jdbcType=INTEGER},#{icon,jdbcType=VARCHAR},#{notice,jdbcType=VARCHAR}
         )
     </insert>
+    <select id="selectMasterIdByUsername" resultType="java.lang.Integer" parameterType="java.lang.String">
+        select master_id from group_team where id =
+        (select group_id from members where user_id =
+        (select id from users where username=#{username} LIMIT 1) LIMIT 1)LIMIT 1;
+    </select>
     <update id="updateByPrimaryKey" parameterType="com.kdkj.intelligent.entity.GroupTeam">
         update group_team
         <set>

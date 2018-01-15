@@ -98,10 +98,10 @@
 	</select>
 
 	<select id="findMyFriends" parameterType="java.lang.Long" resultMap="BaseResultMap">
-		select u.id,u.nickname,u.username,u.phone,u.picture_address from
-		users u,(select uid1 as uid2 from friendship where
+		select u.id,u.nickname,u.username,u.phone,u.picture_address,remarkName as password from
+		users u,(select uid1 as uid2,remark_name2 as remarkName from friendship where
 		uid2=#{id,jdbcType=BIGINT} Union all
-		select uid2 as uid2 from friendship where uid1=#{id,jdbcType=BIGINT}) f
+		select uid2,remark_name1 as remarkName from friendship where uid1=#{id,jdbcType=BIGINT}) f
 		where u.id=f.uid2
 	</select>
 
