@@ -26,6 +26,11 @@ public class MyWebsocketConfig extends WebMvcConfigurerAdapter implements WebSoc
     @Resource
     private FriendHandler friendHandler;
 
+    @Resource
+    private ProxyHandler proxyHandler;
+
+    @Resource
+    private TotalHandler totalHandler;
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {
         //给群聊添加websocket处理器，添加握手拦截器
@@ -37,5 +42,16 @@ public class MyWebsocketConfig extends WebMvcConfigurerAdapter implements WebSoc
         webSocketHandlerRegistry.addHandler(friendHandler, "/friendWs").addInterceptors(new ChatRoomInterceptor()).setAllowedOrigins("*");
         //添加好友聊天websocket处理器，添加握手拦截器
         webSocketHandlerRegistry.addHandler(friendHandler, "/friendWs/sockjs").addInterceptors(new ChatRoomInterceptor()).setAllowedOrigins("*").withSockJS();
+
+        //给好友聊天添加websocket处理器，添加握手拦截器
+        webSocketHandlerRegistry.addHandler(proxyHandler, "/proxyWs").addInterceptors(new ChatRoomInterceptor()).setAllowedOrigins("*");
+        //添加好友聊天websocket处理器，添加握手拦截器
+        webSocketHandlerRegistry.addHandler(proxyHandler, "/proxyWs/sockjs").addInterceptors(new ChatRoomInterceptor()).setAllowedOrigins("*").withSockJS();
+
+        //给好友聊天添加websocket处理器，添加握手拦截器
+        webSocketHandlerRegistry.addHandler(totalHandler, "/totalWs").addInterceptors(new ChatRoomInterceptor()).setAllowedOrigins("*");
+        //添加好友聊天websocket处理器，添加握手拦截器
+        webSocketHandlerRegistry.addHandler(totalHandler, "/totalWs/sockjs").addInterceptors(new ChatRoomInterceptor()).setAllowedOrigins("*").withSockJS();
+
     }
 }
