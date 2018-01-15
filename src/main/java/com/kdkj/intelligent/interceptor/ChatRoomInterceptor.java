@@ -31,6 +31,8 @@ public class ChatRoomInterceptor implements HandshakeInterceptor{
             if (request.getParameter("msgTo")!=null)
                 map.put("msgTo",request.getParameter("msgTo"));
         }
+
+
         return true;
     }
 

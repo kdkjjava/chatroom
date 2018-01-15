@@ -40,8 +40,10 @@ public class BeginController {
     }
 
     @GetMapping(value = "socket")
-    public String socket(@RequestParam(value = "roomNum",required = false) String roomNum, Map<String,Object> map, HttpServletRequest request, HttpServletResponse response){
-        map.put("roomNum",roomNum);
+    public String socket(@RequestParam(value = "groupId",required = false) String groupId, Map<String,Object> map,
+                         HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "msgFrom")String msgFrom){
+        map.put("groupId",groupId);
+        map.put("msgFrom",msgFrom);
         return "webSocket";
     }
 

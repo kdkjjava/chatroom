@@ -171,7 +171,8 @@ ${requestScope.model}
 </div>
 <!-- end dm-->
 <script type="text/javascript">
-    var roomNum="${requestScope.roomNum}";
+    var groupId="${requestScope.groupId}";
+    var msgFrom="${requestScope.msgFrom}";
 </script>
 <script type="text/javascript"
         src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.0.js"></script>
