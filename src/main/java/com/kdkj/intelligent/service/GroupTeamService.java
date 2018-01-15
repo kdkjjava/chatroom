@@ -23,7 +23,7 @@ public interface GroupTeamService {
 
     Boolean findMembership(String username,String groupId);
     
-    int addMember(Members record);
+    int addMember(Integer masterId,Integer groupId,String userIds);
     
     int deleteMemberShip(Members record);
     
@@ -34,4 +34,6 @@ public interface GroupTeamService {
     List<Users> selectUserByGroupId(Integer groupId);
     
     int selectMasterIdByGroupId(Integer groupId);
+    
+    Integer selectMasterIdByUsername(String username);
 }

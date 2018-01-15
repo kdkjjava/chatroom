@@ -151,11 +151,61 @@ public class UserController {
 				record.setBuildTime(new Date());
 				record.setRemarkName1(remarkName);
 				friendshipService.insert(record);
-				return Result.ok();
+				return Result.ok("","添加好友成功");
 			}
 			return Result.error("你们已经是好友，不能重复添加！");
 		}
 		return Result.error("你们已经是好友，不能重复添加！");
+	}
+	
+	@RequestMapping(value = "/modifyRemarkName", method = RequestMethod.GET)
+	public Result modifyRemarkName(HttpServletRequest request, Integer id,String remarkName) {
+		Integer myId=getUser(request).getId();
+		Friendship record = new Friendship();
+		record.setUid1(myId);
+		record.setUid2(id);
+		List<Friendship> list = friendshipService.selectByAttribute(record);
+		if(list!=null && !list.isEmpty()) {
+			record=list.get(0);
+			record.setRemarkName1(remarkName);
+			friendshipService.updateByPrimaryKey(record);
+			return Result.ok("修改备注成功");
+		}else {
+			record.setUid1(id);
+			record.setUid2(myId);
+			list = friendshipService.selectByAttribute(record);
+			if (list != null && !list.isEmpty()) {
+				record = list.get(0);
+				record.setRemarkName2(remarkName);
+				friendshipService.updateByPrimaryKey(record);
+				return Result.ok("修改备注成功");
+			}
+			return Result.error("修改备注失败");
+		}
+	}
+	
+	@RequestMapping(value = "/delFriend", method = RequestMethod.GET)
+	public Result delFriend(HttpServletRequest request, Integer id) {
+		Integer myId=getUser(request).getId();
+		Friendship record = new Friendship();
+		record.setUid1(myId);
+		record.setUid2(id);
+		List<Friendship> list = friendshipService.selectByAttribute(record);
+		if(list!=null && !list.isEmpty()) {
+			record=list.get(0);
+			friendshipService.deleteByPrimaryKey(record.getId());
+			return Result.ok("","删除成功");
+		}else {
+			record.setUid1(id);
+			record.setUid2(myId);
+			list = friendshipService.selectByAttribute(record);
+			if(list!=null && !list.isEmpty()) {
+				record=list.get(0);
+				friendshipService.deleteByPrimaryKey(record.getId());
+				return Result.ok("","删除成功");
+			}
+			return Result.error("删除失败，你们不是好友");
+		}
 	}
 
 	private Users getUser(HttpServletRequest request) {

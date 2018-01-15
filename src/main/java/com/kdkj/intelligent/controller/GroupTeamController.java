@@ -11,12 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import com.kdkj.intelligent.entity.GroupTeam;
 import com.kdkj.intelligent.entity.Members;
 import com.kdkj.intelligent.entity.Users;
 import com.kdkj.intelligent.service.GroupTeamService;
+import com.kdkj.intelligent.service.UsersService;
 import com.kdkj.intelligent.util.Result;
 
 @CrossOrigin(origins="*")
@@ -25,6 +24,8 @@ import com.kdkj.intelligent.util.Result;
 public class GroupTeamController {
 	@Autowired
 	private GroupTeamService groupTeamService;
+	@Autowired
+	private UsersService usersService;
 
 	@RequestMapping(value = "/selectListByGroup", method = RequestMethod.POST)
 	public Result selectListByGroup(HttpServletRequest request,@RequestBody GroupTeam record) {
@@ -73,11 +74,21 @@ public class GroupTeamController {
 	 * @return
 	 */
 	@RequestMapping(value = "/addMembers", method = RequestMethod.POST)
-	public Result addMembers(HttpServletRequest request,@RequestBody Members record) {
-		if (groupTeamService.findMembership(record))
-			return Result.error("该用户已在群中，请勿多次添加");
-		groupTeamService.addMember(record);
-		return Result.ok();
+	public Result addMembers(HttpServletRequest request,Integer id,String userIds) {
+		if(groupTeamService.selectByPrimaryKey(id)==null) {
+			return Result.error("该群不存在，请检查后重新提交！");
+		}
+		String[] ids=userIds.split(",");
+		for(String userId:ids) {
+			if(usersService.selectByPrimaryKey(Integer.valueOf(userId))==null)
+				return Result.error("用户id错误，请检查后再试");
+		}
+		Integer masterId=((Users)request.getAttribute("user")).getId();
+		int i=groupTeamService.addMember(masterId,id,userIds);
+		if(i>0) {
+			return Result.ok("有"+i+"个用户是其他代理商的用户，不能添加");
+		}
+		return Result.ok("添加用户成功！");
 	}
 
 	/**
