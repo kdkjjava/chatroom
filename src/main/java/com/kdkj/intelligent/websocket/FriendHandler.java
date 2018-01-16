@@ -41,6 +41,7 @@ public class FriendHandler implements WebSocketHandler {
         if (key != null)
             friendSessionPools.get(key).add(webSocketSession);
         else {
+            key=msgFrom+"_"+msgTo;
             friendSessionPools.put(key, new ArrayList<>());
             friendSessionPools.get(key).add(webSocketSession);
         }
@@ -73,6 +74,7 @@ public class FriendHandler implements WebSocketHandler {
             }
             try {
                 session.sendMessage(new TextMessage(JSON.toJSONString(socketMsg)));
+                break;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -86,7 +88,14 @@ public class FriendHandler implements WebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus) throws Exception {
-
+        String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
+        String msgTo = (String) webSocketSession.getAttributes().get("msgTo");
+        String key = getKey(msgFrom, msgTo);
+        if (friendSessionPools.get(key).size()<2)
+            friendSessionPools.remove(key);
+        else
+            friendSessionPools.get(key).remove(webSocketSession);
+        webSocketSession.close();
     }
 
     @Override
