@@ -50,8 +50,6 @@ public class FriendHandler implements WebSocketHandler {
                 webSocketSession.sendMessage(new TextMessage(JSON.toJSONString(socketMsg)));
             unsentMessages.get(msgFrom).remove(msgTo);
         }
-
-
     }
 
     @Override
@@ -79,7 +77,6 @@ public class FriendHandler implements WebSocketHandler {
                 e.printStackTrace();
             }
         }
-
     }
 
     @Override

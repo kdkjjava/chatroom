@@ -19,12 +19,10 @@ public class SocketParamModified {
      */
     public void addProxyCache(Integer proxyId){
         GroupHandler.sessionPools.put(proxyId,new ConcurrentHashMap());
-        TotalHandler.totalSessions.put(proxyId, new ConcurrentHashMap());
     }
 
     public void removeProxyCache(Integer proxyId){
         GroupHandler.sessionPools.remove(proxyId);
-        TotalHandler.totalSessions.remove(proxyId);
     }
 
 }

@@ -28,7 +28,7 @@ public class TotalHandler implements WebSocketHandler {
     private GroupTeamService groupTeamService;
 
     //该变量用于存储用户的总的session
-    protected static volatile Map<Integer,Map<String,WebSocketSession>> totalSessions;
+    protected static volatile Map<String,WebSocketSession> totalSessions;
 
     static {
         totalSessions=new ConcurrentHashMap();
@@ -37,13 +37,12 @@ public class TotalHandler implements WebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession webSocketSession) throws Exception {
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
-        Integer masterId = groupTeamService.selectMasterIdByUsername(msgFrom);
-        if (!totalSessions.get(masterId).containsKey(msgFrom)){
-            totalSessions.get(masterId).put(msgFrom,webSocketSession);
+        if (!totalSessions.containsKey(msgFrom)){
+            totalSessions.put(msgFrom,webSocketSession);
         }
 
-        if (FriendHandler.unsentMessages.get(masterId).containsKey(msgFrom)){
-            pushMsg(webSocketSession,msgFrom,masterId);
+        if (FriendHandler.unsentMessages.containsKey(msgFrom)){
+            pushMsg(webSocketSession,msgFrom);
         }
 
     }
@@ -61,9 +60,8 @@ public class TotalHandler implements WebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus) throws Exception {
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
-        Integer masterId = groupTeamService.selectMasterIdByUsername(msgFrom);
-        if (totalSessions.get(masterId).containsKey(msgFrom)){
-            totalSessions.get(masterId).remove(msgFrom);
+        if (totalSessions.containsKey(msgFrom)){
+            totalSessions.remove(msgFrom);
         }
         webSocketSession.close();
     }
@@ -77,9 +75,8 @@ public class TotalHandler implements WebSocketHandler {
      * 推送消息提醒，用户上线后对其总的websocket发送消息提醒，发送消息内容为消息类型，和消息来源
      * @param webSocketSession
      * @param currentUsername
-     * @param masterId
      */
-    private void pushMsg(WebSocketSession webSocketSession, String currentUsername, Integer masterId){
+    private void pushMsg(WebSocketSession webSocketSession, String currentUsername){
         Set<String> msgFroms = FriendHandler.unsentMessages.get(currentUsername).keySet();
         Iterator<String> iterator = msgFroms.iterator();
         while (iterator.hasNext()){

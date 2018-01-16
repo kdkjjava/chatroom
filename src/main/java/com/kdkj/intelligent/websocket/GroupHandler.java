@@ -37,7 +37,6 @@ public class GroupHandler implements WebSocketHandler {
         List<Users> masters = usersService.selectListByUser(user);
         for (Users u : masters) {
             sessionPools.put(u.getId(), new ConcurrentHashMap());
-            TotalHandler.totalSessions.put(u.getId(), new ConcurrentHashMap());
         }
 
     }
