@@ -90,6 +90,8 @@ public class GroupHandler implements WebSocketHandler {
     //发送信息前的处理
     @Override
     public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage) throws Exception {
+
+        System.out.println(webSocketMessage.getPayload().getClass());
         //将用户发送的json消息解析为java对象
         SocketMsg socketMsg = JSON.parseObject(webSocketMessage.getPayload().toString(), SocketMsg.class);
 

@@ -38,6 +38,7 @@ public class ProxyHandler implements WebSocketHandler {
 
         if (!masterSessionPools.containsKey(msgFrom))
             masterSessionPools.put(msgFrom,webSocketSession);
+
     }
 
     @Override
