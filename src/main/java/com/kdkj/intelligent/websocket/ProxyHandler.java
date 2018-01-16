@@ -73,9 +73,8 @@ public class ProxyHandler implements WebSocketHandler {
      */
     private void sendUsualMsg(WebSocketSession webSocketSession, SocketMsg socketMsg){
         String groupId= (String) webSocketSession.getAttributes().get("groupId");
-        Integer masterId = groupTeamService.selectMasterIdByGroupId(Integer.parseInt(groupId));
-        if (GroupHandler.sessionPools.containsKey(masterId)){
-            Iterator<Map.Entry<String, List<WebSocketSession>>> iterator = GroupHandler.sessionPools.get(masterId).entrySet().iterator();
+        if (GroupHandler.sessionPools.containsKey(groupId)){
+            Iterator<Map.Entry<String, List<WebSocketSession>>> iterator = GroupHandler.sessionPools.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry<String, List<WebSocketSession>> entry = iterator.next();
                 if (entry.getKey().equals(socketMsg.getGroupId())) {
@@ -93,12 +92,10 @@ public class ProxyHandler implements WebSocketHandler {
             }
         }else {
             try {
-                webSocketSession.sendMessage(new TextMessage("NO_ONLINE_USERS"));
+                webSocketSession.sendMessage(new TextMessage("{\"errorCode\":\"NO_ONLINE_USERS\"}"));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-
     }
-
 }
