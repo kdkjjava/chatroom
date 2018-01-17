@@ -1,5 +1,6 @@
 package com.kdkj.intelligent.websocket;
 
+import com.kdkj.intelligent.entity.AdminMsg;
 import com.kdkj.intelligent.entity.SocketMsg;
 import com.kdkj.intelligent.service.GroupTeamService;
 import org.junit.Test;
@@ -8,10 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -30,8 +28,12 @@ public class TotalHandler implements WebSocketHandler {
     //该变量用于存储用户的总的session
     protected static volatile Map<String,WebSocketSession> totalSessions;
 
+    //该变量储存用户已读的消息
+    //protected static Map<String,List<AdminMsg>> readMsg;
+
     static {
         totalSessions=new ConcurrentHashMap();
+       //readMsg=new ConcurrentHashMap();
     }
 
     @Override
@@ -44,6 +46,9 @@ public class TotalHandler implements WebSocketHandler {
         if (FriendHandler.unsentMessages.containsKey(msgFrom)){
             pushMsg(webSocketSession,msgFrom);
         }
+
+        //向用户提示有未读的系统消息
+        //pushSysMsg(webSocketSession,msgFrom);
 
     }
 
@@ -87,4 +92,5 @@ public class TotalHandler implements WebSocketHandler {
             }
         }
     }
+
 }

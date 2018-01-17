@@ -101,9 +101,10 @@
 			advice-ref="transactionAdvice" />
 	</aop:config>
 
+	<!--定时任务设置-->
 	<bean id="timedTask"
 		  class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-		<property name="targetObject">
+		<property name="targetObject" >
 			<bean class="com.kdkj.intelligent.websocket.TimedTask" />
 		</property>
 		<property name="targetMethod" value="handlePastMsg" />
@@ -113,7 +114,7 @@
 		<property name="jobDetail" ref="timedTask" />
 		<property name="cronExpression" value="0 30 23 * * ?" />
 	</bean>
-	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+	<bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="triggers">
 			<list>
 				<ref bean="cronTrigger" />

@@ -3,6 +3,7 @@ package com.kdkj.intelligent.websocket;
 import com.alibaba.fastjson.JSON;
 import com.kdkj.intelligent.entity.SocketMsg;
 import com.kdkj.intelligent.service.GroupTeamService;
+import com.kdkj.intelligent.service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
@@ -15,6 +16,9 @@ public class GroupHandler implements WebSocketHandler {
 
     @Autowired
     private GroupTeamService groupTeamService;
+
+    @Autowired
+    private UsersService usersService;
 
     //concurrent包的线程安全Map，用来存放每个客户端对应的MyWebSocket对象。其中key为房间号标识
     protected static volatile Map<String, List<WebSocketSession>> sessionPools;
@@ -114,6 +118,7 @@ public class GroupHandler implements WebSocketHandler {
      */
     private void sendToClient(SocketMsg socketMsg, Integer masterId) {
         WebSocketSession session = ProxyHandler.masterSessionPools.get(masterId);
+        socketMsg.setMasterName(usersService.selectByPrimaryKey(masterId).getUsername());
         socketMsg.setStatus("command");
         try {
             session.sendMessage(new TextMessage(JSON.toJSONString(socketMsg)));

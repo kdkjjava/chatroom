@@ -21,6 +21,16 @@ public class SocketMsg {
 
     private String date;
 
+    private String masterName;
+
+    public String getMasterName() {
+        return masterName;
+    }
+
+    public void setMasterName(String masterName) {
+        this.masterName = masterName;
+    }
+
     public String getDate() {
         return date;
     }

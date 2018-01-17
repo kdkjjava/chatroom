@@ -19,43 +19,59 @@ public class AdminMsg {
 
     private Boolean read;
 
+    private String title;
+
+    public String getTitle() {
+        return title;
+    }
+
+    public AdminMsg setTitle(String title) {
+        this.title = title;
+        return this;
+    }
+
     public Boolean getRead() {
         return read;
     }
 
-    public void setRead(Boolean read) {
+    public AdminMsg setRead(Boolean read) {
         this.read = read;
+        return this;
     }
 
     public String getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public AdminMsg setDate(String date) {
         this.date = date;
+        return this;
     }
 
     public String getMsgFrom() {
         return msgFrom;
     }
 
-    public void setMsgFrom(String msgFrom) {
+    public AdminMsg setMsgFrom(String msgFrom) {
         this.msgFrom = msgFrom;
+        return this;
     }
 
     public String getAdmin() {
         return admin;
     }
 
-    public void setAdmin(String admin) {
+    public AdminMsg setAdmin(String admin) {
         this.admin = admin;
+        return this;
     }
 
     public String getMsg() {
         return msg;
     }
 
-    public void setMsg(String msg) {
+    public AdminMsg setMsg(String msg) {
         this.msg = msg;
+        return this;
     }
 }

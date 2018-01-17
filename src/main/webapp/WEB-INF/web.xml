@@ -3,14 +3,14 @@
   <display-name>intelligent</display-name>
   <description>head</description>
   
-  <!--<filter>
+  <filter>
     <filter-name>visitFilter</filter-name>
     <filter-class>com.kdkj.intelligent.filter.VisitFilter</filter-class>
   </filter>
   <filter-mapping>
     <filter-name>visitFilter</filter-name>
     <url-pattern>/*</url-pattern>
-  </filter-mapping>-->
+  </filter-mapping>
   <filter>
     <description>Character set filters</description>
     <filter-name>encodingFilter</filter-name>

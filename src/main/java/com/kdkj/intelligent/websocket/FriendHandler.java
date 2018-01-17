@@ -32,7 +32,6 @@ public class FriendHandler implements WebSocketHandler {
         unsentMessages = new ConcurrentHashMap();
     }
 
-
     @Override
     public void afterConnectionEstablished(WebSocketSession webSocketSession) throws Exception {
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
@@ -141,6 +140,5 @@ public class FriendHandler implements WebSocketHandler {
             unsentMessages.get(socketMsg.getMsgTo()).get(socketMsg.getMsgFrom()).add(socketMsg);
         }
     }
-
 
 }

@@ -22,10 +22,23 @@ import java.util.Map;
 public class AdminHandler  implements WebSocketHandler {
 
     //该变量用于存储普通用户的建议
-    protected static List<AdminMsg> adviceMsg;
+    public static List<AdminMsg> adviceMsg;
+    //该变量用于存储管理员的广播消息
+    public static List<AdminMsg> broadCastMsg;
 
     static {
         adviceMsg=new ArrayList();
+        broadCastMsg=new ArrayList();
+
+        AdminMsg adminMsg1 =new AdminMsg().setAdmin("admin").setMsg("消息111111").setDate(String.valueOf(System.currentTimeMillis())).setTitle("title1");
+        AdminMsg adminMsg2 =new AdminMsg().setAdmin("admin").setMsg("消息222222").setDate(String.valueOf(System.currentTimeMillis())).setTitle("title2");
+        AdminMsg adminMsg3 =new AdminMsg().setAdmin("admin").setMsg("消息333333").setDate(String.valueOf(System.currentTimeMillis())).setTitle("title3");
+        AdminMsg adminMsg4 =new AdminMsg().setAdmin("admin").setMsg("消息444444").setDate(String.valueOf(System.currentTimeMillis())).setTitle("title4");
+
+        broadCastMsg.add(adminMsg1);
+        broadCastMsg.add(adminMsg2);
+        broadCastMsg.add(adminMsg3);
+        broadCastMsg.add(adminMsg4);
     }
 
     @Override
