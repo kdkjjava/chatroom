@@ -26,7 +26,7 @@ public class TotalHandler implements WebSocketHandler {
     private GroupTeamService groupTeamService;
 
     //该变量用于存储用户的总的session
-    protected static volatile Map<String,WebSocketSession> totalSessions;
+    protected static  Map<String,WebSocketSession> totalSessions;
 
     //该变量储存用户已读的消息
     //protected static Map<String,List<AdminMsg>> readMsg;

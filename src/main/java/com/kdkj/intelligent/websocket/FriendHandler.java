@@ -22,10 +22,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class FriendHandler implements WebSocketHandler {
 
     //创建一个保存好友聊天的WebSocketSession
-    private static volatile Map<String, List<WebSocketSession>> friendSessionPools;
+    private static Map<String, List<WebSocketSession>> friendSessionPools;
 
     //该变量存储好友不在线时发送的消息
-    protected static volatile Map<String, Map<String, List<SocketMsg>>> unsentMessages;
+    protected static Map<String, Map<String, List<SocketMsg>>> unsentMessages;
 
     static {
         friendSessionPools = new ConcurrentHashMap();

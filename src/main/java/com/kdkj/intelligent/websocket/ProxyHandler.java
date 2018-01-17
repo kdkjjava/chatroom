@@ -25,7 +25,7 @@ public class ProxyHandler implements WebSocketHandler {
     @Autowired
     private GroupTeamService groupTeamService;
     //该变量用于保存master的session
-    protected static volatile Map<String, WebSocketSession> masterSessionPools;
+    protected static Map<String, WebSocketSession> masterSessionPools;
 
     static {
         masterSessionPools = new ConcurrentHashMap();

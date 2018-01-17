@@ -21,7 +21,7 @@ public class GroupHandler implements WebSocketHandler {
     private UsersService usersService;
 
     //concurrent包的线程安全Map，用来存放每个客户端对应的MyWebSocket对象。其中key为房间号标识
-    protected static volatile Map<String, List<WebSocketSession>> sessionPools;
+    protected static Map<String, List<WebSocketSession>> sessionPools;
 
     static {
         sessionPools = new ConcurrentHashMap();
