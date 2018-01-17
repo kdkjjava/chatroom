@@ -11,8 +11,9 @@
 
 	<delete id="deleteMemberShip" parameterType="com.kdkj.intelligent.entity.Members">
 		delete from members
-		where user_id = #{userId,jdbcType=BIGINT}
-		and group_id= #{groupId,jdbcType=BIGINT}
+		where 
+		<if test="userId !=null ">user_id = #{userId,jdbcType=BIGINT} and </if>
+		 group_id= #{groupId,jdbcType=BIGINT}
 	</delete>
 
 	<insert id="insert" parameterType="com.kdkj.intelligent.entity.Members">

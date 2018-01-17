@@ -32,6 +32,9 @@ public class GroupTeamServiceImpl implements GroupTeamService {
 
 	@Override
 	public int deleteByPrimaryKey(Integer id) {
+		Members record=new Members();
+		record.setGroupId(id);
+		membersMapper.deleteMemberShip(record);
 		return groupTeamMapper.deleteByPrimaryKey(id);
 	}
 

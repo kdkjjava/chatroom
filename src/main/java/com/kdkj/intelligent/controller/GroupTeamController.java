@@ -1,9 +1,11 @@
 package com.kdkj.intelligent.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.catalina.tribes.MembershipService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,7 +28,7 @@ public class GroupTeamController {
 	private GroupTeamService groupTeamService;
 	@Autowired
 	private UsersService usersService;
-
+	
 	@RequestMapping(value = "/selectListByGroup", method = RequestMethod.POST)
 	public Result selectListByGroup(HttpServletRequest request,@RequestBody GroupTeam record) {
 		List<GroupTeam> list = groupTeamService.selectListByGroup(record);
@@ -35,31 +37,54 @@ public class GroupTeamController {
 
 	@RequestMapping(value = "/selectById", method = RequestMethod.GET)
 	public Result selectById(HttpServletRequest request, int id) {
-		// 群号需要解决
 		GroupTeam groupTeam = groupTeamService.selectByPrimaryKey(id);
 		return Result.ok("查询成功", groupTeam);
+	}
+	//解散群
+	@RequestMapping(value = "/deleteGroup", method = RequestMethod.GET)
+	public Result deleteGroup(HttpServletRequest request, Integer userId,Integer groupId) {
+		if(userId==null || groupId==null) {
+			return Result.error("参数不能为空，请检查！");
+		}
+		String groups=(String)request.getSession().getAttribute("groups");
+		if(!(groups!=null && groups.contains(","+groupId+","))&&!"2".equals(getUser(request).getType())) {
+			return Result.error("您没有此权限!");
+		}
+		
+		groupTeamService.deleteByPrimaryKey(groupId);
+		return Result.ok("删除成功");
 	}
 
 	@RequestMapping(value = "/update", method = RequestMethod.POST)
 	public Result update(HttpServletRequest request,@RequestBody GroupTeam record) {
-		// 需要管理员权限
+		Users user=getUser(request);
+		if(!"2".equals(user.getType()))
+			return Result.error("您没有此权限");
 		groupTeamService.updateByPrimaryKey(record);
 		return Result.ok("修改成功");
 	}
 
 	@RequestMapping(value = "/updateGroupName", method = RequestMethod.POST)
 	public Result updateGroupName(HttpServletRequest request,@RequestBody GroupTeam record) {
-		// 需要代理商本人权限
-		GroupTeam group = new GroupTeam();
-		group.setId(record.getId());
-		group.setGroupName(record.getGroupName());
-		groupTeamService.updateByPrimaryKey(group);
+		//检查登录用户是否是此群群主
+		Object s=request.getAttribute("groups");
+        if(s==null || !((String)s).contains(","+record.getId()+",")) 
+        return Result.error("用户无此权限！");
+        //群主只能修改群名称等字段
+		record.setBuildTime(null);
+		record.setGroupId(null);
+		record.setMasterId(null);
+		record.setStatus(null);
+		record.setType(null);
+		record.setUpperLimit(null);
+		groupTeamService.updateByPrimaryKey(record);
 		return Result.ok("修改成功");
 	}
 
 	@RequestMapping(value = "/addGroup", method = RequestMethod.POST)
 	public Result addGroup(HttpServletRequest request,@RequestBody GroupTeam record) {
-		// 需要代理商权限   群号必填，且不能重复
+		if(!"1".equals(getUser(request).getType()))
+			return Result.error("当前用户无此权限!");
 		if(record.getMasterId()==null || record.getGroupName()==null) {
 			return Result.error("请检查参数是否填写完整");
 		}
@@ -74,7 +99,10 @@ public class GroupTeamController {
 	 * @return
 	 */
 	@RequestMapping(value = "/addMembers", method = RequestMethod.POST)
-	public Result addMembers(HttpServletRequest request,Integer id,String userIds) {
+	public Result addMembers(HttpServletRequest request,@RequestBody Map map) {
+		Integer id=(Integer)map.get("id");
+		String userIds=(String)map.get("userIds");
+		
 		if(groupTeamService.selectByPrimaryKey(id)==null) {
 			return Result.error("该群不存在，请检查后重新提交！");
 		}
@@ -83,7 +111,7 @@ public class GroupTeamController {
 			if(usersService.selectByPrimaryKey(Integer.valueOf(userId))==null)
 				return Result.error("用户id错误，请检查后再试");
 		}
-		Integer masterId=((Users)request.getAttribute("user")).getId();
+		Integer masterId=(((Users)getUser(request))).getId();
 		int i=groupTeamService.addMember(masterId,id,userIds);
 		if(i>0) {
 			return Result.ok("有"+i+"个用户是其他代理商的用户，不能添加");
@@ -99,6 +127,10 @@ public class GroupTeamController {
 	 */
 	@RequestMapping(value = "/delMembers", method = RequestMethod.POST)
 	public Result delMembers(HttpServletRequest request,@RequestBody Members record) {
+		String groups=(String)request.getAttribute("groups");
+		if(!groups.contains(","+record.getGroupId()+",")&&!record.getUserId().equals(getUser(request).getId())) {
+			return Result.error("您没有此权限!");
+		}
 		if (groupTeamService.findMembership(record)) {
 			groupTeamService.deleteMemberShip(record);
 			return Result.ok();
@@ -133,6 +165,12 @@ public class GroupTeamController {
 		if(list!=null && list.size()>0)
 		return Result.ok("",list);
 		return Result.error("群成员列表为空");
+	}
+	
+	private Users getUser(HttpServletRequest request) {
+		if(request.getSession().getAttribute("user")!=null) 
+		  return (Users)request.getSession().getAttribute("user");
+		  return null;
 	}
 	
 }

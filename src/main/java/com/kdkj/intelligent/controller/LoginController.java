@@ -1,6 +1,7 @@
 package com.kdkj.intelligent.controller;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -16,7 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.kdkj.intelligent.entity.GroupTeam;
 import com.kdkj.intelligent.entity.Users;
+import com.kdkj.intelligent.service.GroupTeamService;
 import com.kdkj.intelligent.service.UsersService;
 import com.kdkj.intelligent.util.MD5Encryption;
 import com.kdkj.intelligent.util.Result;
@@ -26,6 +29,9 @@ import com.kdkj.intelligent.util.Result;
 public class LoginController {
 	@Autowired
 	private UsersService usersService;
+	@Autowired
+	private GroupTeamService groupTeamService;
+	
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public Result login(HttpServletRequest request, @RequestBody Users record) {
@@ -49,6 +55,16 @@ public class LoginController {
 				user = usersService.selectByPrimaryKey(user.getId());
 				HttpSession session = request.getSession();
 				user.setPassword(null);
+				//添加用户拥有的群到session
+				GroupTeam groupTeam=new GroupTeam();
+				groupTeam.setMasterId(user.getId());
+				List<GroupTeam> grouplist=groupTeamService.selectListByGroup(groupTeam);
+				String groups=",";
+				for(GroupTeam gt:grouplist) {
+					groups+=(String.valueOf(gt.getId())+",");
+				}
+				session.setAttribute("groups", groups);
+				
 				session.setAttribute("user", user);
 				return Result.ok("登录成功", user);
 			} else {
@@ -64,11 +80,34 @@ public class LoginController {
 	public Result getUserByToken(HttpServletRequest request,String token) {
 		HttpSession session=request.getSession();
 		Users user = new Users();
-		//user.setToken((String)request.getAttribute("token"));
+		user.setToken((String)request.getParameter("token"));
 		user.setToken(token);
 		List<Users> list = usersService.selectListByUser(user);
-		user=list.get(0);
+		user=list.get(0); 
+		Date date=user.getLastLoginTime();
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.add(2,3);
+		cal.getTime();
+		Calendar cal2 = Calendar.getInstance();
+		cal2.setTime(new Date());
+		boolean bl = cal.after(cal2);
+		if(!bl) {
+			return Result.error("您长时间未登录，请重新登录！");
+		}
+		user.setLastLoginTime(new Date());
 		user.setPassword(null);
+		usersService.updateByPrimaryKey(user);
+		
+		//添加用户拥有的群到session
+		GroupTeam groupTeam=new GroupTeam();
+		groupTeam.setMasterId(user.getId());
+		List<GroupTeam> grouplist=groupTeamService.selectListByGroup(groupTeam);
+		String groups=",";
+		for(GroupTeam gt:grouplist) {
+			groups+=(String.valueOf(gt.getId())+",");
+		}
+		session.setAttribute("groups", groups);
 		session.setAttribute("user", user);
 		return Result.ok("", user);
 	}
