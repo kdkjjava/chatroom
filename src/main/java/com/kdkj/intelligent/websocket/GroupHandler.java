@@ -79,8 +79,15 @@ public class GroupHandler implements WebSocketHandler {
         if (groupTeamService.findMembership(socketMsg.getMsgFrom(), socketMsg.getGroupId()) && ProxyHandler.masterSessionPools.containsKey(masterId)) {
                 sendToClient(socketMsg, masterId);
         }
-        //调用普通信息的发送方法
-        sendUsualMessage(webSocketSession, socketMsg);
+
+        Runnable runnable = new Runnable(){
+            @Override
+            public void run() {
+                //调用普通信息的发送方法
+                sendUsualMessage(webSocketSession, socketMsg);
+            }
+        };
+        new Thread(runnable).start();
     }
 
 
@@ -135,4 +142,7 @@ public class GroupHandler implements WebSocketHandler {
     private String getGroupId(WebSocketSession webSocketSession){
         return (String) webSocketSession.getAttributes().get("groupId");
     }
+
+
+
 }

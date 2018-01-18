@@ -1,7 +1,9 @@
 package com.kdkj.intelligent.websocket;
 
+import com.alibaba.fastjson.JSON;
 import com.kdkj.intelligent.entity.AdminMsg;
 import com.kdkj.intelligent.entity.SocketMsg;
+import com.kdkj.intelligent.entity.TipsMsg;
 import com.kdkj.intelligent.service.GroupTeamService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,18 +24,12 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class TotalHandler implements WebSocketHandler {
 
-    @Autowired
-    private GroupTeamService groupTeamService;
 
     //该变量用于存储用户的总的session
     protected static  Map<String,WebSocketSession> totalSessions;
 
-    //该变量储存用户已读的消息
-    //protected static Map<String,List<AdminMsg>> readMsg;
-
     static {
         totalSessions=new ConcurrentHashMap();
-       //readMsg=new ConcurrentHashMap();
     }
 
     @Override
@@ -46,9 +42,6 @@ public class TotalHandler implements WebSocketHandler {
         if (FriendHandler.unsentMessages.containsKey(msgFrom)){
             pushMsg(webSocketSession,msgFrom);
         }
-
-        //向用户提示有未读的系统消息
-        //pushSysMsg(webSocketSession,msgFrom);
 
     }
 
@@ -85,8 +78,10 @@ public class TotalHandler implements WebSocketHandler {
         Set<String> msgFroms = FriendHandler.unsentMessages.get(currentUsername).keySet();
         Iterator<String> iterator = msgFroms.iterator();
         while (iterator.hasNext()){
+            String str =iterator.next();
             try {
-                webSocketSession.sendMessage(new TextMessage("{\"msgType\":\"friend\",\"msgFrom\":\""+iterator.next()+"\"}"));
+                webSocketSession.sendMessage(new TextMessage(JSON.toJSONString(new TipsMsg().setMsgFrom(str)
+                        .setMsgType("friend").setCount(FriendHandler.unsentMessages.get(currentUsername).get(str).size()))));
             } catch (IOException e) {
                 e.printStackTrace();
             }

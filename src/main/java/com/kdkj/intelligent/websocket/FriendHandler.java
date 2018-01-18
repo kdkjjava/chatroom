@@ -2,13 +2,14 @@ package com.kdkj.intelligent.websocket;
 
 import com.alibaba.fastjson.JSON;
 import com.kdkj.intelligent.entity.SocketMsg;
+import com.kdkj.intelligent.entity.TipsMsg;
+import org.junit.Test;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Array;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -22,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class FriendHandler implements WebSocketHandler {
 
     //创建一个保存好友聊天的WebSocketSession
-    private static Map<String, List<WebSocketSession>> friendSessionPools;
+    private static Map<String, Map<String, WebSocketSession>> friendSessionPools;
 
     //该变量存储好友不在线时发送的消息
     protected static Map<String, Map<String, List<SocketMsg>>> unsentMessages;
@@ -37,12 +38,15 @@ public class FriendHandler implements WebSocketHandler {
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
         String msgTo = (String) webSocketSession.getAttributes().get("msgTo");
         String key = getKey(msgFrom, msgTo);
-        if (key != null)
-            friendSessionPools.get(key).add(webSocketSession);
-        else {
-            key=msgFrom+"_"+msgTo;
-            friendSessionPools.put(key, new ArrayList<>());
-            friendSessionPools.get(key).add(webSocketSession);
+        if (key != null) {//如果有同个用户的session，则关闭先前的session
+            if (friendSessionPools.get(key).containsKey(msgFrom)) {
+                friendSessionPools.get(key).get(msgFrom).close();
+            }
+            friendSessionPools.get(key).put(msgFrom, webSocketSession);
+        } else {
+            key = msgFrom + "_" + msgTo;
+            friendSessionPools.put(key, new ConcurrentHashMap());
+            friendSessionPools.get(key).put(msgFrom, webSocketSession);
         }
         //判断缓存内是否有自己未读的消息
         if (unsentMessages.containsKey(msgFrom) && unsentMessages.get(msgFrom).containsKey(msgTo)) {
@@ -57,27 +61,8 @@ public class FriendHandler implements WebSocketHandler {
         //将用户发送的json消息解析为java对象
         SocketMsg socketMsg = JSON.parseObject(webSocketMessage.getPayload().toString(), SocketMsg.class);
         String key = getKey(socketMsg.getMsgFrom(), socketMsg.getMsgTo());
-        //如果对方用户不在线，则保存到缓存中
-        if (friendSessionPools.get(key).size() < 2) {
-            sendToOffline(socketMsg);
-        }
 
-        for (WebSocketSession session : friendSessionPools.get(key)) {
-            if (session == webSocketSession) {
-                try {
-                    session.sendMessage(new TextMessage(JSON.toJSONString(socketMsg)));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                continue;
-            }
-            try {
-                session.sendMessage(new TextMessage(JSON.toJSONString(socketMsg)));
-                break;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        sendUsualMsg(webSocketSession, socketMsg, key);
     }
 
     @Override
@@ -90,10 +75,10 @@ public class FriendHandler implements WebSocketHandler {
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
         String msgTo = (String) webSocketSession.getAttributes().get("msgTo");
         String key = getKey(msgFrom, msgTo);
-        if (friendSessionPools.get(key).size()<2)
+        if (friendSessionPools.get(key).size() < 2)
             friendSessionPools.remove(key);
         else
-            friendSessionPools.get(key).remove(webSocketSession);
+            friendSessionPools.get(key).remove(msgFrom);
         webSocketSession.close();
     }
 
@@ -125,20 +110,55 @@ public class FriendHandler implements WebSocketHandler {
         return null;
     }
 
-    //若对方好友不在线则保存至缓存待对方好友上线后进行提醒
-    private void sendToOffline(SocketMsg socketMsg){
-        if (unsentMessages.containsKey(socketMsg.getMsgTo())) {
-            if (unsentMessages.get(socketMsg.getMsgTo()).containsKey(socketMsg.getMsgFrom())) {
-                unsentMessages.get(socketMsg.getMsgTo()).get(socketMsg.getMsgFrom()).add(socketMsg);
+    //若对方好友不在线则保存至缓存待对方好友上线后进行提醒,若在线则发送提醒
+    private void sendToOffline(SocketMsg socketMsg) {
+
+        if (TotalHandler.totalSessions.containsKey(socketMsg.getMsgTo())) {
+            try {
+                TotalHandler.totalSessions.get(socketMsg.getMsgTo()).sendMessage(new TextMessage(JSON.toJSONString(new TipsMsg().setMsgFrom(socketMsg.getMsgFrom())
+                        .setMsgType("friend").setCount(1))));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            if (unsentMessages.containsKey(socketMsg.getMsgTo())) {
+                if (unsentMessages.get(socketMsg.getMsgTo()).containsKey(socketMsg.getMsgFrom())) {
+                    unsentMessages.get(socketMsg.getMsgTo()).get(socketMsg.getMsgFrom()).add(socketMsg);
+                } else {
+                    unsentMessages.get(socketMsg.getMsgTo()).put(socketMsg.getMsgFrom(), new ArrayList<>());
+                    unsentMessages.get(socketMsg.getMsgTo()).get(socketMsg.getMsgFrom()).add(socketMsg);
+                }
             } else {
+                unsentMessages.put(socketMsg.getMsgTo(), new ConcurrentHashMap());
                 unsentMessages.get(socketMsg.getMsgTo()).put(socketMsg.getMsgFrom(), new ArrayList<>());
                 unsentMessages.get(socketMsg.getMsgTo()).get(socketMsg.getMsgFrom()).add(socketMsg);
             }
-        } else {
-            unsentMessages.put(socketMsg.getMsgTo(), new ConcurrentHashMap());
-            unsentMessages.get(socketMsg.getMsgTo()).put(socketMsg.getMsgFrom(), new ArrayList<>());
-            unsentMessages.get(socketMsg.getMsgTo()).get(socketMsg.getMsgFrom()).add(socketMsg);
         }
+
     }
 
+    /**
+     * 发送消息方法
+     *
+     * @param webSocketSession
+     * @param socketMsg
+     * @param key
+     */
+    private void sendUsualMsg(WebSocketSession webSocketSession, SocketMsg socketMsg, String key) {
+
+        try {
+            webSocketSession.sendMessage(new TextMessage(JSON.toJSONString(socketMsg)));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (friendSessionPools.get(key).size() > 1) {
+            try {
+                friendSessionPools.get(key).get(socketMsg.getMsgTo()).sendMessage(new TextMessage(JSON.toJSONString(socketMsg)));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else //如果对方不在线或者未打开聊天窗口，则保存到缓存中或进行消息提醒
+            sendToOffline(socketMsg);
+    }
 }
