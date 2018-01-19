@@ -17,12 +17,19 @@ public class TimedTask {
 
     public void handlePastMsg() {
 
-        Calendar calForNow = Calendar.getInstance();
-        calForNow.setTime(new Date());
-        int dayNow = calForNow.get(Calendar.DAY_OF_YEAR);
-        int yearNow = calForNow.get(Calendar.YEAR);
-        deletePastMsg(dayNow,yearNow,AdminHandler.adviceMsg);
-        deletePastMsg(dayNow,yearNow,AdminHandler.broadCastMsg);
+        Runnable task = new Runnable(){
+            @Override
+            public void run() {
+                Calendar calForNow = Calendar.getInstance();
+                calForNow.setTime(new Date());
+                int dayNow = calForNow.get(Calendar.DAY_OF_YEAR);
+                int yearNow = calForNow.get(Calendar.YEAR);
+                deletePastMsg(dayNow,yearNow,AdminHandler.adviceMsg);
+                deletePastMsg(dayNow,yearNow,AdminHandler.broadCastMsg);
+            }
+        };
+        new Thread(task).start();
+
     }
 
     private void deletePastMsg(int dayNow,int yearNow,List<AdminMsg> adminMsgList){
@@ -39,7 +46,7 @@ public class TimedTask {
     private int getTimeDistance(int dayNow,int yearNow,Calendar calForMsg){
         int dayForMsg = calForMsg.get(Calendar.DAY_OF_YEAR);
         int yearForMsg = calForMsg.get(Calendar.YEAR);
-
+        System.out.println("时间差距");
         if (yearNow != yearForMsg){//不同年
             int timeDistance = 0;
             for (int i = yearForMsg; i < yearNow; i++) {
@@ -54,7 +61,7 @@ public class TimedTask {
 
             return timeDistance + (dayNow - dayForMsg);
         } else {//同年
-            System.out.println("判断day2 - day1 : " + (dayNow - dayForMsg));
+            //System.out.println("判断day2 - day1 : " + (dayNow - dayForMsg));
             return dayNow - dayForMsg;
         }
     }

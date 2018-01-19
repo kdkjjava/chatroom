@@ -58,11 +58,12 @@ public class FriendHandler implements WebSocketHandler {
 
     @Override
     public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage) {
+
         //将用户发送的json消息解析为java对象
         SocketMsg socketMsg = JSON.parseObject(webSocketMessage.getPayload().toString(), SocketMsg.class);
         String key = getKey(socketMsg.getMsgFrom(), socketMsg.getMsgTo());
-
         sendUsualMsg(webSocketSession, socketMsg, key);
+
     }
 
     @Override
@@ -133,7 +134,6 @@ public class FriendHandler implements WebSocketHandler {
             unsentMessages.get(socketMsg.getMsgTo()).put(socketMsg.getMsgFrom(), new ArrayList<>());
             unsentMessages.get(socketMsg.getMsgTo()).get(socketMsg.getMsgFrom()).add(socketMsg);
         }
-
 
     }
 
