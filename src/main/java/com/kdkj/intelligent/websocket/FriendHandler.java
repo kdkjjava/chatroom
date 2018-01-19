@@ -120,20 +120,20 @@ public class FriendHandler implements WebSocketHandler {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } else {
-            if (unsentMessages.containsKey(socketMsg.getMsgTo())) {
-                if (unsentMessages.get(socketMsg.getMsgTo()).containsKey(socketMsg.getMsgFrom())) {
-                    unsentMessages.get(socketMsg.getMsgTo()).get(socketMsg.getMsgFrom()).add(socketMsg);
-                } else {
-                    unsentMessages.get(socketMsg.getMsgTo()).put(socketMsg.getMsgFrom(), new ArrayList<>());
-                    unsentMessages.get(socketMsg.getMsgTo()).get(socketMsg.getMsgFrom()).add(socketMsg);
-                }
+        }
+        if (unsentMessages.containsKey(socketMsg.getMsgTo())) {
+            if (unsentMessages.get(socketMsg.getMsgTo()).containsKey(socketMsg.getMsgFrom())) {
+                unsentMessages.get(socketMsg.getMsgTo()).get(socketMsg.getMsgFrom()).add(socketMsg);
             } else {
-                unsentMessages.put(socketMsg.getMsgTo(), new ConcurrentHashMap());
                 unsentMessages.get(socketMsg.getMsgTo()).put(socketMsg.getMsgFrom(), new ArrayList<>());
                 unsentMessages.get(socketMsg.getMsgTo()).get(socketMsg.getMsgFrom()).add(socketMsg);
             }
+        } else {
+            unsentMessages.put(socketMsg.getMsgTo(), new ConcurrentHashMap());
+            unsentMessages.get(socketMsg.getMsgTo()).put(socketMsg.getMsgFrom(), new ArrayList<>());
+            unsentMessages.get(socketMsg.getMsgTo()).get(socketMsg.getMsgFrom()).add(socketMsg);
         }
+
 
     }
 
