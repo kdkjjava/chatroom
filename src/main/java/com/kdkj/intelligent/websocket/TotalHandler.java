@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -23,7 +23,6 @@ import java.util.concurrent.ConcurrentHashMap;
  **/
 @Component
 public class TotalHandler implements WebSocketHandler {
-
 
     //该变量用于存储用户的总的session
     protected static  Map<String,WebSocketSession> totalSessions;
@@ -76,9 +75,8 @@ public class TotalHandler implements WebSocketHandler {
      */
     private void pushMsg(WebSocketSession webSocketSession, String currentUsername){
         Set<String> msgFroms = FriendHandler.unsentMessages.get(currentUsername).keySet();
-        Iterator<String> iterator = msgFroms.iterator();
-        while (iterator.hasNext()){
-            String str =iterator.next();
+
+        for (String str :msgFroms){
             try {
                 webSocketSession.sendMessage(new TextMessage(JSON.toJSONString(new TipsMsg().setMsgFrom(str)
                         .setMsgType("friend").setCount(FriendHandler.unsentMessages.get(currentUsername).get(str).size()))));

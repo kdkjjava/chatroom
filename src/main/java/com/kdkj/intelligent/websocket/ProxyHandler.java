@@ -6,10 +6,12 @@ import com.kdkj.intelligent.service.GroupTeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
-import java.io.IOException;
+
+import java.io.*;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -42,9 +44,17 @@ public class ProxyHandler implements WebSocketHandler {
 
     @Override
     public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage) throws Exception {
-        //将用户发送的json消息解析为java对象
-        SocketMsg socketMsg = JSON.parseObject(webSocketMessage.getPayload().toString(), SocketMsg.class);
-        sendUsualMsg(webSocketSession,socketMsg);
+
+        if (webSocketMessage instanceof TextMessage){
+            //将用户发送的json消息解析为java对象
+            SocketMsg socketMsg = JSON.parseObject(webSocketMessage.getPayload().toString(), SocketMsg.class);
+            sendUsualMsg(webSocketSession,socketMsg);
+        }else if (webSocketMessage instanceof BinaryMessage){
+            pushBinaryMsg(webSocketSession,new BinaryMessage((byte[]) webSocketMessage.getPayload()));
+        }else {
+            throw new IllegalStateException("Unexpected webSocket message type!");
+        }
+
     }
 
     @Override
@@ -73,9 +83,8 @@ public class ProxyHandler implements WebSocketHandler {
     private void sendUsualMsg(WebSocketSession webSocketSession, SocketMsg socketMsg){
         String groupId= (String) webSocketSession.getAttributes().get("groupId");
         if (GroupHandler.sessionPools.containsKey(groupId)){
-            Iterator<Map.Entry<String, List<WebSocketSession>>> iterator = GroupHandler.sessionPools.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<String, List<WebSocketSession>> entry = iterator.next();
+            Set<Map.Entry<String, List<WebSocketSession>>> entries = GroupHandler.sessionPools.entrySet();
+            for (Map.Entry<String, List<WebSocketSession>> entry : entries){
                 if (entry.getKey().equals(socketMsg.getGroupId())) {
                     //将客户端的信息发送至指定的群聊天中
                     for (WebSocketSession item : entry.getValue()) {
@@ -97,4 +106,18 @@ public class ProxyHandler implements WebSocketHandler {
             }
         }
     }
+
+    /**
+     * 该方法用于发送二进制文件
+     * @param webSocketSession
+     */
+    private void pushBinaryMsg(WebSocketSession webSocketSession,BinaryMessage binaryMessage){
+
+        try {
+            webSocketSession.sendMessage(binaryMessage);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

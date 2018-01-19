@@ -99,9 +99,8 @@ public class GroupHandler implements WebSocketHandler {
 
     private void sendUsualMessage(WebSocketSession webSocketSession, SocketMsg socketMsg) {
         //遍历map集合，将消息发送至同一个房间下的session
-        Iterator<Map.Entry<String, List<WebSocketSession>>> iterator = sessionPools.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, List<WebSocketSession>> entry = iterator.next();
+        Set<Map.Entry<String, List<WebSocketSession>>> entries = sessionPools.entrySet();
+        for (Map.Entry<String, List<WebSocketSession>> entry:entries){
             if (entry.getKey().equals(webSocketSession.getAttributes().get("groupId"))) {
                 //判断若是为同一个房间，则遍历房间内的session，并发送消息
                 for (WebSocketSession item : entry.getValue()) {
@@ -115,6 +114,7 @@ public class GroupHandler implements WebSocketHandler {
                 break;
             }
         }
+
     }
 
     /**
