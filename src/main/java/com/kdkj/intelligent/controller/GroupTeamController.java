@@ -49,7 +49,6 @@ public class GroupTeamController {
 		if(!(groups!=null && groups.contains(","+groupId+","))&&!"2".equals(getUser(request).getType())) {
 			return Result.error("您没有此权限!");
 		}
-		
 		groupTeamService.deleteByPrimaryKey(groupId);
 		return Result.ok("删除成功");
 	}
@@ -66,7 +65,7 @@ public class GroupTeamController {
 	@RequestMapping(value = "/updateGroupName", method = RequestMethod.POST)
 	public Result updateGroupName(HttpServletRequest request,@RequestBody GroupTeam record) {
 		//检查登录用户是否是此群群主
-		Object s=request.getAttribute("groups");
+		Object s=request.getSession().getAttribute("groups");
         if(s==null || !((String)s).contains(","+record.getId()+",")) 
         return Result.error("用户无此权限！");
         //群主只能修改群名称等字段
@@ -126,15 +125,20 @@ public class GroupTeamController {
 	 */
 	@RequestMapping(value = "/delMembers", method = RequestMethod.POST)
 	public Result delMembers(HttpServletRequest request,@RequestBody Members record) {
-		String groups=(String)request.getAttribute("groups");
-		if(!groups.contains(","+record.getGroupId()+",")&&!record.getUserId().equals(getUser(request).getId())) {
+		String groups=(String)request.getSession().getAttribute("groups");
+		if(record.getGroupId()==null ||record.getUserId()==null)
+			return Result.error("请确认参数是否输入！");
+		if(groups==null || (!groups.contains(","+record.getGroupId()+",")&&!record.getUserId().equals(getUser(request).getId()))) {
 			return Result.error("您没有此权限!");
 		}
+		if(getUser(request).getId().equals(record.getUserId())&&"1".equals(getUser(request).getType()))
+			return Result.error("您不能删除自己！");
 		if (groupTeamService.findMembership(record)) {
 			groupTeamService.deleteMemberShip(record);
 			return Result.ok();
-		} else
+		} else {
 			return Result.error("群中无此用户");
+			}
 	}
 	
 	/**
@@ -159,8 +163,8 @@ public class GroupTeamController {
 	 * @return
 	 */
 	@RequestMapping(value = "/findMembers", method = RequestMethod.GET)
-	public Result findMembers(HttpServletRequest request, Integer groupId) {
-		List<Users> list=groupTeamService.selectUserByGroupId(groupId);
+	public Result findMembers(HttpServletRequest request, Integer id) {
+		List<Users> list=groupTeamService.selectUserByGroupId(id);
 		if(list!=null && list.size()>0)
 		return Result.ok("",list);
 		return Result.error("群成员列表为空");

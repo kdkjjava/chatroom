@@ -14,6 +14,7 @@
 		<result column="phone" jdbcType="VARCHAR" property="phone" />
 		<result column="token" jdbcType="VARCHAR" property="token" />
 		<result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime" />
+		<result column="nogroup_time" jdbcType="TIMESTAMP" property="nogroupTime" />
 	</resultMap>
 	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
 		delete from users
@@ -25,8 +26,7 @@
 			LAST_INSERT_ID()
 		</selectKey>
 		insert into users (username, password,
-		nickname, type, status,
-		score,
+		nickname, type, status, score,
 		regist_time, picture_address,
 		phone,token,last_login_time)
 		values
@@ -37,6 +37,14 @@
 		#{registTime,jdbcType=TIMESTAMP}, #{pictureAddress,jdbcType=VARCHAR},
 		#{phone,jdbcType=VARCHAR},#{token,jdbcType=VARCHAR},#{registTime,jdbcType=TIMESTAMP})
 	</insert>
+	
+	<update id="updateNogroupMemberTime" parameterType="java.lang.Integer">
+		update users 
+		set 
+		nogroup_time=SYSDATE() 
+		where id  in (select user_id from members where group_id=#{id,jdbcType=VARCHAR})
+	</update>
+	
 	<update id="updateByPrimaryKey" parameterType="com.kdkj.intelligent.entity.Users">
 		update users
 		<set>
@@ -51,8 +59,8 @@
 			</if>
 			<if test="phone !=null and phone !=''"> phone = #{phone,jdbcType=VARCHAR},</if>
 			<if test="token=='newToken'"> token=REPLACE(uuid(),'-',''),</if>
-			<if test="lastLoginTime !=null"> last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP},
-			</if>
+			<if test="lastLoginTime !=null"> last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP},</if>
+			 <if test="nogroupTime !=null"> nogroup_time = #{nogroupTime,jdbcType=TIMESTAMP},</if>
 		</set>
 		where id = #{id,jdbcType=INTEGER}
 	</update>
@@ -64,11 +72,18 @@
 		from users
 		where id = #{id,jdbcType=INTEGER}
 	</select>
+	
+	<select id="selectMemberIds"  resultMap="BaseResultMap">
+		 select id, username,nickname,type, 
+		     status,picture_address, phone 
+		 from users 
+		 where id not in  (select user_id from members )
+           and datediff(SYSDATE(),nogroup_time)>3
+	</select>
 
 	<select id="selectListByUser" resultMap="BaseResultMap"
 		parameterType="com.kdkj.intelligent.entity.Users">
-		select id, username, password,nickname, type, status,
-		score,
+		select id, username, password,nickname, type, status,score,
 		regist_time, picture_address,phone,last_login_time
 		from users
 		where 1=1

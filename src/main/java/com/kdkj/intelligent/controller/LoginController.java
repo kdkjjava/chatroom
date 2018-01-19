@@ -34,7 +34,7 @@ public class LoginController {
 	
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public Result login(HttpServletRequest request, @RequestBody Users record) {
+	public Result login(HttpServletRequest request,@RequestBody Users record) {
 		Users user = new Users();
 		user.setUsername(record.getUsername() != null ? record.getUsername() : null);
 		user.setPhone(record.getPhone() != null ? record.getPhone() : null);
@@ -66,6 +66,7 @@ public class LoginController {
 				session.setAttribute("groups", groups);
 				
 				session.setAttribute("user", user);
+				System.out.println(session.getId()+"---222222222222");
 				return Result.ok("登录成功", user);
 			} else {
 				return Result.error("用户名或密码错误，请重新登录!");

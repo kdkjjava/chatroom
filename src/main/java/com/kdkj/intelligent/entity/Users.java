@@ -53,7 +53,21 @@ public class Users extends Pageinfo implements Serializable{
 	 * 最后登录时间
 	 */
     private Date lastLoginTime;
+    
+    /*
+     * 无群时间
+     */
+    private Date nogroupTime;
+    
+    public Date getNogroupTime() {
+		return nogroupTime;
+	}
 
+	public void setNogroupTime(Date nogroupTime) {
+		this.nogroupTime = nogroupTime;
+	}
+
+    
     public String getToken() {
 		return token;
 	}

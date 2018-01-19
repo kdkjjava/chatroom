@@ -34,6 +34,7 @@ public class GroupTeamServiceImpl implements GroupTeamService {
 	public int deleteByPrimaryKey(Integer id) {
 		Members record=new Members();
 		record.setGroupId(id);
+		usersMapper.updateNogroupMemberTime(id);
 		membersMapper.deleteMemberShip(record);
 		return groupTeamMapper.deleteByPrimaryKey(id);
 	}
@@ -121,6 +122,9 @@ public class GroupTeamServiceImpl implements GroupTeamService {
 
 	@Override
 	public int deleteMemberShip(Members record) {
+		Users user=usersMapper.selectByPrimaryKey(record.getUserId());
+		user.setNogroupTime(new Date());
+		usersMapper.updateByPrimaryKey(user);
 		return membersMapper.deleteMemberShip(record);
 	}
 

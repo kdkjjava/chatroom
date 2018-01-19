@@ -2,6 +2,7 @@ package com.kdkj.intelligent.service;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.Set;
 
 import com.kdkj.intelligent.entity.Friendship;
 import com.kdkj.intelligent.entity.GroupTeam;
@@ -23,6 +24,8 @@ public interface UsersService {
     int updateByPrimaryKey(Users record);
     
     String selectTypeByUserName(String userName);
+ 
+    List<Users> selectMemberIds();
     
     List<Users> findMyFriends(Long id);
 }

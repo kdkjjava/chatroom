@@ -3,6 +3,7 @@ package com.kdkj.intelligent.service.impl;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -84,5 +85,10 @@ public class UsersServiceImpl implements UsersService{
 	public List<Users> findMyFriends(Long id) {
 		// TODO Auto-generated method stub
 		return usersMapper.findMyFriends(id);
+	}
+
+	@Override
+	public List<Users> selectMemberIds() {
+		return usersMapper.selectMemberIds();
 	}
 }

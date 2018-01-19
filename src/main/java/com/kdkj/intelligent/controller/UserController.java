@@ -46,6 +46,14 @@ public class UserController {
 		Users user = usersService.selectByPrimaryKey(id);
 		return Result.ok("查询成功", user);
 	}
+	
+	@RequestMapping(value = "/deletUserById", method = RequestMethod.GET)
+	public Result deletUserById(HttpServletRequest request, int id) {
+		if(!"1".equals(getUser(request).getType()))
+			return Result.error("您无此权限！");
+		usersService.deleteByPrimaryKey(id);
+		return Result.ok("删除成功");
+	}
 
 	@RequestMapping(value = "/update", method = RequestMethod.POST)
 	public Result update(HttpServletRequest request, @RequestBody Users record) {
@@ -88,8 +96,13 @@ public class UserController {
 		}
 	}
 
-	@RequestMapping(value = "/addUser", method = RequestMethod.POST)
-	public Result addUser(HttpServletRequest request, @RequestBody Users record) {
+	@RequestMapping(value = "/addUser", method = RequestMethod.GET)
+	public Result addUser(HttpServletRequest request, /*@RequestBody*/ Users record) {
+		
+		usersService.selectMemberIds();
+		
+		
+		
 		Users user = new Users();
 		user.setUsername(record.getUsername() == null ? null : record.getUsername());
 		user.setPhone(record.getPhone() == null ? null : record.getPhone());
@@ -127,6 +140,14 @@ public class UserController {
 	@RequestMapping(value = "/findMyFriends", method = RequestMethod.GET)
 	public Result findMyFriends(HttpServletRequest request, Long id) {
 		List<Users> list = usersService.findMyFriends(id);
+		return Result.ok("", list);
+	}
+	
+	@RequestMapping(value = "/findNoGroupUsers", method = RequestMethod.GET)
+	public Result findNoGroupUsers(HttpServletRequest request) {
+		if(!"1".equals(getUser(request).getType()))
+			return Result.error("您无此权限！");
+		List<Users> list = usersService.selectMemberIds();
 		return Result.ok("", list);
 	}
 

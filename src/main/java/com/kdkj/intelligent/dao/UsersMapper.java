@@ -1,6 +1,7 @@
 package com.kdkj.intelligent.dao;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.stereotype.Repository;
 
@@ -15,11 +16,15 @@ public interface UsersMapper {
     
     List<Users> selectListByUser(Users record);
     
-    List<Users> selectUserByGroupId(Integer groupId);
+    List<Users> selectUserByGroupId(Integer id);
     
     List<Users> selectAll();
 
     int updateByPrimaryKey(Users record);
+    
+    int updateNogroupMemberTime(Integer id);
+    
+    List<Users> selectMemberIds();
     
     List<Users> findMyFriends(Long id);
 }

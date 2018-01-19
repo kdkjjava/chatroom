@@ -53,11 +53,19 @@ public class VisitFilter implements Filter {
 			throws IOException, ServletException {
 		// TODO Auto-generated method stub
 		// place your code here
-		String s = JSON.toJSONString((Result.error("用户尚未登录或者登录已过期，请重新登录！")));
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse rep = (HttpServletResponse) response;
+		
+		rep.setHeader("Access-Control-Allow-Credentials", "true");
+		rep.setHeader("Access-Control-Allow-Headers", "X-Requested-With, accept, content-type, xxxx");
+		rep.setHeader("Access-Control-Allow-Methods", "GET, HEAD, POST, PUT, DELETE, TRACE, OPTIONS, PATCH");
+		rep.setHeader("Access-Control-Allow-Origin", "http://localhost:8082");
+        
+        
 		rep.setCharacterEncoding("UTF-8");
+		String s = JSON.toJSONString((Result.error("用户尚未登录或者登录已过期，请重新登录！")));
 		HttpSession session = req.getSession();
+		System.out.println(session.getId()+"-----11111111111111");
 		String path = req.getServletPath();
 		String path1 = "/login";
 		String path2 = "/user/addUser";
@@ -77,9 +85,11 @@ public class VisitFilter implements Filter {
 					Users olduser = list.get(0);
 					Date date = olduser.getLastLoginTime();
 					Calendar cal = Calendar.getInstance();
+					Calendar cal2 = Calendar.getInstance();
+					cal2.setTime(new Date());
 					cal.setTime(date);
 					cal.add(2, 3); // 加三个月后看时间有无过期
-					boolean bl = cal.after(new Date());
+					boolean bl = cal.after(cal2);
 					if (bl) {
 						olduser.setLastLoginTime(new Date());
 						usersService.updateByPrimaryKey(olduser);
