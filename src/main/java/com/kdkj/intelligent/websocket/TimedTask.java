@@ -1,7 +1,10 @@
 package com.kdkj.intelligent.websocket;
 
 import com.kdkj.intelligent.entity.AdminMsg;
+import org.junit.Test;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -34,9 +37,15 @@ public class TimedTask {
 
     private void deletePastMsg(int dayNow,int yearNow,List<AdminMsg> adminMsgList){
         for (AdminMsg adminMsg : adminMsgList) {
-            Long date = Long.parseLong(adminMsg.getDate());
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            Date date = null;
+            try {
+                date = sdf.parse(adminMsg.getDate());//将消息的时间字符串转换成日期格式
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
             Calendar calForMsg = Calendar.getInstance();
-            calForMsg.setTimeInMillis(date);
+            calForMsg.setTime(date);
             //超过七天后从集合中移除该对象
             if (getTimeDistance(dayNow,yearNow,calForMsg)>=7)
                 AdminHandler.adviceMsg.remove(adminMsg);
@@ -65,5 +74,6 @@ public class TimedTask {
             return dayNow - dayForMsg;
         }
     }
+
 
 }
