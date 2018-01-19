@@ -39,7 +39,7 @@ public class TimedTask {
     private int getTimeDistance(int dayNow,int yearNow,Calendar calForMsg){
         int dayForMsg = calForMsg.get(Calendar.DAY_OF_YEAR);
         int yearForMsg = calForMsg.get(Calendar.YEAR);
-
+        System.out.println("时间差距");
         if (yearNow != yearForMsg){//不同年
             int timeDistance = 0;
             for (int i = yearForMsg; i < yearNow; i++) {
