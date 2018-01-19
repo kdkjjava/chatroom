@@ -143,6 +143,4 @@ public class GroupHandler implements WebSocketHandler {
         return (String) webSocketSession.getAttributes().get("groupId");
     }
 
-
-
 }
