@@ -65,7 +65,6 @@ public class VisitFilter implements Filter {
 		rep.setCharacterEncoding("UTF-8");
 		String s = JSON.toJSONString((Result.error("用户尚未登录或者登录已过期，请重新登录！")));
 		HttpSession session = req.getSession();
-		System.out.println(session.getId()+"-----11111111111111");
 		String path = req.getServletPath();
 		String path1 = "/login";
 		String path2 = "/user/addUser";

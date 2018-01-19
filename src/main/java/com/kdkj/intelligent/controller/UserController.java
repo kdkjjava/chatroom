@@ -96,13 +96,8 @@ public class UserController {
 		}
 	}
 
-	@RequestMapping(value = "/addUser", method = RequestMethod.GET)
-	public Result addUser(HttpServletRequest request, /*@RequestBody*/ Users record) {
-		
-		usersService.selectMemberIds();
-		
-		
-		
+	@RequestMapping(value = "/addUser", method = RequestMethod.POST)
+	public Result addUser(HttpServletRequest request, @RequestBody Users record) {
 		Users user = new Users();
 		user.setUsername(record.getUsername() == null ? null : record.getUsername());
 		user.setPhone(record.getPhone() == null ? null : record.getPhone());

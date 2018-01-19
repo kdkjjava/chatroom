@@ -26,8 +26,6 @@ public class UsersServiceImpl implements UsersService{
 	UsersMapper usersMapper;
 	@Autowired
 	GroupTeamMapper groupTeamMapper;
-	@Autowired
-	KeyWordMapper keyWordMapper;
 	
 	@Override
 	public int deleteByPrimaryKey(Integer id) {

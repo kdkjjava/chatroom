@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kdkj.intelligent.dao.GroupTeamMapper;
-import com.kdkj.intelligent.dao.KeyWordMapper;
 import com.kdkj.intelligent.dao.MembersMapper;
 import com.kdkj.intelligent.dao.UsersMapper;
 import com.kdkj.intelligent.entity.GroupTeam;
@@ -27,8 +26,6 @@ public class GroupTeamServiceImpl implements GroupTeamService {
 	@Autowired
 	UsersMapper usersMapper;
 
-	@Autowired
-	KeyWordMapper keyWordMapper;
 
 	@Override
 	public int deleteByPrimaryKey(Integer id) {

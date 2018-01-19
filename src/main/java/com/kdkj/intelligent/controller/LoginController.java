@@ -66,7 +66,6 @@ public class LoginController {
 				session.setAttribute("groups", groups);
 				
 				session.setAttribute("user", user);
-				System.out.println(session.getId()+"---222222222222");
 				return Result.ok("登录成功", user);
 			} else {
 				return Result.error("用户名或密码错误，请重新登录!");
