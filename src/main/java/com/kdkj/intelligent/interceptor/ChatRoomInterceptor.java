@@ -28,15 +28,18 @@ public class ChatRoomInterceptor implements HandshakeInterceptor{
         if (serverHttpRequest instanceof ServletServerHttpRequest) {
             HttpServletRequest request = ((ServletServerHttpRequest) serverHttpRequest).getServletRequest();
             HttpServletResponse response =((ServletServerHttpResponse)serverHttpResponse).getServletResponse();
+
             if (request.getParameter("msgFrom")==null)
                 response.getWriter().write("{\"errorCode\":\"请求参数不完整\"}");
             else
                 map.put("msgFrom",request.getParameter("msgFrom"));
+
             if (request.getParameter("groupId")!=null)
                 map.put("groupId",request.getParameter("groupId"));
             if (request.getParameter("msgTo")!=null)
                 map.put("msgTo",request.getParameter("msgTo"));
         }
+
 
 
         return true;

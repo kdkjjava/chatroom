@@ -3,18 +3,13 @@ package com.kdkj.intelligent.service.impl;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import com.kdkj.intelligent.dao.GroupTeamMapper;
-import com.kdkj.intelligent.dao.KeyWordMapper;
 import com.kdkj.intelligent.dao.UsersMapper;
-import com.kdkj.intelligent.entity.Friendship;
 import com.kdkj.intelligent.entity.GroupTeam;
-import com.kdkj.intelligent.entity.KeyWord;
 import com.kdkj.intelligent.entity.Users;
 import com.kdkj.intelligent.service.UsersService;
 import com.kdkj.intelligent.util.MD5Encryption;

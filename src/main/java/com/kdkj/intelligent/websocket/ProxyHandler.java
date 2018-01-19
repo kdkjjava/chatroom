@@ -111,7 +111,7 @@ public class ProxyHandler implements WebSocketHandler {
      * 该方法用于发送二进制文件
      * @param webSocketSession
      */
-    private void pushBinaryMsg(WebSocketSession webSocketSession,BinaryMessage binaryMessage){
+    private void pushBinaryMsg(WebSocketSession webSocketSession , BinaryMessage binaryMessage){
 
         try {
             webSocketSession.sendMessage(binaryMessage);
