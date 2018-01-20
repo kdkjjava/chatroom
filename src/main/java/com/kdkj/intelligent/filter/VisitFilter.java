@@ -17,14 +17,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 
 import com.alibaba.fastjson.JSON;
 import com.kdkj.intelligent.entity.Users;
 import com.kdkj.intelligent.service.UsersService;
-import com.kdkj.intelligent.service.impl.UsersServiceImpl;
 import com.kdkj.intelligent.util.Result;
 
 /**
@@ -107,6 +105,7 @@ public class VisitFilter implements Filter {
 					if (bl) {
 						olduser.setLastLoginTime(new Date());
 						usersService.updateByPrimaryKey(olduser);
+						req.getSession().setAttribute("user", olduser);
 						chain.doFilter(request, response);
 						return;
 					} else {

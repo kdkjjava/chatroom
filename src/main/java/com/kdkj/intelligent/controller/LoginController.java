@@ -55,16 +55,6 @@ public class LoginController {
 				user = usersService.selectByPrimaryKey(user.getId());
 				HttpSession session = request.getSession();
 				user.setPassword(null);
-				//添加用户拥有的群到session
-				GroupTeam groupTeam=new GroupTeam();
-				groupTeam.setMasterId(user.getId());
-				List<GroupTeam> grouplist=groupTeamService.selectListByGroup(groupTeam);
-				String groups=",";
-				for(GroupTeam gt:grouplist) {
-					groups+=(String.valueOf(gt.getId())+",");
-				}
-				session.setAttribute("groups", groups);
-				
 				session.setAttribute("user", user);
 				return Result.ok("登录成功", user);
 			} else {
@@ -98,16 +88,6 @@ public class LoginController {
 		user.setLastLoginTime(new Date());
 		user.setPassword(null);
 		usersService.updateByPrimaryKey(user);
-		
-		//添加用户拥有的群到session
-		GroupTeam groupTeam=new GroupTeam();
-		groupTeam.setMasterId(user.getId());
-		List<GroupTeam> grouplist=groupTeamService.selectListByGroup(groupTeam);
-		String groups=",";
-		for(GroupTeam gt:grouplist) {
-			groups+=(String.valueOf(gt.getId())+",");
-		}
-		session.setAttribute("groups", groups);
 		session.setAttribute("user", user);
 		return Result.ok("", user);
 	}
