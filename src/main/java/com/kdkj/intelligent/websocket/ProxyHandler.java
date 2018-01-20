@@ -38,20 +38,20 @@ public class ProxyHandler implements WebSocketHandler {
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
 
         if (!masterSessionPools.containsKey(msgFrom))
-            masterSessionPools.put(msgFrom,webSocketSession);
+            masterSessionPools.put(msgFrom, webSocketSession);
 
     }
 
     @Override
     public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage) throws Exception {
 
-        if (webSocketMessage instanceof TextMessage){
+        if (webSocketMessage instanceof TextMessage) {
             //将用户发送的json消息解析为java对象
             SocketMsg socketMsg = JSON.parseObject(webSocketMessage.getPayload().toString(), SocketMsg.class);
-            sendUsualMsg(webSocketSession,socketMsg);
-        }else if (webSocketMessage instanceof BinaryMessage){
-            pushBinaryMsg(webSocketSession,new BinaryMessage((byte[]) webSocketMessage.getPayload()));
-        }else {
+            sendUsualMsg(webSocketSession, socketMsg);
+        } else if (webSocketMessage instanceof BinaryMessage) {
+            pushBinaryMsg(webSocketSession, new BinaryMessage((byte[]) webSocketMessage.getPayload()));
+        } else {
             throw new IllegalStateException("Unexpected webSocket message type!");
         }
 
@@ -77,28 +77,30 @@ public class ProxyHandler implements WebSocketHandler {
 
     /**
      * 普通文本消息发送方法
+     *
      * @param webSocketSession
      * @param socketMsg
      */
-    private void sendUsualMsg(WebSocketSession webSocketSession, SocketMsg socketMsg){
-        String groupId= (String) webSocketSession.getAttributes().get("groupId");
-        if (GroupHandler.sessionPools.containsKey(groupId)){
-            Set<Map.Entry<String, List<WebSocketSession>>> entries = GroupHandler.sessionPools.entrySet();
-            for (Map.Entry<String, List<WebSocketSession>> entry : entries){
-                if (entry.getKey().equals(socketMsg.getGroupId())) {
-                    //将客户端的信息发送至指定的群聊天中
-                    for (WebSocketSession item : entry.getValue()) {
-                        try {
-                            //将本条消息通过WebSocketSession发送至客户端
-                            item.sendMessage(new TextMessage(JSON.toJSONString(socketMsg)));
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    break;
+    private void sendUsualMsg(WebSocketSession webSocketSession, SocketMsg socketMsg) {
+        String groupId = (String) webSocketSession.getAttributes().get("groupId");
+        if (!groupId.equals(socketMsg.getGroupId())) {
+            try {
+                webSocketSession.sendMessage(new TextMessage("{\"errorCode\":\"请求参数错误！\"}"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if (GroupHandler.sessionPools.containsKey(socketMsg.getGroupId())) {
+            //将客户端的信息发送至指定的群聊天中
+            for (WebSocketSession item : GroupHandler.sessionPools.get(socketMsg.getGroupId())) {
+                try {
+                    //将本条消息通过WebSocketSession发送至客户端
+                    item.sendMessage(new TextMessage(JSON.toJSONString(socketMsg)));
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
-        }else {
+        } else {
             try {
                 webSocketSession.sendMessage(new TextMessage("{\"errorCode\":\"NO_ONLINE_USERS\"}"));
             } catch (IOException e) {
@@ -109,9 +111,10 @@ public class ProxyHandler implements WebSocketHandler {
 
     /**
      * 该方法用于发送二进制文件
+     *
      * @param webSocketSession
      */
-    private void pushBinaryMsg(WebSocketSession webSocketSession , BinaryMessage binaryMessage){
+    private void pushBinaryMsg(WebSocketSession webSocketSession, BinaryMessage binaryMessage) {
 
         try {
             webSocketSession.sendMessage(binaryMessage);

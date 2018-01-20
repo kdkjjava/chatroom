@@ -102,7 +102,7 @@
 	</aop:config>
 
 	<!--定时任务设置-->
-	<bean id="timedTask"
+	<bean id="handleMsg"
 		  class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
 		<property name="targetObject" >
 			<bean class="com.kdkj.intelligent.websocket.TimedTask" />
@@ -110,14 +110,28 @@
 		<property name="targetMethod" value="handlePastMsg" />
 		<property name="concurrent" value="false" /><!-- 作业不并发调度 -->
 	</bean>
-	<bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
-		<property name="jobDetail" ref="timedTask" />
+	<bean id="handleGroup"
+		  class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" >
+			<bean class="com.kdkj.intelligent.websocket.TimedTask" />
+		</property>
+		<property name="targetMethod" value="handleUnUseGroup" />
+		<property name="concurrent" value="false" /><!-- 作业不并发调度 -->
+	</bean>
+	<bean id="msgTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="handleMsg" />
 		<property name="cronExpression" value="0 30 23 * * ?" />
+	</bean>
+	<bean id="groupTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
+		<property name="jobDetail" ref="handleGroup" />
+		<property name="startDelay" value="60" /><!-- 调度工厂实例化后，经过60秒开始执行调度 -->
+		<property name="repeatInterval" value="3600000" /><!-- 每一个小时调度一次 -->
 	</bean>
 	<bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="triggers">
 			<list>
-				<ref bean="cronTrigger" />
+				<ref bean="msgTrigger" />
+				<ref bean="groupTrigger"/>
 			</list>
 		</property>
 	</bean>

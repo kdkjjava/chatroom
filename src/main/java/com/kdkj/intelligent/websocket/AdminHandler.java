@@ -9,7 +9,6 @@ import org.springframework.web.socket.WebSocketSession;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * powered by IntelliJ IDEA
@@ -43,22 +42,22 @@ public class AdminHandler  implements WebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession webSocketSession) throws Exception {
-
+        //暂时不需要总的webSocket发送消息
     }
 
     @Override
     public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage) throws Exception {
-
+        //暂时不需要总的webSocket发送消息
     }
 
     @Override
     public void handleTransportError(WebSocketSession webSocketSession, Throwable throwable) throws Exception {
-
+        //暂时不需要总的webSocket发送消息
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus) throws Exception {
-
+        //暂时不需要总的webSocket发送消息
     }
 
     @Override

@@ -120,7 +120,7 @@
 
         <logger name="org.mybatis" level="INFO"></logger>
 
-        <root level="error">
+        <root level="warn">
 
             <appender-ref ref="Console"/>
 
