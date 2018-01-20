@@ -88,15 +88,6 @@ public class FriendHandler implements WebSocketHandler {
         return false;
     }
 
-    private void sendErrorMsg(WebSocketSession webSocketSession, SocketMsg socketMsg) {
-        socketMsg.setStatus("发送失败，发生未知错误");
-        try {
-            webSocketSession.sendMessage(new TextMessage(JSON.toJSONString(socketMsg)));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     /**
      * 该方法用于返回好友聊天的key
      *

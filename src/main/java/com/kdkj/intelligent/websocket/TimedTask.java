@@ -36,7 +36,6 @@ public class TimedTask {
      */
     public void handleUnUseGroup(){
         new Thread(() -> {
-            System.out.println("length:"+GroupHandler.sessionPools.size());
             GroupHandler.sessionPools.forEach((key,value) -> {
                 if (value.size()==0)
                     GroupHandler.sessionPools.remove(key);

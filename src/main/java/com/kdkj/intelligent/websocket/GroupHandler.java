@@ -80,18 +80,15 @@ public class GroupHandler implements WebSocketHandler {
         if (groupTeamService.findMembership(socketMsg.getMsgFrom(), socketMsg.getGroupId()) && ProxyHandler.masterSessionPools.containsKey(masterId)) {
             sendToClient(socketMsg, masterId);
         }
-
         //调用普通信息的发送方法
         new Thread(() -> sendUsualMessage(webSocketSession, socketMsg)).start();
     }
-
 
     /**
      * 本方法用于处理玩家发送的普通消息
      *
      * @param webSocketSession
      */
-
     private void sendUsualMessage(WebSocketSession webSocketSession, SocketMsg socketMsg) {
         String groupId = (String) webSocketSession.getAttributes().get("groupId");
         if (!groupId.equals(socketMsg.getGroupId())) {
@@ -101,7 +98,6 @@ public class GroupHandler implements WebSocketHandler {
                 e.printStackTrace();
             }
         }
-
         //遍历map集合，将消息发送至同一个房间下的session
         if (sessionPools.containsKey(socketMsg.getGroupId())) {
             sessionPools.get(socketMsg.getGroupId()).forEach((item) -> {
@@ -140,6 +136,5 @@ public class GroupHandler implements WebSocketHandler {
     private String getGroupId(WebSocketSession webSocketSession) {
         return (String) webSocketSession.getAttributes().get("groupId");
     }
-
 
 }
