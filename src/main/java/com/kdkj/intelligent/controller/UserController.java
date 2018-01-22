@@ -125,8 +125,8 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/findGroups", method = RequestMethod.GET)
-	public Result findGroups(HttpServletRequest request, Integer userId) {
-		List<GroupTeam> list = usersService.selectGroupByUserId(userId);
+	public Result findGroups(HttpServletRequest request) {
+		List<GroupTeam> list = usersService.selectGroupByUserId(getUser(request).getId());
 		if (list != null && list.size() > 0)
 			return Result.ok("", list);
 		return Result.ok();

@@ -70,7 +70,7 @@ public class VisitFilter implements Filter {
 		HttpServletResponse rep = (HttpServletResponse) response;
 		
 		rep.setHeader("Access-Control-Allow-Credentials", "true");
-		rep.setHeader("Access-Control-Allow-Headers", "X-Requested-With, accept, content-type, xxxx");
+		rep.setHeader("Access-Control-Allow-Headers", "X-Requested-With, accept, content-type, xxxx,token");
 		rep.setHeader("Access-Control-Allow-Methods", "GET, HEAD, POST, PUT, DELETE, TRACE, OPTIONS, PATCH");
 		rep.setHeader("Access-Control-Allow-Origin", "http://localhost:8082");
         
@@ -87,6 +87,8 @@ public class VisitFilter implements Filter {
 			chain.doFilter(request, response);
 			return;
 		}
+		req.getHeader("token");
+		req.getHeaders("token");
 		if (session.getAttribute("user") == null) {
 			if (req.getParameter("token") != null) {
 				String token = (String) req.getParameter("token");
