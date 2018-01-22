@@ -58,7 +58,20 @@ public class Users extends Pageinfo implements Serializable{
      * 无群时间
      */
     private Date nogroupTime;
-    
+
+    /**
+     * 用户等级
+     */
+    private String level;
+
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
     public Date getNogroupTime() {
 		return nogroupTime;
 	}
@@ -163,11 +176,23 @@ public class Users extends Pageinfo implements Serializable{
     public void setPhone(String phone) {
         this.phone = phone == null ? null : phone.trim();
     }
-    
+
     @Override
-	public String toString() {
-		return "Users [id=" + id + ", username=" + username + ", nickname=" + nickname + ", type=" + type + ", status="
-				+ status + ", score=" + score + ", registTime=" + registTime + ", pictureAddress=" + pictureAddress
-				+ ", phone=" + phone + ", token=" + token + ", lastLoginTime=" + lastLoginTime + "]";
-	}
+    public String toString() {
+        return "Users{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", nickname='" + nickname + '\'' +
+                ", type='" + type + '\'' +
+                ", status='" + status + '\'' +
+                ", score=" + score +
+                ", registTime=" + registTime +
+                ", pictureAddress='" + pictureAddress + '\'' +
+                ", phone='" + phone + '\'' +
+                ", token='" + token + '\'' +
+                ", lastLoginTime=" + lastLoginTime +
+                ", nogroupTime=" + nogroupTime +
+                ", level='" + level + '\'' +
+                '}';
+    }
 }

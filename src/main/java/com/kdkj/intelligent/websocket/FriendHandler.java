@@ -35,6 +35,8 @@ public class FriendHandler implements WebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession webSocketSession) throws Exception {
+        if (!webSocketSession.isOpen())
+            return;
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
         String msgTo = (String) webSocketSession.getAttributes().get("msgTo");
         String key = getKey(msgFrom, msgTo);
@@ -50,8 +52,13 @@ public class FriendHandler implements WebSocketHandler {
         }
         //判断缓存内是否有自己未读的消息
         if (unsentMessages.containsKey(msgFrom) && unsentMessages.get(msgFrom).containsKey(msgTo)) {
-            for (SocketMsg socketMsg : unsentMessages.get(msgFrom).get(msgTo))
-                webSocketSession.sendMessage(new TextMessage(JSON.toJSONString(socketMsg)));
+            unsentMessages.get(msgFrom).get(msgTo).forEach(socketMsg -> {
+                try {
+                    webSocketSession.sendMessage(new TextMessage(JSON.toJSONString(socketMsg)));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
             unsentMessages.get(msgFrom).remove(msgTo);
         }
     }

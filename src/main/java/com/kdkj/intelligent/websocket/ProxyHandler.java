@@ -24,8 +24,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class ProxyHandler implements WebSocketHandler {
 
-    @Autowired
-    private GroupTeamService groupTeamService;
     //该变量用于保存master的session
     protected static Map<String, WebSocketSession> masterSessionPools;
 
@@ -48,9 +46,9 @@ public class ProxyHandler implements WebSocketHandler {
         if (webSocketMessage instanceof TextMessage) {
             //将用户发送的json消息解析为java对象
             SocketMsg socketMsg = JSON.parseObject(webSocketMessage.getPayload().toString(), SocketMsg.class);
-            sendUsualMsg(webSocketSession, socketMsg);
+            new Thread(() -> sendUsualMsg(webSocketSession, socketMsg)).start();
         } else if (webSocketMessage instanceof BinaryMessage) {
-            pushBinaryMsg(webSocketSession, new BinaryMessage((byte[]) webSocketMessage.getPayload()));
+            new Thread(() -> pushBinaryMsg(webSocketSession, new BinaryMessage((byte[]) webSocketMessage.getPayload()))).start();
         } else {
             throw new IllegalStateException("Unexpected webSocket message type!");
         }
@@ -92,14 +90,14 @@ public class ProxyHandler implements WebSocketHandler {
         }
         if (GroupHandler.sessionPools.containsKey(socketMsg.getGroupId())) {
             //将客户端的信息发送至指定的群聊天中
-            for (WebSocketSession item : GroupHandler.sessionPools.get(socketMsg.getGroupId())) {
+            GroupHandler.sessionPools.get(socketMsg.getGroupId()).forEach(item ->{
                 try {
                     //将本条消息通过WebSocketSession发送至客户端
                     item.sendMessage(new TextMessage(JSON.toJSONString(socketMsg)));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }
+            });
         } else {
             try {
                 webSocketSession.sendMessage(new TextMessage("{\"errorCode\":\"NO_ONLINE_USERS\"}"));
@@ -115,7 +113,6 @@ public class ProxyHandler implements WebSocketHandler {
      * @param webSocketSession
      */
     private void pushBinaryMsg(WebSocketSession webSocketSession, BinaryMessage binaryMessage) {
-
         try {
             webSocketSession.sendMessage(binaryMessage);
         } catch (IOException e) {
