@@ -54,8 +54,8 @@ public class GroupHandler implements WebSocketHandler {
      * 因此应当在关闭连接这个切面增加去除userSocketSessionMap中当前处于close状态的WebSocketSession，
      * 让新创建的WebSocketSession(open状态)可以加入到userSocketSessionMap中
      *
-     * @param webSocketSession
-     * @param closeStatus
+     * @param webSocketSession 当前session
+     * @param closeStatus 关闭状态码
      * @throws Exception
      */
     @Override
@@ -87,7 +87,7 @@ public class GroupHandler implements WebSocketHandler {
     /**
      * 本方法用于处理玩家发送的普通消息
      *
-     * @param webSocketSession
+     * @param webSocketSession 当前session对象
      */
     private void sendUsualMessage(WebSocketSession webSocketSession, SocketMsg socketMsg) {
         String groupId = (String) webSocketSession.getAttributes().get("groupId");
@@ -113,8 +113,8 @@ public class GroupHandler implements WebSocketHandler {
     /**
      * 本方法用于发送信息至客户端
      *
-     * @param socketMsg
-     * @param masterId
+     * @param socketMsg 消息对象
+     * @param masterId 代理
      */
     private void sendToClient(SocketMsg socketMsg, Integer masterId) {
         WebSocketSession session = ProxyHandler.masterSessionPools.get(masterId);
@@ -130,7 +130,7 @@ public class GroupHandler implements WebSocketHandler {
     /**
      * 通过webSocketSession得到作用域中的groupId
      *
-     * @param webSocketSession
+     * @param webSocketSession 当前session对象
      * @return
      */
     private String getGroupId(WebSocketSession webSocketSession) {

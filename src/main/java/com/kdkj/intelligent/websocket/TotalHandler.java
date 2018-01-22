@@ -35,17 +35,13 @@ public class TotalHandler implements WebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession webSocketSession) throws Exception {
-        if (!webSocketSession.isOpen())
-            return;
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
         if (!totalSessions.containsKey(msgFrom)) {
             totalSessions.put(msgFrom, webSocketSession);
         }
-
         if (FriendHandler.unsentMessages.containsKey(msgFrom)) {
             pushMsg(webSocketSession, msgFrom);
         }
-
     }
 
     @Override
@@ -75,8 +71,8 @@ public class TotalHandler implements WebSocketHandler {
     /**
      * 推送消息提醒，用户上线后对其总的websocket发送消息提醒，发送消息内容为消息类型，和消息来源
      *
-     * @param webSocketSession
-     * @param currentUsername
+     * @param webSocketSession session对象
+     * @param currentUsername 当前用户名
      */
     private void pushMsg(WebSocketSession webSocketSession, String currentUsername) {
         FriendHandler.unsentMessages.get(currentUsername).keySet().forEach(str ->{

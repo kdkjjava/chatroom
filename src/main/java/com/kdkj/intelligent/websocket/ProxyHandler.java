@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @Author: unknown
  * @Date: 2018/1/15 17:12
- * @Description:
+ * @Description: 用于proxy的webSocket
  **/
 @Component
 public class ProxyHandler implements WebSocketHandler {
@@ -76,8 +76,8 @@ public class ProxyHandler implements WebSocketHandler {
     /**
      * 普通文本消息发送方法
      *
-     * @param webSocketSession
-     * @param socketMsg
+     * @param webSocketSession 当前session对象
+     * @param socketMsg 待发送的消息对象
      */
     private void sendUsualMsg(WebSocketSession webSocketSession, SocketMsg socketMsg) {
         String groupId = (String) webSocketSession.getAttributes().get("groupId");
@@ -110,7 +110,7 @@ public class ProxyHandler implements WebSocketHandler {
     /**
      * 该方法用于发送二进制文件
      *
-     * @param webSocketSession
+     * @param webSocketSession 当前session对象
      */
     private void pushBinaryMsg(WebSocketSession webSocketSession, BinaryMessage binaryMessage) {
         try {

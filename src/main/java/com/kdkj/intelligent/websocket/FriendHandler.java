@@ -3,12 +3,9 @@ package com.kdkj.intelligent.websocket;
 import com.alibaba.fastjson.JSON;
 import com.kdkj.intelligent.entity.SocketMsg;
 import com.kdkj.intelligent.entity.TipsMsg;
-import org.junit.Test;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
-
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -35,8 +32,6 @@ public class FriendHandler implements WebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession webSocketSession) throws Exception {
-        if (!webSocketSession.isOpen())
-            return;
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
         String msgTo = (String) webSocketSession.getAttributes().get("msgTo");
         String key = getKey(msgFrom, msgTo);
@@ -65,12 +60,10 @@ public class FriendHandler implements WebSocketHandler {
 
     @Override
     public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage) {
-
         //将用户发送的json消息解析为java对象
         SocketMsg socketMsg = JSON.parseObject(webSocketMessage.getPayload().toString(), SocketMsg.class);
         String key = getKey(socketMsg.getMsgFrom(), socketMsg.getMsgTo());
         sendUsualMsg(webSocketSession, socketMsg, key);
-
     }
 
     @Override
@@ -98,8 +91,9 @@ public class FriendHandler implements WebSocketHandler {
     /**
      * 该方法用于返回好友聊天的key
      *
-     * @param
-     * @return
+     * @param msgFrom 发起聊天者
+     * @param msgTo 接受聊天者
+     * @return 返回缓存存储的key
      */
     private String getKey(String msgFrom, String msgTo) {
         if (friendSessionPools.containsKey(msgFrom + "_" + msgTo))
@@ -132,18 +126,16 @@ public class FriendHandler implements WebSocketHandler {
             unsentMessages.get(socketMsg.getMsgTo()).put(socketMsg.getMsgFrom(), new ArrayList<>());
             unsentMessages.get(socketMsg.getMsgTo()).get(socketMsg.getMsgFrom()).add(socketMsg);
         }
-
     }
 
     /**
      * 发送消息方法
      *
-     * @param webSocketSession
-     * @param socketMsg
-     * @param key
+     * @param webSocketSession session对象
+     * @param socketMsg 消息对象
+     * @param key 好友聊天的key
      */
     private void sendUsualMsg(WebSocketSession webSocketSession, SocketMsg socketMsg, String key) {
-
         try {
             webSocketSession.sendMessage(new TextMessage(JSON.toJSONString(socketMsg)));
         } catch (IOException e) {
