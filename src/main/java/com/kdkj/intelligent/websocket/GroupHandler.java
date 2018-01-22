@@ -7,6 +7,7 @@ import com.kdkj.intelligent.service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
+
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,7 +43,7 @@ public class GroupHandler implements WebSocketHandler {
 
 
     @Override
-    public void handleTransportError(WebSocketSession webSocketSession, Throwable throwable) throws Exception{
+    public void handleTransportError(WebSocketSession webSocketSession, Throwable throwable) throws Exception {
 
     }
 
@@ -77,44 +78,36 @@ public class GroupHandler implements WebSocketHandler {
         Integer masterId = groupTeamService.selectMasterIdByGroupId(Integer.parseInt(socketMsg.getGroupId()));
         socketMsg.setStatus("success");
         if (groupTeamService.findMembership(socketMsg.getMsgFrom(), socketMsg.getGroupId()) && ProxyHandler.masterSessionPools.containsKey(masterId)) {
-                sendToClient(socketMsg, masterId);
+            sendToClient(socketMsg, masterId);
         }
-
-        Runnable runnable = new Runnable(){
-            @Override
-            public void run() {
-                //调用普通信息的发送方法
-                sendUsualMessage(webSocketSession, socketMsg);
-            }
-        };
-        new Thread(runnable).start();
+        //调用普通信息的发送方法
+        new Thread(() -> sendUsualMessage(webSocketSession, socketMsg)).start();
     }
-
 
     /**
      * 本方法用于处理玩家发送的普通消息
      *
      * @param webSocketSession
      */
-
     private void sendUsualMessage(WebSocketSession webSocketSession, SocketMsg socketMsg) {
-        //遍历map集合，将消息发送至同一个房间下的session
-        Set<Map.Entry<String, List<WebSocketSession>>> entries = sessionPools.entrySet();
-        for (Map.Entry<String, List<WebSocketSession>> entry:entries){
-            if (entry.getKey().equals(webSocketSession.getAttributes().get("groupId"))) {
-                //判断若是为同一个房间，则遍历房间内的session，并发送消息
-                for (WebSocketSession item : entry.getValue()) {
-                    try {
-                        //将本条消息通过WebSocketSession发送至客户端
-                        item.sendMessage(new TextMessage(JSON.toJSONString(socketMsg)));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                break;
+        String groupId = (String) webSocketSession.getAttributes().get("groupId");
+        if (!groupId.equals(socketMsg.getGroupId())) {
+            try {
+                webSocketSession.sendMessage(new TextMessage("{\"errorCode\":\"请求参数错误！\"}"));
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
-
+        //遍历map集合，将消息发送至同一个房间下的session
+        if (sessionPools.containsKey(socketMsg.getGroupId())) {
+            sessionPools.get(socketMsg.getGroupId()).forEach((item) -> {
+                try {
+                    item.sendMessage(new TextMessage(JSON.toJSONString(socketMsg)));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
     }
 
     /**
@@ -136,10 +129,11 @@ public class GroupHandler implements WebSocketHandler {
 
     /**
      * 通过webSocketSession得到作用域中的groupId
+     *
      * @param webSocketSession
      * @return
      */
-    private String getGroupId(WebSocketSession webSocketSession){
+    private String getGroupId(WebSocketSession webSocketSession) {
         return (String) webSocketSession.getAttributes().get("groupId");
     }
 
