@@ -72,9 +72,8 @@ public class VisitFilter implements Filter {
 		rep.setHeader("Access-Control-Allow-Credentials", "true");
 		rep.setHeader("Access-Control-Allow-Headers", "X-Requested-With, accept, content-type, xxxx,token");
 		rep.setHeader("Access-Control-Allow-Methods", "GET, HEAD, POST, PUT, DELETE, TRACE, OPTIONS, PATCH");
-		rep.setHeader("Access-Control-Allow-Origin", "http://localhost:8082");
-        
-        
+		rep.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
+
 		rep.setCharacterEncoding("UTF-8");
 		String s = JSON.toJSONString((Result.error("用户尚未登录或者登录已过期，请重新登录！")));
 		HttpSession session = req.getSession();
@@ -91,7 +90,7 @@ public class VisitFilter implements Filter {
 		req.getHeaders("token");
 		if (session.getAttribute("user") == null) {
 			if (req.getParameter("token") != null) {
-				String token = (String) req.getParameter("token");
+				String token = req.getParameter("token");
 				Users user = new Users();
 				user.setToken(token);
 				List<Users> list = usersService.selectListByUser(user);
@@ -114,7 +113,6 @@ public class VisitFilter implements Filter {
 						rep.getWriter().write(s);
 						return;
 					}
-
 				} else {
 					rep.getWriter().write(s);
 					return;

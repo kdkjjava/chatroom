@@ -84,4 +84,9 @@ public class UsersServiceImpl implements UsersService{
 	public List<Users> selectMemberIds() {
 		return usersMapper.selectMemberIds();
 	}
+
+	@Override
+	public List<Users> selectProxyList() {
+		return usersMapper.selectProxyList();
+	}
 }

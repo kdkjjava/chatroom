@@ -1,79 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kdkj.intelligent.dao.UsersMapper">
-	<resultMap id="BaseResultMap" type="com.kdkj.intelligent.entity.Users">
-		<id column="id" jdbcType="INTEGER" property="id" />
-		<result column="username" jdbcType="VARCHAR" property="username" />
-		<result column="password" jdbcType="VARCHAR" property="password" />
-		<result column="nickname" jdbcType="VARCHAR" property="nickname" />
-		<result column="type" jdbcType="VARCHAR" property="type" />
-		<result column="status" jdbcType="VARCHAR" property="status" />
-		<result column="score" jdbcType="BIGINT" property="score" />
-		<result column="regist_time" jdbcType="TIMESTAMP" property="registTime" />
-		<result column="picture_address" jdbcType="VARCHAR" property="pictureAddress" />
-		<result column="phone" jdbcType="VARCHAR" property="phone" />
-		<result column="token" jdbcType="VARCHAR" property="token" />
-		<result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime" />
-		<result column="nogroup_time" jdbcType="TIMESTAMP" property="nogroupTime" />
-	</resultMap>
-	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <resultMap id="BaseResultMap" type="com.kdkj.intelligent.entity.Users">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="username" jdbcType="VARCHAR" property="username"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="nickname" jdbcType="VARCHAR" property="nickname"/>
+        <result column="type" jdbcType="VARCHAR" property="type"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
+        <result column="score" jdbcType="BIGINT" property="score"/>
+        <result column="regist_time" jdbcType="TIMESTAMP" property="registTime"/>
+        <result column="picture_address" jdbcType="VARCHAR" property="pictureAddress"/>
+        <result column="phone" jdbcType="VARCHAR" property="phone"/>
+        <result column="token" jdbcType="VARCHAR" property="token"/>
+        <result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime"/>
+        <result column="nogroup_time" jdbcType="TIMESTAMP" property="nogroupTime"/>
+        <result column="level" property="level" jdbcType="VARCHAR"></result>
+        <result column="proxy_level" property="proxyLevel" jdbcType="VARCHAR"></result>
+        <result column="expire_date" property="expireDate" jdbcType="DATE"></result>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
 		delete from users
 		where id = #{id,jdbcType=INTEGER}
 	</delete>
-	<insert id="insert" parameterType="com.kdkj.intelligent.entity.Users">
-		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
-			SELECT
-			LAST_INSERT_ID()
-		</selectKey>
-		insert into users (username, password,
-		nickname, type, status, score,
-		regist_time, picture_address,
-		phone,token,last_login_time)
-		values
-		(#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
-		#{nickname,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR},
-		#{status,jdbcType=VARCHAR},
-		#{score,jdbcType=BIGINT},
-		#{registTime,jdbcType=TIMESTAMP}, #{pictureAddress,jdbcType=VARCHAR},
-		#{phone,jdbcType=VARCHAR},#{token,jdbcType=VARCHAR},#{registTime,jdbcType=TIMESTAMP})
-	</insert>
-	
-	<update id="updateNogroupMemberTime" parameterType="java.lang.Integer">
+    <insert id="insert" parameterType="com.kdkj.intelligent.entity.Users">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            SELECT
+            LAST_INSERT_ID()
+        </selectKey>
+        insert into users (username, password,
+        nickname, type, status, score,
+        regist_time, picture_address,
+        phone,token,last_login_time)
+        values
+        (#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
+        #{nickname,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR},
+        #{status,jdbcType=VARCHAR},
+        #{score,jdbcType=BIGINT},
+        #{registTime,jdbcType=TIMESTAMP}, #{pictureAddress,jdbcType=VARCHAR},
+        #{phone,jdbcType=VARCHAR},#{token,jdbcType=VARCHAR},#{registTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <update id="updateNogroupMemberTime" parameterType="java.lang.Integer">
 		update users 
 		set 
 		nogroup_time=SYSDATE() 
 		where id  in (select user_id from members where group_id=#{id,jdbcType=VARCHAR})
 	</update>
-	
-	<update id="updateByPrimaryKey" parameterType="com.kdkj.intelligent.entity.Users">
-		update users
-		<set>
-			<if test="username !=null and username !='' "> username = #{username,jdbcType=VARCHAR},</if>
-			<if test="nickname !=null and nickname !='' "> nickname = #{nickname,jdbcType=VARCHAR},</if>
-			<if test="password !=null and password !='' "> password = #{password,jdbcType=VARCHAR},</if>
-			<if test="type !=null and type !=''"> type = #{type,jdbcType=VARCHAR},</if>
-			<if test="status !=null and status !=''"> status = #{status,jdbcType=VARCHAR},</if>
-			<if test="score !=null and score !=''"> score = #{score,jdbcType=VARCHAR},</if>
-			<if test="registTime !=null"> regist_time = #{registTime,jdbcType=TIMESTAMP},</if>
-			<if test="pictureAddress !=null and pictureAddress !=''"> picture_address = #{pictureAddress,jdbcType=VARCHAR},
-			</if>
-			<if test="phone !=null and phone !=''"> phone = #{phone,jdbcType=VARCHAR},</if>
-			<if test="token=='newToken'"> token=REPLACE(uuid(),'-',''),</if>
-			<if test="lastLoginTime !=null"> last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP},</if>
-			 <if test="nogroupTime !=null"> nogroup_time = #{nogroupTime,jdbcType=TIMESTAMP},</if>
-		</set>
-		where id = #{id,jdbcType=INTEGER}
-	</update>
-	<select id="selectByPrimaryKey" parameterType="java.lang.Integer"
-		resultMap="BaseResultMap">
+
+    <update id="updateByPrimaryKey" parameterType="com.kdkj.intelligent.entity.Users">
+        update users
+        <set>
+            <if test="username !=null and username !='' ">username = #{username,jdbcType=VARCHAR},</if>
+            <if test="nickname !=null and nickname !='' ">nickname = #{nickname,jdbcType=VARCHAR},</if>
+            <if test="password !=null and password !='' ">password = #{password,jdbcType=VARCHAR},</if>
+            <if test="type !=null and type !=''">type = #{type,jdbcType=VARCHAR},</if>
+            <if test="status !=null and status !=''">status = #{status,jdbcType=VARCHAR},</if>
+            <if test="score !=null and score !=''">score = #{score,jdbcType=VARCHAR},</if>
+            <if test="registTime !=null">regist_time = #{registTime,jdbcType=TIMESTAMP},</if>
+            <if test="pictureAddress !=null and pictureAddress !=''">picture_address =
+                #{pictureAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="phone !=null and phone !=''">phone = #{phone,jdbcType=VARCHAR},</if>
+            <if test="token=='newToken'">token=REPLACE(uuid(),'-',''),</if>
+            <if test="lastLoginTime !=null">last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP},</if>
+            <if test="nogroupTime !=null">nogroup_time = #{nogroupTime,jdbcType=TIMESTAMP},</if>
+            <if test="level !=null">level = #{level,jdbcType=TIMESTAMP},</if>
+            <if test="proxyLevel !=null">proxy_level = #{proxyLevel,jdbcType=TIMESTAMP},</if>
+            <if test="expireDate !=null">expire_date = #{expireDate,jdbcType=TIMESTAMP},</if>
+
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer"
+            resultMap="BaseResultMap">
 		select 'true' as QUERYID,id, username, password,nickname,
 		type, status,
 		score, regist_time,token,picture_address, phone
 		from users
 		where id = #{id,jdbcType=INTEGER}
 	</select>
-	
-	<select id="selectMemberIds"  resultMap="BaseResultMap">
+
+    <select id="selectMemberIds" resultMap="BaseResultMap">
 		 select id, username,nickname,type, 
 		     status,picture_address, phone 
 		 from users 
@@ -81,28 +89,31 @@
            and datediff(SYSDATE(),nogroup_time)>3
 	</select>
 
-	<select id="selectListByUser" resultMap="BaseResultMap"
-		parameterType="com.kdkj.intelligent.entity.Users">
-		select id, username, password,nickname, type, status,score,
-		regist_time, picture_address,phone,last_login_time
-		from users
-		where 1=1
-		<if test="username !=null and username !='' ">and username = #{username,jdbcType=VARCHAR}</if>
-		<if test="nickname !=null and nickname !='' ">and nickname = #{nickname,jdbcType=VARCHAR}</if>
-		<if test="type !=null and type !=''">and type = #{type,jdbcType=VARCHAR}</if>
-		<if test="status !=null and status !=''">and status = #{status,jdbcType=VARCHAR}</if>
-		<if test="score !=null and score !=''">and score = #{score,jdbcType=VARCHAR}</if>
-		<if test="registTime !=null">and regist_time = #{registTime,jdbcType=TIMESTAMP}</if>
-		<if test="pictureAddress !=null and pictureAddress !=''">and picture_address = #{pictureAddress,jdbcType=VARCHAR}
-		</if>
-		<if test="phone !=null and phone !=''">and phone = #{phone,jdbcType=VARCHAR}</if>
-		<if test="token !=null and token !=''">and token = #{token,jdbcType=VARCHAR}</if>
-		<if test="lastLoginTime !=null"> last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP}
-		</if>
-	</select>
+    <select id="selectListByUser" resultMap="BaseResultMap"
+            parameterType="com.kdkj.intelligent.entity.Users">
+        select id, username, password,nickname, type, status,score,
+        regist_time, picture_address,phone,last_login_time
+        from users
+        where 1=1
+        <if test="username !=null and username !='' ">and username = #{username,jdbcType=VARCHAR}</if>
+        <if test="nickname !=null and nickname !='' ">and nickname = #{nickname,jdbcType=VARCHAR}</if>
+        <if test="type !=null and type !=''">and type = #{type,jdbcType=VARCHAR}</if>
+        <if test="status !=null and status !=''">and status = #{status,jdbcType=VARCHAR}</if>
+        <if test="score !=null and score !=''">and score = #{score,jdbcType=VARCHAR}</if>
+        <if test="registTime !=null">and regist_time = #{registTime,jdbcType=TIMESTAMP}</if>
+        <if test="pictureAddress !=null and pictureAddress !=''">and picture_address =
+            #{pictureAddress,jdbcType=VARCHAR}
+        </if>
+        <if test="phone !=null and phone !=''">and phone = #{phone,jdbcType=VARCHAR}</if>
+        <if test="token !=null and token !=''">and token = #{token,jdbcType=VARCHAR}</if>
+        <if test="lastLoginTime !=null">last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP}</if>
+        <if test="level !=null">level = #{level,jdbcType=TIMESTAMP},</if>
+        <if test="proxyLevel !=null">proxy_level = #{proxyLevel,jdbcType=TIMESTAMP},</if>
+        <if test="expireDate !=null">expire_date = #{expireDate,jdbcType=TIMESTAMP},</if>
+    </select>
 
-	<select id="selectUserByGroupId" parameterType="java.lang.Integer"
-		resultMap="BaseResultMap">
+    <select id="selectUserByGroupId" parameterType="java.lang.Integer"
+            resultMap="BaseResultMap">
 		select u.id, username,u.nickname, u.type, u.status,
 		u.score,
 		u.regist_time, u.picture_address,u.phone
@@ -112,7 +123,7 @@
 		and u.id=m.user_id
 	</select>
 
-	<select id="findMyFriends" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <select id="findMyFriends" parameterType="java.lang.Long" resultMap="BaseResultMap">
 		select u.id,u.nickname,u.username,u.phone,u.picture_address,remarkName as password from
 		users u,(select uid1 as uid2,remark_name2 as remarkName from friendship where
 		uid2=#{id,jdbcType=BIGINT} Union all
@@ -120,11 +131,28 @@
 		where u.id=f.uid2
 	</select>
 
-	<select id="selectAll" resultMap="BaseResultMap">
+    <select id="selectAll" resultMap="BaseResultMap">
 		select id, username, password,
 		nickname, type, status, score, regist_time,
-		picture_address, phone
+		picture_address, phone, level, proxy_level, expire_date
 		from
 		users
 	</select>
+
+    <select id="selectProxyList" resultMap="proxyList">
+      select id,username,nickname,type,status,phone,level,proxy_level,expire_date from users where type = '1'
+	</select>
+
+    <resultMap id="proxyList" type="Users">
+        <id column="id" property="id"></id>
+        <result column="username" property="username"></result>
+        <result column="nickname" property="nickname"></result>
+        <result column="type" property="type"></result>
+        <result column="status" property="status"></result>
+        <result column="phone" property="phone"></result>
+        <result column="level" property="level"></result>
+        <result column="proxy_level" property="proxyLevel"></result>
+        <result column="expire_date" property="expireDate"></result>
+    </resultMap>
+
 </mapper>

@@ -42,7 +42,7 @@ public class LoginController {
 			return Result.error("用户名或密码不能为空");
 		}
 		List<Users> list = usersService.selectListByUser(user);
-		if (list == null || list.size() == 0) {
+		if (list == null || list.isEmpty()) {
 			return Result.error("用户名或密码错误，请重新登录!");
 		}
 		user = list.get(0);

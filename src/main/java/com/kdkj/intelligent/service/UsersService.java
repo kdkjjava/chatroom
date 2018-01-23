@@ -28,4 +28,6 @@ public interface UsersService {
     List<Users> selectMemberIds();
     
     List<Users> findMyFriends(Long id);
+
+    List<Users> selectProxyList();
 }

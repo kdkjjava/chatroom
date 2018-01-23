@@ -34,13 +34,23 @@ public class TotalHandler implements WebSocketHandler {
     }
 
     @Override
-    public void afterConnectionEstablished(WebSocketSession webSocketSession) throws Exception {
+    public void afterConnectionEstablished(WebSocketSession webSocketSession) {
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
-        if (!totalSessions.containsKey(msgFrom)) {
-            totalSessions.put(msgFrom, webSocketSession);
+        if (msgFrom != null) {
+            if (!totalSessions.containsKey(msgFrom)) {
+                totalSessions.put(msgFrom, webSocketSession);
+            }
+            if (FriendHandler.unsentMessages.containsKey(msgFrom)) {
+                pushMsg(webSocketSession, msgFrom);
+            }
+            return;
         }
-        if (FriendHandler.unsentMessages.containsKey(msgFrom)) {
-            pushMsg(webSocketSession, msgFrom);
+        if (msgFrom == null && webSocketSession.isOpen()) {
+            try {
+                webSocketSession.close(new CloseStatus(1007));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -55,12 +65,16 @@ public class TotalHandler implements WebSocketHandler {
     }
 
     @Override
-    public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus) throws Exception {
+    public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus) {
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
-        if (totalSessions.containsKey(msgFrom)) {
+        if (msgFrom != null && totalSessions.containsKey(msgFrom)) {
             totalSessions.remove(msgFrom);
         }
-        webSocketSession.close();
+        try {
+            webSocketSession.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -72,10 +86,10 @@ public class TotalHandler implements WebSocketHandler {
      * 推送消息提醒，用户上线后对其总的websocket发送消息提醒，发送消息内容为消息类型，和消息来源
      *
      * @param webSocketSession session对象
-     * @param currentUsername 当前用户名
+     * @param currentUsername  当前用户名
      */
     private void pushMsg(WebSocketSession webSocketSession, String currentUsername) {
-        FriendHandler.unsentMessages.get(currentUsername).keySet().forEach(str ->{
+        FriendHandler.unsentMessages.get(currentUsername).keySet().forEach(str -> {
             try {
                 webSocketSession.sendMessage(new TextMessage(JSON.toJSONString(new TipsMsg().setMsgFrom(str)
                         .setMsgType("friend").setCount(FriendHandler.unsentMessages.get(currentUsername).get(str).size()))));

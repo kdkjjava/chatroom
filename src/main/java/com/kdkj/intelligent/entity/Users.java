@@ -64,6 +64,28 @@ public class Users extends Pageinfo implements Serializable{
      */
     private String level;
 
+    private String proxyLevel;
+    /**
+     * 过期时间
+     */
+    private Date expireDate;
+
+    public String getProxyLevel() {
+        return proxyLevel;
+    }
+
+    public void setProxyLevel(String proxyLevel) {
+        this.proxyLevel = proxyLevel;
+    }
+
+    public Date getExpireDate() {
+        return expireDate;
+    }
+
+    public void setExpireDate(Date expireDate) {
+        this.expireDate = expireDate;
+    }
+
     public String getLevel() {
         return level;
     }

@@ -39,27 +39,22 @@ public class MyWebsocketConfig extends WebMvcConfigurerAdapter implements WebSoc
     public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {
         //给群聊添加websocket处理器，添加握手拦截器
         webSocketHandlerRegistry.addHandler(grouphandler, "/groupWs").addInterceptors(new ChatRoomInterceptor()).setAllowedOrigins("*");
-        //添加群聊websocket处理器，添加握手拦截器
         webSocketHandlerRegistry.addHandler(grouphandler, "/groupWs/sockjs").addInterceptors(new ChatRoomInterceptor()).setAllowedOrigins("*").withSockJS();
 
         //给好友聊天添加websocket处理器，添加握手拦截器
         webSocketHandlerRegistry.addHandler(friendHandler, "/friendWs").addInterceptors(new ChatRoomInterceptor()).setAllowedOrigins("*");
-        //添加好友聊天websocket处理器，添加握手拦截器
         webSocketHandlerRegistry.addHandler(friendHandler, "/friendWs/sockjs").addInterceptors(new ChatRoomInterceptor()).setAllowedOrigins("*").withSockJS();
 
-        //给好友聊天添加websocket处理器，添加握手拦截器
+        //给proxy聊天添加websocket处理器，添加握手拦截器
         webSocketHandlerRegistry.addHandler(proxyHandler, "/proxyWs").addInterceptors(new ChatRoomInterceptor()).setAllowedOrigins("*");
-        //添加好友聊天websocket处理器，添加握手拦截器
         webSocketHandlerRegistry.addHandler(proxyHandler, "/proxyWs/sockjs").addInterceptors(new ChatRoomInterceptor()).setAllowedOrigins("*").withSockJS();
 
-        //给好友聊天添加websocket处理器，添加握手拦截器
+        //给总的会话添加websocket处理器，添加握手拦截器
         webSocketHandlerRegistry.addHandler(totalHandler, "/totalWs").addInterceptors(new ChatRoomInterceptor()).setAllowedOrigins("*");
-        //添加好友聊天websocket处理器，添加握手拦截器
         webSocketHandlerRegistry.addHandler(totalHandler, "/totalWs/sockjs").addInterceptors(new ChatRoomInterceptor()).setAllowedOrigins("*").withSockJS();
 
-        //给好友聊天添加websocket处理器，添加握手拦截器
-        webSocketHandlerRegistry.addHandler(adminHandler, "/adminWs").addInterceptors(new ChatRoomInterceptor()).setAllowedOrigins("*");
-        //添加好友聊天websocket处理器，添加握手拦截器
-        webSocketHandlerRegistry.addHandler(adminHandler, "/adminWs/sockjs").addInterceptors(new ChatRoomInterceptor()).setAllowedOrigins("*").withSockJS();
+        //给管理员添加websocket处理器，添加握手拦截器，暂时不需要管理员的webSocket
+        /*webSocketHandlerRegistry.addHandler(adminHandler, "/adminWs").addInterceptors(new ChatRoomInterceptor()).setAllowedOrigins("*");
+        webSocketHandlerRegistry.addHandler(adminHandler, "/adminWs/sockjs").addInterceptors(new ChatRoomInterceptor()).setAllowedOrigins("*").withSockJS();*/
     }
 }

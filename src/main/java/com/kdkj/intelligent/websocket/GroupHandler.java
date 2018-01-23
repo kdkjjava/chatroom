@@ -7,10 +7,10 @@ import com.kdkj.intelligent.service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
-
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
 public class GroupHandler implements WebSocketHandler {
@@ -36,7 +36,7 @@ public class GroupHandler implements WebSocketHandler {
         if (sessionPools.containsKey(groupId)) {
             sessionPools.get(groupId).add(webSocketSession);
         } else {
-            sessionPools.put(groupId, new ArrayList());
+            sessionPools.put(groupId, new CopyOnWriteArrayList());
             sessionPools.get(groupId).add(webSocketSession);
         }
     }

@@ -8,11 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -69,7 +65,8 @@ public class UserController {
 			String newPwd = MD5Encryption.getEncryption(record.getPassword());
 			if (newPwd.equals(user.getPassword())) {
 				user.setPassword(MD5Encryption.getEncryption(record.getNickname()));
-				usersService.updateByPrimaryKey(user);
+				int i = usersService.updateByPrimaryKey(user);
+				System.out.println(i);
 				return Result.ok("修改成功");
 			} else {
 				return Result.error("密码不正确");
@@ -224,8 +221,19 @@ public class UserController {
 		}
 	}
 
+	@GetMapping("getProxyList")
+	public Result getProxyList(){
+
+		List<Users> proxyList = usersService.selectProxyList();
+
+		return null;
+	}
+
 	private Users getUser(HttpServletRequest request) {
 		Users user = (Users) request.getSession().getAttribute("user");
 		return user;
 	}
+
+
+
 }
