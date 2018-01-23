@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,7 @@ public class UserController {
 	public Result selectListByUser(HttpServletRequest request, @RequestBody Users record) {
 		PageHelper.startPage(record.getCurrent(), record.getPageSize());
 		List<Users> list = usersService.selectListByUser(record);
-		PageInfo<Users> page = new PageInfo<Users>(list);
+		PageInfo<Users> page = new PageInfo(list);
 		return Result.ok("查询成功", page);
 	}
 
@@ -65,8 +66,7 @@ public class UserController {
 			String newPwd = MD5Encryption.getEncryption(record.getPassword());
 			if (newPwd.equals(user.getPassword())) {
 				user.setPassword(MD5Encryption.getEncryption(record.getNickname()));
-				int i = usersService.updateByPrimaryKey(user);
-				System.out.println(i);
+				usersService.updateByPrimaryKey(user);
 				return Result.ok("修改成功");
 			} else {
 				return Result.error("密码不正确");
@@ -99,7 +99,7 @@ public class UserController {
 		user.setUsername(record.getUsername() == null ? null : record.getUsername());
 		user.setPhone(record.getPhone() == null ? null : record.getPhone());
 		List<Users> list = usersService.selectListByUser(user);
-		if (list != null && list.size() > 0)
+		if (list != null && !list.isEmpty())
 			return Result.error("用户名或电话号码已存在！");
 		try {
 			if (StringUtils.isEmpty(record.getType())) {
@@ -124,7 +124,7 @@ public class UserController {
 	@RequestMapping(value = "/findGroups", method = RequestMethod.GET)
 	public Result findGroups(HttpServletRequest request) {
 		List<GroupTeam> list = usersService.selectGroupByUserId(getUser(request).getId());
-		if (list != null && list.size() > 0)
+		if (list != null && !list.isEmpty())
 			return Result.ok("", list);
 		return Result.ok();
 	}
@@ -223,15 +223,11 @@ public class UserController {
 
 	@GetMapping("getProxyList")
 	public Result getProxyList(){
-
-		List<Users> proxyList = usersService.selectProxyList();
-
-		return null;
+		return Result.ok("success", JSON.toJSONString(usersService.selectProxyList()));
 	}
 
 	private Users getUser(HttpServletRequest request) {
-		Users user = (Users) request.getSession().getAttribute("user");
-		return user;
+		return (Users) request.getSession().getAttribute("user");
 	}
 
 
