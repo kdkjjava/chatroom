@@ -221,11 +221,6 @@ public class UserController {
 		}
 	}
 
-	@GetMapping("getProxyList")
-	public Result getProxyList(){
-		return Result.ok("success", JSON.toJSONString(usersService.selectProxyList()));
-	}
-
 	private Users getUser(HttpServletRequest request) {
 		return (Users) request.getSession().getAttribute("user");
 	}

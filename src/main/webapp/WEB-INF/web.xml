@@ -12,6 +12,14 @@
     <url-pattern>/*</url-pattern>
   </filter-mapping>
   <filter>
+    <filter-name>adminFilter</filter-name>
+    <filter-class>com.kdkj.intelligent.filter.AdminFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>adminFilter</filter-name>
+    <url-pattern>/admin/*</url-pattern>
+  </filter-mapping>
+  <filter>
     <description>Character set filters</description>
     <filter-name>encodingFilter</filter-name>
     <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>

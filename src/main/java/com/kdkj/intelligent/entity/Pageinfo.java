@@ -5,7 +5,8 @@ public class Pageinfo {
 	private int pageNum;
 	private int pageSize = 10;
 	private String orderBy;
-	
+	private int beginNum;
+
 	public int getCurrent() {
 		return current;
 	}
@@ -17,6 +18,7 @@ public class Pageinfo {
 	}
 	public void setPageNum(int pageNum) {
 		this.pageNum = pageNum;
+		beginNum = (pageNum-1)*pageSize;
 	}
 	public int getPageSize() {
 		return pageSize;

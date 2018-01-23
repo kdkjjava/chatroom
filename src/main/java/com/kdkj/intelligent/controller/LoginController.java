@@ -14,10 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
-import com.kdkj.intelligent.entity.GroupTeam;
 import com.kdkj.intelligent.entity.Users;
 import com.kdkj.intelligent.service.GroupTeamService;
 import com.kdkj.intelligent.service.UsersService;
@@ -56,6 +52,8 @@ public class LoginController {
 				HttpSession session = request.getSession();
 				user.setPassword(null);
 				session.setAttribute("user", user);
+				if ("2".equals(user.getType()))//若为管理员登陆，则往session域里添加一个标记
+				    session.setAttribute("admin","admin");
 				return Result.ok("登录成功", user);
 			} else {
 				return Result.error("用户名或密码错误，请重新登录!");

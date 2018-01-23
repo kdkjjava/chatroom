@@ -139,16 +139,22 @@
 		users
 	</select>
 
-    <select id="selectProxyList" resultMap="proxyList">
-      select id,username,nickname,type,status,phone,level,proxy_level,expire_date from users where type = '1'
+    <select id="selectProxyList" resultMap="customUserList">
+      select id,username,nickname,type,status,picture_address,phone,level,proxy_level,expire_date from users where type = '1'
 	</select>
 
-    <resultMap id="proxyList" type="Users">
+    <select id="selectByPaging" resultMap="customUserList">
+        select id,username,nickname,type,status,picture_address,phone,level,proxy_level,expire_date
+        from users where type = '0' order by nickname ASC LIMIT #{beginNum},#{pageSize}
+    </select>
+
+    <resultMap id="customUserList" type="Users">
         <id column="id" property="id"></id>
         <result column="username" property="username"></result>
         <result column="nickname" property="nickname"></result>
         <result column="type" property="type"></result>
         <result column="status" property="status"></result>
+        <result column="picture_address" property="pictureAddress"></result>
         <result column="phone" property="phone"></result>
         <result column="level" property="level"></result>
         <result column="proxy_level" property="proxyLevel"></result>
