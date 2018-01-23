@@ -70,7 +70,7 @@ public class LoginController {
 	public Result getUserByToken(HttpServletRequest request,String token) {
 		HttpSession session=request.getSession();
 		Users user = new Users();
-		user.setToken((String)request.getParameter("token"));
+		user.setToken(request.getParameter("token"));
 		user.setToken(token);
 		List<Users> list = usersService.selectListByUser(user);
 		user=list.get(0); 
