@@ -86,11 +86,9 @@ public class VisitFilter implements Filter {
 			chain.doFilter(request, response);
 			return;
 		}
-		req.getHeader("token");
-		req.getHeaders("token");
 		if (session.getAttribute("user") == null) {
-			if (req.getParameter("token") != null) {
-				String token = req.getParameter("token");
+			if (req.getHeader("token") != null) {
+				String token = req.getHeader("token");;
 				Users user = new Users();
 				user.setToken(token);
 				List<Users> list = usersService.selectListByUser(user);
@@ -122,6 +120,7 @@ public class VisitFilter implements Filter {
 			return;
 		}
 		chain.doFilter(request, response);
+		return;
 		// pass the request along the filter chain
 	}
 
