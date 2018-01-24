@@ -7,6 +7,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import com.alibaba.fastjson.JSON;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -149,7 +150,7 @@ public class UserController {
 			return Result.error("不存在该用户，请检查后再提交！");
 		Users user = getUser(request);
 		Integer myId = user.getId();
-		if(myId==id) {
+		if(myId.equals(id)) {
 			return Result.error("不能添加自己为好友!");
 		}
 		Friendship record = new Friendship();
@@ -224,7 +225,5 @@ public class UserController {
 	private Users getUser(HttpServletRequest request) {
 		return (Users) request.getSession().getAttribute("user");
 	}
-
-
 
 }

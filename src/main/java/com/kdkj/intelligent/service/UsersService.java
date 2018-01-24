@@ -29,5 +29,7 @@ public interface UsersService {
     
     List<Users> findMyFriends(Long id);
 
-    List<Users> selectProxyList();
+    List<Users> selectByPaging(Users user);
+
+    Boolean hasRecords(Users user);
 }

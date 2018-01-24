@@ -28,5 +28,7 @@ public interface UsersMapper {
     
     List<Users> findMyFriends(Long id);
 
-    List<Users> selectProxyList();
+    List<Users> selectByPaging(Users user);
+
+    Integer selectCount(Users user);
 }

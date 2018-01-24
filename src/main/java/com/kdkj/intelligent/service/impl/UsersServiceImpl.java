@@ -86,7 +86,15 @@ public class UsersServiceImpl implements UsersService{
 	}
 
 	@Override
-	public List<Users> selectProxyList() {
-		return usersMapper.selectProxyList();
+	public List<Users> selectByPaging(Users user) {
+		return usersMapper.selectByPaging(user);
+	}
+
+	@Override
+	public Boolean hasRecords(Users user) {
+		Integer amount = usersMapper.selectCount(user);
+		if ((user.getCurrent()-1)*user.getPageSize()>=amount)
+			return false;
+		return true;
 	}
 }

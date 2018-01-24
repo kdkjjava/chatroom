@@ -11,14 +11,7 @@
     <filter-name>visitFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
-  <filter>
-    <filter-name>adminFilter</filter-name>
-    <filter-class>com.kdkj.intelligent.filter.AdminFilter</filter-class>
-  </filter>
-  <filter-mapping>
-    <filter-name>adminFilter</filter-name>
-    <url-pattern>/admin/*</url-pattern>
-  </filter-mapping>
+
   <filter>
     <description>Character set filters</description>
     <filter-name>encodingFilter</filter-name>
@@ -36,6 +29,14 @@
   <filter-mapping>
     <filter-name>encodingFilter</filter-name>
     <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <filter>
+    <filter-name>adminFilter</filter-name>
+    <filter-class>com.kdkj.intelligent.filter.AdminFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>adminFilter</filter-name>
+    <url-pattern>/admin/*</url-pattern>
   </filter-mapping>
   <context-param>
     <param-name>webAppRootKey</param-name>

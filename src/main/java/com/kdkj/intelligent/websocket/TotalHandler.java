@@ -45,7 +45,7 @@ public class TotalHandler implements WebSocketHandler {
             }
             return;
         }
-        if (msgFrom == null && webSocketSession.isOpen()) {
+        if (webSocketSession.isOpen()) {
             try {
                 webSocketSession.close(new CloseStatus(1007));
             } catch (IOException e) {

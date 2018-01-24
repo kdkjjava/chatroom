@@ -139,13 +139,14 @@
 		users
 	</select>
 
-    <select id="selectProxyList" resultMap="customUserList">
-      select id,username,nickname,type,status,picture_address,phone,level,proxy_level,expire_date from users where type = '1'
-	</select>
+    <select id="selectByPaging" resultMap="customUserList" parameterType="Users">
+        select id,username,nickname,type,status,picture_address,phone,level
+        <if test="type == '1'">,proxy_level,expire_date</if>
+        from users where type = #{type} order by #{orderBy} ASC LIMIT #{pageNum},#{pageSize}
+    </select>
 
-    <select id="selectByPaging" resultMap="customUserList">
-        select id,username,nickname,type,status,picture_address,phone,level,proxy_level,expire_date
-        from users where type = '0' order by nickname ASC LIMIT #{beginNum},#{pageSize}
+    <select id="selectCount" resultType="java.lang.Integer" parameterType="Users">
+        select count(id) amount from users where type = #{type}
     </select>
 
     <resultMap id="customUserList" type="Users">
