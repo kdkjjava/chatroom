@@ -150,4 +150,8 @@ public class GroupTeamServiceImpl implements GroupTeamService {
 		return groupTeamMapper.selectMasterIdByUsername(username);
 	}
 
+	@Override
+	public String selectMasterNameByGroupId(String groupId) {
+		return groupTeamMapper.selectMasterNameByGroupId(groupId);
+	}
 }

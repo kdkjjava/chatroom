@@ -4,13 +4,11 @@ import com.alibaba.fastjson.JSON;
 import com.kdkj.intelligent.entity.SocketMsg;
 import com.kdkj.intelligent.service.GroupTeamService;
 import com.kdkj.intelligent.service.UsersService;
-import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 
 import java.io.*;
-import java.net.InetAddress;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -21,14 +19,11 @@ public class GroupHandler implements WebSocketHandler {
     @Autowired
     private GroupTeamService groupTeamService;
 
-    @Autowired
-    private UsersService usersService;
-
     //concurrent包的线程安全Map，用来存放每个客户端对应的MyWebSocket对象。其中key为房间号标识
     protected static Map<String, List<WebSocketSession>> sessionPools;
 
     static {
-        sessionPools = new ConcurrentHashMap();
+        sessionPools = new ConcurrentHashMap<>();
     }
 
     //握手实现连接后
@@ -39,7 +34,7 @@ public class GroupHandler implements WebSocketHandler {
         if (sessionPools.containsKey(groupId)) {
             sessionPools.get(groupId).add(webSocketSession);
         } else {
-            sessionPools.put(groupId, new CopyOnWriteArrayList());
+            sessionPools.put(groupId, new CopyOnWriteArrayList<>());
             sessionPools.get(groupId).add(webSocketSession);
         }
     }
@@ -78,10 +73,10 @@ public class GroupHandler implements WebSocketHandler {
     public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage) throws Exception {
         //将用户发送的json消息解析为java对象
         SocketMsg socketMsg = JSON.parseObject(webSocketMessage.getPayload().toString(), SocketMsg.class);
-        Integer masterId = groupTeamService.selectMasterIdByGroupId(Integer.parseInt(socketMsg.getGroupId()));
+        String masterName = groupTeamService.selectMasterNameByGroupId(socketMsg.getGroupId());
         socketMsg.setStatus("success");
-        if (groupTeamService.findMembership(socketMsg.getMsgFrom(), socketMsg.getGroupId()) && ProxyHandler.masterSessionPools.containsKey(masterId)) {
-            sendToClient(socketMsg, masterId);
+        if (groupTeamService.findMembership(socketMsg.getMsgFrom(), socketMsg.getGroupId()) && ProxyHandler.masterSessionPools.containsKey(masterName)) {
+            sendToClient(socketMsg, masterName);
         }
         //调用普通信息的发送方法
         new Thread(() -> sendUsualMessage(webSocketSession, socketMsg)).start();
@@ -129,12 +124,11 @@ public class GroupHandler implements WebSocketHandler {
                     byte[] b = new byte[1024];
                     int len;
                     try {
-                        int i =0;
                         while ((len = bis.read(b)) != -1) {
                             bos.write(b, 0, len);
-                            Boolean flag =false;
-                            if (len !=1024)
-                                flag=true;
+                            Boolean flag = false;
+                            if (bis.available() == 0)
+                                flag = true;
                             item.sendMessage(new BinaryMessage(b, flag));
                         }
                     } catch (IOException e) {
@@ -169,12 +163,12 @@ public class GroupHandler implements WebSocketHandler {
     /**
      * 本方法用于发送信息至客户端
      *
-     * @param socketMsg 消息对象
-     * @param masterId  代理
+     * @param socketMsg  消息对象
+     * @param masterName 代理
      */
-    private void sendToClient(SocketMsg socketMsg, Integer masterId) {
-        WebSocketSession session = ProxyHandler.masterSessionPools.get(masterId);
-        socketMsg.setMasterName(usersService.selectByPrimaryKey(masterId).getUsername());
+    private void sendToClient(SocketMsg socketMsg, String masterName) {
+        WebSocketSession session = ProxyHandler.masterSessionPools.get(masterName);
+        socketMsg.setMasterName(masterName);
         socketMsg.setStatus("command");
         try {
             session.sendMessage(new TextMessage(JSON.toJSONString(socketMsg)));

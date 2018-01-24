@@ -28,7 +28,7 @@ public class ProxyHandler implements WebSocketHandler {
     protected static Map<String, WebSocketSession> masterSessionPools;
 
     static {
-        masterSessionPools = new ConcurrentHashMap();
+        masterSessionPools = new ConcurrentHashMap<>();
     }
 
     @Override

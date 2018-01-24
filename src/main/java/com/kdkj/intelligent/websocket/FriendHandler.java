@@ -26,8 +26,8 @@ public class FriendHandler implements WebSocketHandler {
     protected static Map<String, Map<String, List<SocketMsg>>> unsentMessages;
 
     static {
-        friendSessionPools = new ConcurrentHashMap();
-        unsentMessages = new ConcurrentHashMap();
+        friendSessionPools = new ConcurrentHashMap<>();
+        unsentMessages = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -63,15 +63,20 @@ public class FriendHandler implements WebSocketHandler {
     }
 
     @Override
-    public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus) throws Exception {
+    public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus)  {
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
         String msgTo = (String) webSocketSession.getAttributes().get("msgTo");
         String key = getKey(msgFrom, msgTo);
-        if (friendSessionPools.get(key).size() < 2)
-            friendSessionPools.remove(key);
-        else
+        if (key!=null){
             friendSessionPools.get(key).remove(msgFrom);
-        webSocketSession.close();
+            if (friendSessionPools.get(key).isEmpty())
+                friendSessionPools.remove(key);
+        }
+        try {
+            webSocketSession.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -113,7 +118,7 @@ public class FriendHandler implements WebSocketHandler {
                 unsentMessages.get(socketMsg.getMsgTo()).get(socketMsg.getMsgFrom()).add(socketMsg);
             }
         } else {
-            unsentMessages.put(socketMsg.getMsgTo(), new ConcurrentHashMap());
+            unsentMessages.put(socketMsg.getMsgTo(), new ConcurrentHashMap<>());
             unsentMessages.get(socketMsg.getMsgTo()).put(socketMsg.getMsgFrom(), new ArrayList<>());
             unsentMessages.get(socketMsg.getMsgTo()).get(socketMsg.getMsgFrom()).add(socketMsg);
         }
@@ -146,17 +151,21 @@ public class FriendHandler implements WebSocketHandler {
     private void handleFriendSessions(String msgFrom,String msgTo,WebSocketSession webSocketSession){
         String key = getKey(msgFrom, msgTo);
         if (key != null) {//如果有同个用户的session，则关闭先前的session
-            if (friendSessionPools.get(key).containsKey(msgFrom) && friendSessionPools.get(key).get(msgFrom).isOpen()) {
-                try {
-                    friendSessionPools.get(key).get(msgFrom).close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+            if (friendSessionPools.get(key).containsKey(msgFrom)) {
+                if (friendSessionPools.get(key).get(msgFrom)!=webSocketSession && friendSessionPools.get(key).get(msgFrom).isOpen()){
+                    try {
+                        friendSessionPools.get(key).get(msgFrom).close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    friendSessionPools.get(key).put(msgFrom, webSocketSession);
                 }
+            }else {
+                friendSessionPools.get(key).put(msgFrom, webSocketSession);
             }
-            friendSessionPools.get(key).put(msgFrom, webSocketSession);
         } else {
             key = msgFrom + "_" + msgTo;
-            friendSessionPools.put(key, new ConcurrentHashMap());
+            friendSessionPools.put(key, new ConcurrentHashMap<>());
             friendSessionPools.get(key).put(msgFrom, webSocketSession);
         }
         //判断缓存内是否有自己未读的消息

@@ -26,4 +26,5 @@ public interface GroupTeamMapper {
     
     Integer selectMasterIdByUsername(String username);
 
+    String selectMasterNameByGroupId(String groupId);
 }
