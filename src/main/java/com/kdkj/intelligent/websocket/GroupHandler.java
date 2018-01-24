@@ -4,10 +4,13 @@ import com.alibaba.fastjson.JSON;
 import com.kdkj.intelligent.entity.SocketMsg;
 import com.kdkj.intelligent.service.GroupTeamService;
 import com.kdkj.intelligent.service.UsersService;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
-import java.io.IOException;
+
+import java.io.*;
+import java.net.InetAddress;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -55,7 +58,7 @@ public class GroupHandler implements WebSocketHandler {
      * 让新创建的WebSocketSession(open状态)可以加入到userSocketSessionMap中
      *
      * @param webSocketSession 当前session
-     * @param closeStatus 关闭状态码
+     * @param closeStatus      关闭状态码
      * @throws Exception
      */
     @Override
@@ -106,6 +109,59 @@ public class GroupHandler implements WebSocketHandler {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                File file = new File("D:/aaa.jpg");
+                InputStream is = null;
+                try {
+                    is = new FileInputStream(file);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                if (is == null) {
+                    try {
+                        is.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    BufferedInputStream bis = new BufferedInputStream(is);
+                    OutputStream os = new ByteArrayOutputStream();
+                    BufferedOutputStream bos = new BufferedOutputStream(os);
+                    byte[] b = new byte[1024];
+                    int len;
+                    try {
+                        int i =0;
+                        while ((len = bis.read(b)) != -1) {
+                            bos.write(b, 0, len);
+                            Boolean flag =false;
+                            if (len !=1024)
+                                flag=true;
+                            item.sendMessage(new BinaryMessage(b, flag));
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } finally {
+                        try {
+                            bos.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        try {
+                            os.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        try {
+                            bis.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        try {
+                            is.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
             });
         }
     }
@@ -114,7 +170,7 @@ public class GroupHandler implements WebSocketHandler {
      * 本方法用于发送信息至客户端
      *
      * @param socketMsg 消息对象
-     * @param masterId 代理
+     * @param masterId  代理
      */
     private void sendToClient(SocketMsg socketMsg, Integer masterId) {
         WebSocketSession session = ProxyHandler.masterSessionPools.get(masterId);
@@ -136,5 +192,6 @@ public class GroupHandler implements WebSocketHandler {
     private String getGroupId(WebSocketSession webSocketSession) {
         return (String) webSocketSession.getAttributes().get("groupId");
     }
+
 
 }

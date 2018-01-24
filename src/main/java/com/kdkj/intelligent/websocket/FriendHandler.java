@@ -34,28 +34,19 @@ public class FriendHandler implements WebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession webSocketSession) throws Exception {
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
         String msgTo = (String) webSocketSession.getAttributes().get("msgTo");
-        String key = getKey(msgFrom, msgTo);
-        if (key != null) {//如果有同个用户的session，则关闭先前的session
-            if (friendSessionPools.get(key).containsKey(msgFrom)) {
-                friendSessionPools.get(key).get(msgFrom).close();
-            }
-            friendSessionPools.get(key).put(msgFrom, webSocketSession);
-        } else {
-            key = msgFrom + "_" + msgTo;
-            friendSessionPools.put(key, new ConcurrentHashMap());
-            friendSessionPools.get(key).put(msgFrom, webSocketSession);
-        }
-        //判断缓存内是否有自己未读的消息
-        if (unsentMessages.containsKey(msgFrom) && unsentMessages.get(msgFrom).containsKey(msgTo)) {
-            unsentMessages.get(msgFrom).get(msgTo).forEach(socketMsg -> {
+
+        if (msgFrom !=null && msgTo!=null){
+            handleFriendSessions(msgFrom,msgTo,webSocketSession);
+        }else {
+            if (webSocketSession.isOpen()) {
                 try {
-                    webSocketSession.sendMessage(new TextMessage(JSON.toJSONString(socketMsg)));
+                    webSocketSession.close(new CloseStatus(1007));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            });
-            unsentMessages.get(msgFrom).remove(msgTo);
+            }
         }
+
     }
 
     @Override
@@ -151,4 +142,34 @@ public class FriendHandler implements WebSocketHandler {
         } else //如果对方不在线或者未打开聊天窗口，则保存到缓存中或进行消息提醒
             sendToOffline(socketMsg);
     }
+
+    private void handleFriendSessions(String msgFrom,String msgTo,WebSocketSession webSocketSession){
+        String key = getKey(msgFrom, msgTo);
+        if (key != null) {//如果有同个用户的session，则关闭先前的session
+            if (friendSessionPools.get(key).containsKey(msgFrom) && friendSessionPools.get(key).get(msgFrom).isOpen()) {
+                try {
+                    friendSessionPools.get(key).get(msgFrom).close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            friendSessionPools.get(key).put(msgFrom, webSocketSession);
+        } else {
+            key = msgFrom + "_" + msgTo;
+            friendSessionPools.put(key, new ConcurrentHashMap());
+            friendSessionPools.get(key).put(msgFrom, webSocketSession);
+        }
+        //判断缓存内是否有自己未读的消息
+        if (unsentMessages.containsKey(msgFrom) && unsentMessages.get(msgFrom).containsKey(msgTo)) {
+            unsentMessages.get(msgFrom).get(msgTo).forEach(socketMsg -> {
+                try {
+                    webSocketSession.sendMessage(new TextMessage(JSON.toJSONString(socketMsg)));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+            unsentMessages.get(msgFrom).remove(msgTo);
+        }
+    }
+
 }
