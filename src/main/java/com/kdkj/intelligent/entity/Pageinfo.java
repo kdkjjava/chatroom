@@ -5,6 +5,15 @@ public class Pageinfo {
 	private int pageNum;
 	private int pageSize = 10;
 	private String orderBy;
+	private String keyWord;
+
+	public String getKeyWord() {
+		return keyWord;
+	}
+
+	public void setKeyWord(String keyWord) {
+		this.keyWord = keyWord;
+	}
 
 	public int getCurrent() {
 		return current;

@@ -141,8 +141,10 @@
 
     <select id="selectByPaging" resultMap="customUserList" parameterType="Users">
         select id,username,nickname,type,status,picture_address,phone,level
-        <if test="type == '1'">,proxy_level,expire_date</if>
-        from users where type = #{type} order by #{orderBy} ASC LIMIT #{pageNum},#{pageSize}
+        <if test="type = '1'">,proxy_level,expire_date</if>
+        from users where type = #{type}
+        <if test="keyWord !=null and keyWord != ''">and phone rlike #{keyWord}</if>
+        order by #{orderBy} ASC LIMIT #{pageNum},#{pageSize}
     </select>
 
     <select id="selectCount" resultType="java.lang.Integer" parameterType="Users">

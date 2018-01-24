@@ -59,6 +59,13 @@
 		from group_team
 		where group_id = #{groupId,jdbcType=INTEGER}
 	</select>
+    <select id="selectMasterNameByGroupId" parameterType="java.lang.String" resultType="java.lang.String">
+        select username from users where id =(
+        select master_id
+        from group_team
+        where group_id = #{groupId,jdbcType=INTEGER} limit 1)
+    </select>
+
 
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer"
             resultMap="BaseResultMap">

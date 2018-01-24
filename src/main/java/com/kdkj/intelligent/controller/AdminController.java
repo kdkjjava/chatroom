@@ -7,6 +7,7 @@ import com.kdkj.intelligent.util.Result;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * powered by IntelliJ IDEA
@@ -24,13 +25,17 @@ public class AdminController {
     private UsersService usersService;
 
     /**
-     * 初始化用户列表
-     * @return 返回用户的初始化列表，默认返回10条
+     * 返回用户列表
+     *
+     * @return 返回用户的列表，默认返回10条
      */
     @PostMapping("selectUsersList")
-    public Result initialUserList(@RequestBody Users user){
-        if (usersService.hasRecords(user)){
-                return Result.ok("success",JSON.toJSONString(usersService.selectByPaging(user)));
+    public Result selectUsersList(@RequestBody Users user) {
+        if (usersService.hasRecords(user)) {
+            List<Users> userList = usersService.selectByPaging(user);
+            if (userList != null && !userList.isEmpty()) {
+                return Result.ok("success", JSON.toJSONString(userList));
+            }
         }
         return Result.error("没有更多的消息");
     }

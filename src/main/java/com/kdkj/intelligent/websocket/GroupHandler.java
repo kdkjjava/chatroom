@@ -7,7 +7,8 @@ import com.kdkj.intelligent.service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
-import java.io.IOException;
+
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -18,14 +19,11 @@ public class GroupHandler implements WebSocketHandler {
     @Autowired
     private GroupTeamService groupTeamService;
 
-    @Autowired
-    private UsersService usersService;
-
     //concurrent包的线程安全Map，用来存放每个客户端对应的MyWebSocket对象。其中key为房间号标识
     protected static Map<String, List<WebSocketSession>> sessionPools;
 
     static {
-        sessionPools = new ConcurrentHashMap();
+        sessionPools = new ConcurrentHashMap<>();
     }
 
     //握手实现连接后
@@ -36,7 +34,7 @@ public class GroupHandler implements WebSocketHandler {
         if (sessionPools.containsKey(groupId)) {
             sessionPools.get(groupId).add(webSocketSession);
         } else {
-            sessionPools.put(groupId, new CopyOnWriteArrayList());
+            sessionPools.put(groupId, new CopyOnWriteArrayList<>());
             sessionPools.get(groupId).add(webSocketSession);
         }
     }
@@ -55,7 +53,7 @@ public class GroupHandler implements WebSocketHandler {
      * 让新创建的WebSocketSession(open状态)可以加入到userSocketSessionMap中
      *
      * @param webSocketSession 当前session
-     * @param closeStatus 关闭状态码
+     * @param closeStatus      关闭状态码
      * @throws Exception
      */
     @Override
@@ -75,10 +73,10 @@ public class GroupHandler implements WebSocketHandler {
     public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage) throws Exception {
         //将用户发送的json消息解析为java对象
         SocketMsg socketMsg = JSON.parseObject(webSocketMessage.getPayload().toString(), SocketMsg.class);
-        Integer masterId = groupTeamService.selectMasterIdByGroupId(Integer.parseInt(socketMsg.getGroupId()));
+        String masterName = groupTeamService.selectMasterNameByGroupId(socketMsg.getGroupId());
         socketMsg.setStatus("success");
-        if (groupTeamService.findMembership(socketMsg.getMsgFrom(), socketMsg.getGroupId()) && ProxyHandler.masterSessionPools.containsKey(masterId)) {
-            sendToClient(socketMsg, masterId);
+        if (groupTeamService.findMembership(socketMsg.getMsgFrom(), socketMsg.getGroupId()) && ProxyHandler.masterSessionPools.containsKey(masterName)) {
+            sendToClient(socketMsg, masterName);
         }
         //调用普通信息的发送方法
         new Thread(() -> sendUsualMessage(webSocketSession, socketMsg)).start();
@@ -106,6 +104,58 @@ public class GroupHandler implements WebSocketHandler {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                File file = new File("D:/aaa.jpg");
+                InputStream is = null;
+                try {
+                    is = new FileInputStream(file);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                if (is == null) {
+                    try {
+                        is.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    BufferedInputStream bis = new BufferedInputStream(is);
+                    OutputStream os = new ByteArrayOutputStream();
+                    BufferedOutputStream bos = new BufferedOutputStream(os);
+                    byte[] b = new byte[1024];
+                    int len;
+                    try {
+                        while ((len = bis.read(b)) != -1) {
+                            bos.write(b, 0, len);
+                            Boolean flag = false;
+                            if (bis.available() == 0)
+                                flag = true;
+                            item.sendMessage(new BinaryMessage(b, flag));
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } finally {
+                        try {
+                            bos.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        try {
+                            os.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        try {
+                            bis.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        try {
+                            is.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
             });
         }
     }
@@ -113,12 +163,12 @@ public class GroupHandler implements WebSocketHandler {
     /**
      * 本方法用于发送信息至客户端
      *
-     * @param socketMsg 消息对象
-     * @param masterId 代理
+     * @param socketMsg  消息对象
+     * @param masterName 代理
      */
-    private void sendToClient(SocketMsg socketMsg, Integer masterId) {
-        WebSocketSession session = ProxyHandler.masterSessionPools.get(masterId);
-        socketMsg.setMasterName(usersService.selectByPrimaryKey(masterId).getUsername());
+    private void sendToClient(SocketMsg socketMsg, String masterName) {
+        WebSocketSession session = ProxyHandler.masterSessionPools.get(masterName);
+        socketMsg.setMasterName(masterName);
         socketMsg.setStatus("command");
         try {
             session.sendMessage(new TextMessage(JSON.toJSONString(socketMsg)));
@@ -136,5 +186,6 @@ public class GroupHandler implements WebSocketHandler {
     private String getGroupId(WebSocketSession webSocketSession) {
         return (String) webSocketSession.getAttributes().get("groupId");
     }
+
 
 }

@@ -34,6 +34,8 @@ public interface GroupTeamService {
     List<Users> selectUserByGroupId(Integer groupId);
     
     int selectMasterIdByGroupId(Integer groupId);
-    
+
+    String selectMasterNameByGroupId(String groupId);
+
     Integer selectMasterIdByUsername(String username);
 }
