@@ -40,4 +40,26 @@ public class AdminController {
         return Result.error("没有更多的消息");
     }
 
+    @PostMapping("getProxyMsg")
+    public Result getProxyMsg(@RequestBody Users user){
+
+        Users proxyUser = usersService.selectProxyNameAndTel(user.getId());
+        if (proxyUser==null)
+            return Result.error("该用户为离散用户");
+        return Result.ok(JSON.toJSONString(proxyUser));
+    }
+
+    @GetMapping("upToProxy")
+    public Result upToProxy(@RequestBody Users user){
+        Users userMsg = usersService.selectByPrimaryKey(user.getId());
+        if (userMsg.getType()!= "0")
+            return Result.error("该用户不是普通用户");
+        user.setType("1");
+        Integer affect =usersService.updateByPrimaryKey(user);
+        if (affect>0)
+            return Result.ok("修改成功！");
+        else
+            return Result.error("修改失败！");
+    }
+
 }

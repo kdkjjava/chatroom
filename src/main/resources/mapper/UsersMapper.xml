@@ -65,9 +65,9 @@
             <if test="token=='newToken'">token=REPLACE(uuid(),'-',''),</if>
             <if test="lastLoginTime !=null">last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP},</if>
             <if test="nogroupTime !=null">nogroup_time = #{nogroupTime,jdbcType=TIMESTAMP},</if>
-            <if test="level !=null">level = #{level,jdbcType=TIMESTAMP},</if>
-            <if test="proxyLevel !=null">proxy_level = #{proxyLevel,jdbcType=TIMESTAMP},</if>
-            <if test="expireDate !=null">expire_date = #{expireDate,jdbcType=TIMESTAMP},</if>
+            <if test="level !=null">level = #{level,jdbcType=VARCHAR},</if>
+            <if test="proxyLevel !=null and proxyLevel !=''">proxy_level = #{proxyLevel,jdbcType=VARCHAR},</if>
+            <if test="expireDate !=null and expireDate !=''">expire_date = #{expireDate,jdbcType=VARCHAR},</if>
 
         </set>
         where id = #{id,jdbcType=INTEGER}
@@ -163,5 +163,11 @@
         <result column="proxy_level" property="proxyLevel"></result>
         <result column="expire_date" property="expireDate"></result>
     </resultMap>
+
+    <select id="selectProxyNameAndTel" resultMap="customUserList" parameterType="java.lang.Integer">
+      select nickname,phone from users where id =
+      (select master_id from group_team where id =
+      (select group_id from members where user_id = #{id} LIMIT 1) limit 1) limit 1
+    </select>
 
 </mapper>

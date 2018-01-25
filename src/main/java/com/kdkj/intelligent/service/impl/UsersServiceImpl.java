@@ -97,4 +97,10 @@ public class UsersServiceImpl implements UsersService{
 			return false;
 		return true;
 	}
+
+	@Override
+	public Users selectProxyNameAndTel(Integer id) {
+		return usersMapper.selectProxyNameAndTel(id);
+	}
+
 }

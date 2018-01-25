@@ -31,4 +31,6 @@ public interface UsersMapper {
     List<Users> selectByPaging(Users user);
 
     Integer selectCount(Users user);
+
+    Users selectProxyNameAndTel(Integer id);
 }

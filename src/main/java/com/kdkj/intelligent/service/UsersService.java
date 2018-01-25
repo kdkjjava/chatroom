@@ -32,4 +32,7 @@ public interface UsersService {
     List<Users> selectByPaging(Users user);
 
     Boolean hasRecords(Users user);
+
+    Users selectProxyNameAndTel(Integer id);
+
 }
