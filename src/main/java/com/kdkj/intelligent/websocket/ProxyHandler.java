@@ -41,13 +41,12 @@ public class ProxyHandler implements WebSocketHandler {
             SocketMsg socketMsg = JSON.parseObject(webSocketMessage.getPayload().toString(), SocketMsg.class);
             new Thread(() -> sendUsualMsg(webSocketSession, socketMsg)).start();
             return;
-        } else if (webSocketMessage instanceof BinaryMessage) {
+        }
+        if (webSocketMessage instanceof BinaryMessage) {
             new Thread(() -> pushBinaryMsg(webSocketSession, new BinaryMessage((byte[]) webSocketMessage.getPayload()))).start();
             return;
-        } else {
-            throw new IllegalStateException("Unexpected webSocket message type!");
         }
-
+            throw new IllegalStateException("Unexpected webSocket message type!");
     }
 
     @Override

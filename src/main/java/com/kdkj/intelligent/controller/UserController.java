@@ -242,4 +242,5 @@ public class UserController {
 		return (Users) request.getSession().getAttribute("user");
 	}
 
+
 }
