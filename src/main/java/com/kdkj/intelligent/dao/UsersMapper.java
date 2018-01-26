@@ -36,4 +36,6 @@ public interface UsersMapper {
     Users selectProxyNameAndTel(Integer id);
 
     Date selectExpireDate(String username);
+
+	void changetoLs(String master);
 }

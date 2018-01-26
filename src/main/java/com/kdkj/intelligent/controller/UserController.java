@@ -49,14 +49,28 @@ public class UserController {
 	
 	@RequestMapping(value = "/deletUserById", method = RequestMethod.GET)
 	public Result deletUserById(HttpServletRequest request, int id) {
-		if(!"1".equals(getUser(request).getType()))
+		Users nowuser=getUser(request);
+		if(!"1".equals(nowuser.getType()) && !"2".equals(nowuser.getType()))
 			return Result.error("您无此权限！");
+		Users user=usersService.selectByPrimaryKey(id);
+		if("1".equals(user.getType())&&!"2".equals(nowuser.getType()))
+			return Result.error("您无此权限！");
+		if("1".equals(user.getType())) 
+			usersService.changetoLs(user.getUsername());
 		usersService.deleteByPrimaryKey(id);
 		return Result.ok("删除成功");
 	}
 
 	@RequestMapping(value = "/update", method = RequestMethod.POST)
 	public Result update(HttpServletRequest request, @RequestBody Users record) {
+		Users nowuser=getUser(request);
+		int nowId=Integer.valueOf(nowuser.getType());
+		int reId=Integer.valueOf(record.getType());
+		if((nowId<=reId && reId!=3) && nowuser.getId()!=record.getId())
+			return Result.error("您无此权限");
+		Users olduser=usersService.selectByPrimaryKey(record.getId());
+		if("1".equals(olduser.getType())&&"0".equals(record.getType()))
+			usersService.changetoLs(olduser.getUsername());
 		record.setPassword(null);
 		usersService.updateByPrimaryKey(record);
 		return Result.ok("修改成功");
