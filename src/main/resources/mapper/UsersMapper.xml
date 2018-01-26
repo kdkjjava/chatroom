@@ -17,7 +17,11 @@
         <result column="nogroup_time" jdbcType="TIMESTAMP" property="nogroupTime"/>
         <result column="level" property="level" jdbcType="VARCHAR"></result>
         <result column="proxy_level" property="proxyLevel" jdbcType="VARCHAR"></result>
-        <result column="expire_date" property="expireDate" jdbcType="DATE"></result>
+        <result column="expire_date" property="expireDate" jdbcType="TIMESTAMP"></result>
+        <result column="master" property="master" jdbcType="VARCHAR"></result>
+        <result column="remark1" property="remark1" jdbcType="VARCHAR"></result>
+        <result column="remark2" property="remark2" jdbcType="VARCHAR"></result>
+        <result column="remark3" property="remark3" jdbcType="TIMESTAMP"></result>
     </resultMap>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
 		delete from users
@@ -31,14 +35,14 @@
         insert into users (username, password,
         nickname, type, status, score,
         regist_time, picture_address,
-        phone,token,last_login_time)
+        phone,token,last_login_time,master)
         values
         (#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
         #{nickname,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR},
-        #{status,jdbcType=VARCHAR},
-        #{score,jdbcType=BIGINT},
+        #{status,jdbcType=VARCHAR},#{score,jdbcType=BIGINT},
         #{registTime,jdbcType=TIMESTAMP}, #{pictureAddress,jdbcType=VARCHAR},
-        #{phone,jdbcType=VARCHAR},#{token,jdbcType=VARCHAR},#{registTime,jdbcType=TIMESTAMP})
+        #{phone,jdbcType=VARCHAR},#{token,jdbcType=VARCHAR},
+        #{registTime,jdbcType=TIMESTAMP}, #{master,jdbcType=VARCHAR})
     </insert>
 
     <update id="updateNogroupMemberTime" parameterType="java.lang.Integer">
@@ -65,9 +69,13 @@
             <if test="token=='newToken'">token=REPLACE(uuid(),'-',''),</if>
             <if test="lastLoginTime !=null">last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP},</if>
             <if test="nogroupTime !=null">nogroup_time = #{nogroupTime,jdbcType=TIMESTAMP},</if>
-            <if test="level !=null">level = #{level,jdbcType=VARCHAR},</if>
+            <if test="level !=null and level != ''">level = #{level,jdbcType=VARCHAR},</if>
             <if test="proxyLevel !=null and proxyLevel !=''">proxy_level = #{proxyLevel,jdbcType=VARCHAR},</if>
-            <if test="expireDate !=null and expireDate !=''">expire_date = #{expireDate,jdbcType=VARCHAR},</if>
+            <if test="expireDate !=null ">expire_date = #{expireDate,jdbcType=DATE},</if>
+            <if test="master !=null and master !=''">master = #{master,jdbcType=VARCHAR},</if>
+            <if test="remark1 !=null and remark1 !=''">remark1 = #{remark1,jdbcType=VARCHAR},</if>
+            <if test="remark2 !=null and remark2 !=''">remark2 = #{remark2,jdbcType=VARCHAR},</if>
+            <if test="remark3 !=null ">remark3 = #{remark3,jdbcType=TIMESTAMP},</if>
 
         </set>
         where id = #{id,jdbcType=INTEGER}
@@ -75,7 +83,7 @@
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer"
             resultMap="BaseResultMap">
 		select 'true' as QUERYID,id, username, password,nickname,
-		type, status,
+		type, status,master,
 		score, regist_time,token,picture_address, phone
 		from users
 		where id = #{id,jdbcType=INTEGER}
@@ -85,8 +93,7 @@
 		 select id, username,nickname,type, 
 		     status,picture_address, phone 
 		 from users 
-		 where id not in  (select user_id from members )
-           and datediff(SYSDATE(),nogroup_time)>3
+		 where master=1
 	</select>
 
     <select id="selectListByUser" resultMap="BaseResultMap"
@@ -107,16 +114,15 @@
         <if test="phone !=null and phone !=''">and phone = #{phone,jdbcType=VARCHAR}</if>
         <if test="token !=null and token !=''">and token = #{token,jdbcType=VARCHAR}</if>
         <if test="lastLoginTime !=null">last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP}</if>
-        <if test="level !=null">level = #{level,jdbcType=TIMESTAMP},</if>
-        <if test="proxyLevel !=null">proxy_level = #{proxyLevel,jdbcType=TIMESTAMP},</if>
-        <if test="expireDate !=null">expire_date = #{expireDate,jdbcType=TIMESTAMP},</if>
+        <if test="level !=null and level != ''">level = #{level,jdbcType=VARCHAR},</if>
+        <if test="proxyLevel !=null and proxyLevel !=''">proxy_level = #{proxyLevel,jdbcType=VARCHAR},</if>
+        <if test="expireDate !=null and expireDate !=''">expire_date = #{expireDate,jdbcType=DATE},</if>
     </select>
 
     <select id="selectUserByGroupId" parameterType="java.lang.Integer"
             resultMap="BaseResultMap">
 		select u.id, username,u.nickname, u.type, u.status,
-		u.score,
-		u.regist_time, u.picture_address,u.phone
+		u.score,u.regist_time, u.picture_address,u.phone,m.status as level
 		from users u,members m
 		where
 		m.group_id=#{id,jdbcType=INTEGER}
@@ -141,10 +147,12 @@
 
     <select id="selectByPaging" resultMap="customUserList" parameterType="Users">
         select id,username,nickname,type,status,picture_address,phone,level
-        <if test="type = '1'">,proxy_level,expire_date</if>
+        <if test="type == '1'.toString()">,proxy_level,expire_date</if>
         from users where type = #{type}
         <if test="keyWord !=null and keyWord != ''">and phone rlike #{keyWord}</if>
-        order by #{orderBy} ASC LIMIT #{pageNum},#{pageSize}
+        order by #{orderBy}
+        <if test="sort == 'desc'.toString() ">desc</if>
+        LIMIT #{pageNum},#{pageSize}
     </select>
 
     <select id="selectCount" resultType="java.lang.Integer" parameterType="Users">
@@ -168,6 +176,10 @@
       select nickname,phone from users where id =
       (select master_id from group_team where id =
       (select group_id from members where user_id = #{id} LIMIT 1) limit 1) limit 1
+    </select>
+
+    <select id="selectExpireDate" parameterType="java.lang.String" resultType="java.util.Date">
+        select expire_date from users where username = #{username} limit 1
     </select>
 
 </mapper>
