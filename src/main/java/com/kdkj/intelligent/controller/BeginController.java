@@ -2,6 +2,8 @@ package com.kdkj.intelligent.controller;
 
 import com.kdkj.intelligent.entity.Members;
 import com.kdkj.intelligent.service.BaseService;
+import com.kdkj.intelligent.service.UsersService;
+import com.kdkj.intelligent.util.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,9 @@ import java.util.Map;
 public class BeginController {
     @Autowired
     private BaseService baseService;
+
+    @Autowired
+    private UsersService usersService;
 
     @PostMapping("/begin")
     public String begin(Members members, Map<String,Object> map) {
@@ -41,6 +46,13 @@ public class BeginController {
         map.put("groupId",groupId);
         map.put("msgFrom",msgFrom);
         return "webSocket";
+    }
+    @ResponseBody
+    @PostMapping("hasExpire")
+    public Result hasExpire(@RequestParam("username")String username){
+        if (usersService.hasExpired(username))
+            return Result.error("该用户已过期");
+        return Result.ok("用户可正常使用");
     }
 
 

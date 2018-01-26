@@ -103,4 +103,8 @@ public class UsersServiceImpl implements UsersService{
 		return usersMapper.selectProxyNameAndTel(id);
 	}
 
+	@Override
+	public Boolean hasExpired(String username) {
+		return usersMapper.selectExpireDate(username).before(new Date());
+	}
 }

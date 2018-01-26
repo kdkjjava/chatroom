@@ -6,7 +6,15 @@ public class Pageinfo {
 	private int pageSize = 10;
 	private String orderBy;
 	private String keyWord;
+	private String sort;
 
+	public String getSort() {
+		return sort;
+	}
+
+	public void setSort(String sort) {
+		this.sort = sort;
+	}
 	public String getKeyWord() {
 		return keyWord;
 	}

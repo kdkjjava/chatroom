@@ -1,9 +1,11 @@
 package com.kdkj.intelligent.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.kdkj.intelligent.entity.AdminMsg;
 import com.kdkj.intelligent.entity.Users;
 import com.kdkj.intelligent.service.UsersService;
 import com.kdkj.intelligent.util.Result;
+import com.kdkj.intelligent.websocket.AdminHandler;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -49,12 +51,13 @@ public class AdminController {
         return Result.ok(JSON.toJSONString(proxyUser));
     }
 
-    @GetMapping("upToProxy")
+    @PostMapping("upToProxy")
     public Result upToProxy(@RequestBody Users user){
         Users userMsg = usersService.selectByPrimaryKey(user.getId());
-        if (userMsg.getType()!= "0")
+        if (!"0".equals(userMsg.getType()))
             return Result.error("该用户不是普通用户");
         user.setType("1");
+        user.setProxyLevel("1");
         Integer affect =usersService.updateByPrimaryKey(user);
         if (affect>0)
             return Result.ok("修改成功！");
@@ -62,4 +65,19 @@ public class AdminController {
             return Result.error("修改失败！");
     }
 
+    /**
+     * 新增广播消息
+     * @param adminMsg
+     * @return
+     */
+    @PostMapping("addBroadCast")
+    public Result addBroadCast(@RequestBody AdminMsg adminMsg){
+        try{
+            AdminHandler.broadCastMsg.add(adminMsg);
+            return Result.ok("success");
+        }catch (Exception e){
+            e.printStackTrace();
+            return Result.error("failing");
+        }
+    }
 }

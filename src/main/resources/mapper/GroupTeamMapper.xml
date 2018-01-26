@@ -105,8 +105,8 @@
 	</select>
 
     <select id="isPlayer" resultType="java.lang.String">
-        select g.group_id groupId from users u LEFT JOIN members m on u.id=m.user_id
-        LEFT JOIN group_team g on m.group_id=g.id where m.status=1 and u.username=#{username,jdbcType=VARCHAR};
+        select group_id groupId from group_team where id in (select group_id from members where user_id =
+        (select id from users where username = #{username,jdbcType=VARCHAR} LIMIT 1)  and STATUS ="1") ;
 	</select>
 
 

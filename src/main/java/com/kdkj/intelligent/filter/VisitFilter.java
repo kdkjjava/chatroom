@@ -81,8 +81,8 @@ public class VisitFilter implements Filter {
 		String path1 = "/login";
 		String path2 = "/user/addUser";
 		String path3 = "/tokenLogin";
-		
-		if (path1.equals(path) || path2.equals(path) || path3.equals(path)) {
+		String path4 ="/test/";
+		if (path1.equals(path) || path2.equals(path) || path3.equals(path) || path.contains(path4)) {
 			chain.doFilter(request, response);
 			return;
 		}

@@ -1,6 +1,7 @@
 package com.kdkj.intelligent.websocket;
 
 import com.kdkj.intelligent.entity.AdminMsg;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -17,39 +18,35 @@ public class TimedTask {
 
     /**
      * 该方法用于被执行的定时任务，定时清理无用的消息
-      */
+     */
     public void handlePastMsg() {
-        new Thread(() -> {
-            Calendar calForNow = Calendar.getInstance();
-            calForNow.setTime(new Date());
-            int dayNow = calForNow.get(Calendar.DAY_OF_YEAR);
-            int yearNow = calForNow.get(Calendar.YEAR);
-            deletePastMsg(dayNow, yearNow, AdminHandler.adviceMsg);
-            deletePastMsg(dayNow, yearNow, AdminHandler.broadCastMsg);
-        }).start();
+
+        Calendar calForNow = Calendar.getInstance();
+        calForNow.setTime(new Date());
+        int dayNow = calForNow.get(Calendar.DAY_OF_YEAR);
+        int yearNow = calForNow.get(Calendar.YEAR);
+        deletePastMsg(dayNow, yearNow, AdminHandler.adviceMsg);
+        deletePastMsg(dayNow, yearNow, AdminHandler.broadCastMsg);
+
     }
 
     /**
      * 该方法用于处理不处于活跃状态的群
      */
-    public void handleUnUseGroup(){
-        new Thread(() -> {
-            GroupHandler.sessionPools.forEach((key,value) -> {
-                if (value.size()==0)
-                    GroupHandler.sessionPools.remove(key);
-            });
-        }).start();
+    public void handleUnUseGroup() {
+
+        GroupHandler.sessionPools.forEach((key, value) -> {
+            if (value.size() == 0)
+                GroupHandler.sessionPools.remove(key);
+        });
+
     }
 
     private void deletePastMsg(int dayNow, int yearNow, List<AdminMsg> adminMsgList) {
         for (AdminMsg adminMsg : adminMsgList) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
             Date date = null;
-            try {
-                date = sdf.parse(adminMsg.getDate());//将消息的时间字符串转换成日期格式
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+            date = adminMsg.getDate();//将消息的时间字符串转换成日期格式
             Calendar calForMsg = Calendar.getInstance();
             calForMsg.setTime(date);
             //超过七天后从集合中移除该对象

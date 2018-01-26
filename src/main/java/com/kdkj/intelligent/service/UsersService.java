@@ -35,4 +35,6 @@ public interface UsersService {
 
     Users selectProxyNameAndTel(Integer id);
 
+    Boolean hasExpired(String username);
+
 }

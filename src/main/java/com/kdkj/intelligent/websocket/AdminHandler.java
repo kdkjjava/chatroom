@@ -8,6 +8,7 @@ import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -29,10 +30,10 @@ public class AdminHandler  implements WebSocketHandler {
         adviceMsg=new ArrayList<>();
         broadCastMsg=new ArrayList<>();
 
-        AdminMsg adminMsg1 =new AdminMsg().setAdmin("admin").setMsg("消息111111").setDate(String.valueOf(System.currentTimeMillis())).setTitle("title1");
-        AdminMsg adminMsg2 =new AdminMsg().setAdmin("admin").setMsg("消息222222").setDate(String.valueOf(System.currentTimeMillis())).setTitle("title2");
-        AdminMsg adminMsg3 =new AdminMsg().setAdmin("admin").setMsg("消息333333").setDate(String.valueOf(System.currentTimeMillis())).setTitle("title3");
-        AdminMsg adminMsg4 =new AdminMsg().setAdmin("admin").setMsg("消息444444").setDate(String.valueOf(System.currentTimeMillis())).setTitle("title4");
+        AdminMsg adminMsg1 =new AdminMsg().setAdmin("admin").setMsg("消息111111").setDate(new Date()).setTitle("title1");
+        AdminMsg adminMsg2 =new AdminMsg().setAdmin("admin").setMsg("消息222222").setDate(new Date()).setTitle("title2");
+        AdminMsg adminMsg3 =new AdminMsg().setAdmin("admin").setMsg("消息333333").setDate(new Date()).setTitle("title3");
+        AdminMsg adminMsg4 =new AdminMsg().setAdmin("admin").setMsg("消息444444").setDate(new Date()).setTitle("title4");
 
         broadCastMsg.add(adminMsg1);
         broadCastMsg.add(adminMsg2);
