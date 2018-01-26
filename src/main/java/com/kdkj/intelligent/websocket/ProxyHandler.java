@@ -2,16 +2,10 @@ package com.kdkj.intelligent.websocket;
 
 import com.alibaba.fastjson.JSON;
 import com.kdkj.intelligent.entity.SocketMsg;
-import com.kdkj.intelligent.service.GroupTeamService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
-
 import java.io.*;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -40,14 +34,16 @@ public class ProxyHandler implements WebSocketHandler {
     }
 
     @Override
-    public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage) throws Exception {
+    public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage){
 
         if (webSocketMessage instanceof TextMessage) {
             //将用户发送的json消息解析为java对象
             SocketMsg socketMsg = JSON.parseObject(webSocketMessage.getPayload().toString(), SocketMsg.class);
             new Thread(() -> sendUsualMsg(webSocketSession, socketMsg)).start();
+            return;
         } else if (webSocketMessage instanceof BinaryMessage) {
             new Thread(() -> pushBinaryMsg(webSocketSession, new BinaryMessage((byte[]) webSocketMessage.getPayload()))).start();
+            return;
         } else {
             throw new IllegalStateException("Unexpected webSocket message type!");
         }
@@ -79,14 +75,7 @@ public class ProxyHandler implements WebSocketHandler {
      * @param socketMsg        待发送的消息对象
      */
     private void sendUsualMsg(WebSocketSession webSocketSession, SocketMsg socketMsg) {
-        String groupId = (String) webSocketSession.getAttributes().get("groupId");
-        if (!groupId.equals(socketMsg.getGroupId())) {
-            try {
-                webSocketSession.sendMessage(new TextMessage("{\"errorCode\":\"请求参数错误！\"}"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+
         if (GroupHandler.sessionPools.containsKey(socketMsg.getGroupId())) {
             //将客户端的信息发送至指定的群聊天中
             GroupHandler.sessionPools.get(socketMsg.getGroupId()).forEach(item -> {
@@ -97,9 +86,17 @@ public class ProxyHandler implements WebSocketHandler {
                     e.printStackTrace();
                 }
             });
+            if (GroupHandler.sessionPools.get(socketMsg.getGroupId()).isEmpty()){
+                try {
+                    webSocketSession.sendMessage(new TextMessage("{\"errorCode\":\"NO_ONLINE_USERS\"}"));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
         } else {
             try {
-                webSocketSession.sendMessage(new TextMessage("{\"errorCode\":\"NO_ONLINE_USERS\"}"));
+                webSocketSession.sendMessage(new TextMessage("{\"errorCode\":\"群号不正确或者无在线用户\"}"));
             } catch (IOException e) {
                 e.printStackTrace();
             }
