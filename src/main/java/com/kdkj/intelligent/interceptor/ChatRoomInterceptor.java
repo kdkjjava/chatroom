@@ -21,22 +21,24 @@ import java.util.Map;
  */
 
 @Component
-public class ChatRoomInterceptor implements HandshakeInterceptor{
+public class ChatRoomInterceptor implements HandshakeInterceptor {
 
     @Override
     public boolean beforeHandshake(ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse, WebSocketHandler webSocketHandler, Map<String, Object> map) throws Exception {
         if (serverHttpRequest instanceof ServletServerHttpRequest) {
             HttpServletRequest request = ((ServletServerHttpRequest) serverHttpRequest).getServletRequest();
-            HttpServletResponse response =((ServletServerHttpResponse)serverHttpResponse).getServletResponse();
-
-            if (request.getParameter("msgFrom")==null)
-                response.getWriter().write("{\"errorCode\":\"请求参数不完整\"}");
-            else
-                map.put("msgFrom",request.getParameter("msgFrom"));
-            if (request.getParameter("groupId")!=null)
-                map.put("groupId",request.getParameter("groupId"));
-            if (request.getParameter("msgTo")!=null)
-                map.put("msgTo",request.getParameter("msgTo"));
+            HttpServletResponse response = ((ServletServerHttpResponse) serverHttpResponse).getServletResponse();
+            String msgFrom = request.getParameter("msgFrom");
+            String groupId = request.getParameter("groupId");
+            if (msgFrom == null || groupId == null) {
+                response.getWriter().write("{\"code\":\"500\",\"msg\":\"请求参数不完整\"}");
+                return false;
+            } else {
+                map.put("msgFrom", request.getParameter("msgFrom"));
+                map.put("groupId", request.getParameter("groupId"));
+            }
+        } else {
+            return false;
         }
         return true;
     }

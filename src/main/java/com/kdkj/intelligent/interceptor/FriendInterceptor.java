@@ -1,8 +1,5 @@
 package com.kdkj.intelligent.interceptor;
 
-import com.kdkj.intelligent.service.UsersService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -11,7 +8,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
@@ -20,30 +16,24 @@ import java.util.Map;
  * powered by IntelliJ IDEA
  *
  * @Author: unknown
- * @Date: 2018/1/25 17:58
+ * @Date: 2018/1/26 16:11
  * @Description:
  **/
 @Component
-public class ProxyInterceptor implements HandshakeInterceptor {
-
-    @Autowired
-    private UsersService usersService;
-
+public class FriendInterceptor implements HandshakeInterceptor {
     @Override
     public boolean beforeHandshake(ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse, WebSocketHandler webSocketHandler, Map<String, Object> map) throws Exception {
         if (serverHttpRequest instanceof ServletServerHttpRequest) {
             HttpServletRequest request = ((ServletServerHttpRequest) serverHttpRequest).getServletRequest();
-            HttpServletResponse response =((ServletServerHttpResponse)serverHttpResponse).getServletResponse();
-            String msgFrom = request.getHeader("msgFrom");
-            if (msgFrom!=null) {
-                if (usersService.hasExpired(msgFrom)) {
-                    response.getWriter().write("{\"code\":\"500\",\"msg\":\"您的用户已过期，请联系管理员\"}");
-                    return false;
-                }
-                map.put("msgFrom", msgFrom);
-            }else {
+            HttpServletResponse response = ((ServletServerHttpResponse) serverHttpResponse).getServletResponse();
+            String msgFrom = request.getParameter("msgFrom");
+            String msgTo = request.getParameter("msgTo");
+            if (msgFrom == null || msgTo == null) {
                 response.getWriter().write("{\"code\":\"500\",\"msg\":\"请求参数不完整\"}");
                 return false;
+            } else {
+                map.put("msgFrom", msgFrom);
+                map.put("msgTo", msgTo);
             }
         } else {
             return false;
