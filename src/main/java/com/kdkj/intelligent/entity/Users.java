@@ -69,6 +69,54 @@ public class Users extends Pageinfo implements Serializable{
      * 过期时间
      */
     private Date expireDate;
+    /**
+     * 代理商
+     */
+    private String master;
+    /**
+     * 备注字段1
+     */
+    private String remark1;
+    /**
+     * 备注字段2
+     */
+    private String remark2;
+    /**
+     * 备注字段3
+     */
+    private Date remark3;
+    
+    public String getMaster() {
+		return master;
+	}
+
+	public void setMaster(String master) {
+		this.master = master;
+	}
+
+	public String getRemark1() {
+		return remark1;
+	}
+
+	public void setRemark1(String remark1) {
+		this.remark1 = remark1;
+	}
+
+	public String getRemark2() {
+		return remark2;
+	}
+
+	public void setRemark2(String remark2) {
+		this.remark2 = remark2;
+	}
+
+	public Date getRemark3() {
+		return remark3;
+	}
+
+	public void setRemark3(Date remark3) {
+		this.remark3 = remark3;
+	}
 
     public String getProxyLevel() {
         return proxyLevel;

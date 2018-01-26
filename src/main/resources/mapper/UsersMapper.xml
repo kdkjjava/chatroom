@@ -17,7 +17,11 @@
         <result column="nogroup_time" jdbcType="TIMESTAMP" property="nogroupTime"/>
         <result column="level" property="level" jdbcType="VARCHAR"></result>
         <result column="proxy_level" property="proxyLevel" jdbcType="VARCHAR"></result>
-        <result column="expire_date" property="expireDate" jdbcType="DATE"></result>
+        <result column="expire_date" property="expireDate" jdbcType="TIMESTAMP"></result>
+        <result column="master" property="master" jdbcType="VARCHAR"></result>
+        <result column="remark1" property="remark1" jdbcType="VARCHAR"></result>
+        <result column="remark2" property="remark2" jdbcType="VARCHAR"></result>
+        <result column="remark3" property="remark3" jdbcType="TIMESTAMP"></result>
     </resultMap>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
 		delete from users
@@ -31,14 +35,14 @@
         insert into users (username, password,
         nickname, type, status, score,
         regist_time, picture_address,
-        phone,token,last_login_time)
+        phone,token,last_login_time,master)
         values
         (#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
         #{nickname,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR},
-        #{status,jdbcType=VARCHAR},
-        #{score,jdbcType=BIGINT},
+        #{status,jdbcType=VARCHAR},#{score,jdbcType=BIGINT},
         #{registTime,jdbcType=TIMESTAMP}, #{pictureAddress,jdbcType=VARCHAR},
-        #{phone,jdbcType=VARCHAR},#{token,jdbcType=VARCHAR},#{registTime,jdbcType=TIMESTAMP})
+        #{phone,jdbcType=VARCHAR},#{token,jdbcType=VARCHAR},
+        #{registTime,jdbcType=TIMESTAMP}, #{master,jdbcType=VARCHAR})
     </insert>
 
     <update id="updateNogroupMemberTime" parameterType="java.lang.Integer">
@@ -68,14 +72,17 @@
             <if test="level !=null and level != ''">level = #{level,jdbcType=VARCHAR},</if>
             <if test="proxyLevel !=null and proxyLevel !=''">proxy_level = #{proxyLevel,jdbcType=VARCHAR},</if>
             <if test="expireDate !=null ">expire_date = #{expireDate,jdbcType=DATE},</if>
-
+            <if test="master !=null and master !=''">master = #{master,jdbcType=VARCHAR},</if>
+            <if test="remark1 !=null and remark1 !=''">remark1 = #{remark1,jdbcType=VARCHAR},</if>
+            <if test="remark2 !=null and remark2 !=''">remark2 = #{remark2,jdbcType=VARCHAR},</if>
+            <if test="remark3 !=null ">remark3 = #{remark3,jdbcType=TIMESTAMP},</if>
         </set>
         where id = #{id,jdbcType=INTEGER}
     </update>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer"
             resultMap="BaseResultMap">
 		select 'true' as QUERYID,id, username, password,nickname,
-		type, status,
+		type, status,master,
 		score, regist_time,token,picture_address, phone
 		from users
 		where id = #{id,jdbcType=INTEGER}
@@ -85,8 +92,7 @@
 		 select id, username,nickname,type, 
 		     status,picture_address, phone 
 		 from users 
-		 where id not in  (select user_id from members )
-           and datediff(SYSDATE(),nogroup_time)>3
+		 where master=1
 	</select>
 
     <select id="selectListByUser" resultMap="BaseResultMap"
@@ -115,8 +121,7 @@
     <select id="selectUserByGroupId" parameterType="java.lang.Integer"
             resultMap="BaseResultMap">
 		select u.id, username,u.nickname, u.type, u.status,
-		u.score,
-		u.regist_time, u.picture_address,u.phone
+		u.score,u.regist_time, u.picture_address,u.phone,m.status as level
 		from users u,members m
 		where
 		m.group_id=#{id,jdbcType=INTEGER}
