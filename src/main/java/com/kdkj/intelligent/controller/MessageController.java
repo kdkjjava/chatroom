@@ -52,19 +52,5 @@ public class MessageController {
         }
     }
 
-    /**
-     * 新增广播消息
-     * @param adminMsg
-     * @return
-     */
-    @PostMapping("addBroadCast")
-    public Result addBroadCast(@RequestBody AdminMsg adminMsg){
-        try{
-            AdminHandler.broadCastMsg.add(adminMsg);
-            return Result.ok("success");
-        }catch (Exception e){
-            e.printStackTrace();
-            return Result.error("failing");
-        }
-    }
+
 }

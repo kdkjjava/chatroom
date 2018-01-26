@@ -34,10 +34,9 @@ public class ProxyHandler implements WebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession webSocketSession) throws Exception {
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
-
-        if (!masterSessionPools.containsKey(msgFrom))
-            masterSessionPools.put(msgFrom, webSocketSession);
-
+        if (masterSessionPools.containsKey(msgFrom) && masterSessionPools.get(msgFrom).isOpen())
+            masterSessionPools.get(msgFrom).close();
+        masterSessionPools.put(msgFrom, webSocketSession);
     }
 
     @Override
@@ -77,7 +76,7 @@ public class ProxyHandler implements WebSocketHandler {
      * 普通文本消息发送方法
      *
      * @param webSocketSession 当前session对象
-     * @param socketMsg 待发送的消息对象
+     * @param socketMsg        待发送的消息对象
      */
     private void sendUsualMsg(WebSocketSession webSocketSession, SocketMsg socketMsg) {
         String groupId = (String) webSocketSession.getAttributes().get("groupId");
@@ -90,7 +89,7 @@ public class ProxyHandler implements WebSocketHandler {
         }
         if (GroupHandler.sessionPools.containsKey(socketMsg.getGroupId())) {
             //将客户端的信息发送至指定的群聊天中
-            GroupHandler.sessionPools.get(socketMsg.getGroupId()).forEach(item ->{
+            GroupHandler.sessionPools.get(socketMsg.getGroupId()).forEach(item -> {
                 try {
                     //将本条消息通过WebSocketSession发送至客户端
                     item.sendMessage(new TextMessage(JSON.toJSONString(socketMsg)));

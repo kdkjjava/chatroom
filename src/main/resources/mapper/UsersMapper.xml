@@ -76,7 +76,6 @@
             <if test="remark1 !=null and remark1 !=''">remark1 = #{remark1,jdbcType=VARCHAR},</if>
             <if test="remark2 !=null and remark2 !=''">remark2 = #{remark2,jdbcType=VARCHAR},</if>
             <if test="remark3 !=null ">remark3 = #{remark3,jdbcType=TIMESTAMP},</if>
-
         </set>
         where id = #{id,jdbcType=INTEGER}
     </update>

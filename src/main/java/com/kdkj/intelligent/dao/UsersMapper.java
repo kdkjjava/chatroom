@@ -1,5 +1,6 @@
 package com.kdkj.intelligent.dao;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -33,4 +34,6 @@ public interface UsersMapper {
     Integer selectCount(Users user);
 
     Users selectProxyNameAndTel(Integer id);
+
+    Date selectExpireDate(String username);
 }

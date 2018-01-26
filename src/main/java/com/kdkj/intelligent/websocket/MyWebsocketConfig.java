@@ -1,6 +1,7 @@
 package com.kdkj.intelligent.websocket;
 
 import com.kdkj.intelligent.interceptor.ChatRoomInterceptor;
+import com.kdkj.intelligent.interceptor.ProxyInterceptor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
@@ -32,9 +33,6 @@ public class MyWebsocketConfig extends WebMvcConfigurerAdapter implements WebSoc
     @Resource
     private TotalHandler totalHandler;
 
-    @Resource
-    private AdminHandler adminHandler;
-
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {
         //给群聊添加websocket处理器，添加握手拦截器
@@ -46,8 +44,8 @@ public class MyWebsocketConfig extends WebMvcConfigurerAdapter implements WebSoc
         webSocketHandlerRegistry.addHandler(friendHandler, "/friendWs/sockjs").addInterceptors(new ChatRoomInterceptor()).setAllowedOrigins("*").withSockJS();
 
         //给proxy聊天添加websocket处理器，添加握手拦截器
-        webSocketHandlerRegistry.addHandler(proxyHandler, "/proxyWs").addInterceptors(new ChatRoomInterceptor()).setAllowedOrigins("*");
-        webSocketHandlerRegistry.addHandler(proxyHandler, "/proxyWs/sockjs").addInterceptors(new ChatRoomInterceptor()).setAllowedOrigins("*").withSockJS();
+        webSocketHandlerRegistry.addHandler(proxyHandler, "/proxyWs").addInterceptors(new ProxyInterceptor()).setAllowedOrigins("*");
+        webSocketHandlerRegistry.addHandler(proxyHandler, "/proxyWs/sockjs").addInterceptors(new ProxyInterceptor()).setAllowedOrigins("*").withSockJS();
 
         //给总的会话添加websocket处理器，添加握手拦截器
         webSocketHandlerRegistry.addHandler(totalHandler, "/totalWs").addInterceptors(new ChatRoomInterceptor()).setAllowedOrigins("*");

@@ -1,5 +1,7 @@
 package com.kdkj.intelligent.entity;
 
+import java.util.Date;
+
 /**
  * powered by IntelliJ IDEA
  *
@@ -9,17 +11,33 @@ package com.kdkj.intelligent.entity;
  **/
 public class AdminMsg {
 
+    private static int increment;
+
     private String msgFrom;
 
     private String admin;
 
     private String msg;
 
-    private String date;
+    private Date date;
 
     private Boolean read;
 
     private String title;
+
+    private int id;
+
+    public AdminMsg(){
+        setId(++increment);
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getTitle() {
         return title;
@@ -39,11 +57,11 @@ public class AdminMsg {
         return this;
     }
 
-    public String getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public AdminMsg setDate(String date) {
+    public AdminMsg setDate(Date date) {
         this.date = date;
         return this;
     }
