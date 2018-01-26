@@ -107,4 +107,10 @@ public class UsersServiceImpl implements UsersService{
 	public Boolean hasExpired(String username) {
 		return usersMapper.selectExpireDate(username).before(new Date());
 	}
+
+	@Override
+	public void changetoLs(String username) {
+		usersMapper.changetoLs(username);
+		
+	}
 }

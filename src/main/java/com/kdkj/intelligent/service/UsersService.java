@@ -37,4 +37,6 @@ public interface UsersService {
 
     Boolean hasExpired(String username);
 
+	void changetoLs(String username);
+
 }

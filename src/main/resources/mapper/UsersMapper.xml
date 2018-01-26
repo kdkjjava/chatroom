@@ -26,6 +26,7 @@
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
 		delete from users
 		where id = #{id,jdbcType=INTEGER}
+		and id!='2'
 	</delete>
     <insert id="insert" parameterType="com.kdkj.intelligent.entity.Users">
         <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
@@ -79,6 +80,13 @@
         </set>
         where id = #{id,jdbcType=INTEGER}
     </update>
+    
+     <update id="changetoLs" parameterType="java.lang.String">
+        update users
+       set  master='2'
+        where master=#{master,jdbcType=VARCHAR}
+    </update>
+    
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer"
             resultMap="BaseResultMap">
 		select 'true' as QUERYID,id, username, password,nickname,

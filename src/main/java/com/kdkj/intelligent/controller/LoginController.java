@@ -65,9 +65,10 @@ public class LoginController {
 	public Result getUserByToken(HttpServletRequest request,String token) {
 		HttpSession session=request.getSession();
 		Users user = new Users();
-		user.setToken(request.getParameter("token"));
 		user.setToken(token);
 		List<Users> list = usersService.selectListByUser(user);
+		if(list==null || list.isEmpty())
+			return Result.error("您长时间未登录，请重新登录！");
 		user=list.get(0); 
 		Date date=user.getLastLoginTime();
 		Calendar cal = Calendar.getInstance();
