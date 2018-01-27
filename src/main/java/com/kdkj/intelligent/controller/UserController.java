@@ -64,11 +64,16 @@ public class UserController {
 	@RequestMapping(value = "/update", method = RequestMethod.POST)
 	public Result update(HttpServletRequest request, @RequestBody Users record) {
 		Users nowuser=getUser(request);
-		int nowId=Integer.valueOf(nowuser.getType());
-		int reId=Integer.valueOf(record.getType());
-		if((nowId<=reId && reId!=3) && nowuser.getId()!=record.getId())
-			return Result.error("您无此权限");
 		Users olduser=usersService.selectByPrimaryKey(record.getId());
+		int nowType=Integer.valueOf(nowuser.getType());
+		int oldreType=Integer.valueOf(olduser.getType());
+		if((nowType<=oldreType && oldreType!=3) && nowuser.getId()!=record.getId())
+			return Result.error("您无此权限");
+		if(record.getType()!=null) {
+		  int reType=Integer.valueOf(record.getType());
+		  if((nowType<=reType && reType!=3) && nowuser.getId()!=record.getId())
+			return Result.error("您无此权限");
+		}
 		if("1".equals(olduser.getType())&&"0".equals(record.getType()))
 			usersService.changetoLs(olduser.getUsername());
 		record.setPassword(null);
