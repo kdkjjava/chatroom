@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class TotalHandler implements WebSocketHandler {
 
     //该变量用于存储用户的总的session
-    protected static Map<String, WebSocketSession> totalSessions;
+    protected static Map<String, ConcurrentWebSocket> totalSessions;
 
     static {
         totalSessions = new ConcurrentHashMap();
@@ -36,12 +36,13 @@ public class TotalHandler implements WebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession webSocketSession) {
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
+        ConcurrentWebSocket concurrentWebSocket = new ConcurrentWebSocket(webSocketSession);
         if (msgFrom != null) {
             if (!totalSessions.containsKey(msgFrom)) {
-                totalSessions.put(msgFrom, webSocketSession);
+                totalSessions.put(msgFrom, concurrentWebSocket);
             }
             if (FriendHandler.unsentMessages.containsKey(msgFrom)) {
-                pushMsg(webSocketSession, msgFrom);
+                pushMsg(concurrentWebSocket, msgFrom);
             }
             return;
         }
@@ -88,14 +89,10 @@ public class TotalHandler implements WebSocketHandler {
      * @param webSocketSession session对象
      * @param currentUsername  当前用户名
      */
-    private void pushMsg(WebSocketSession webSocketSession, String currentUsername) {
+    private void pushMsg(ConcurrentWebSocket webSocketSession, String currentUsername) {
         FriendHandler.unsentMessages.get(currentUsername).keySet().forEach(str -> {
-            try {
-                webSocketSession.sendMessage(new TextMessage(JSON.toJSONString(new TipsMsg().setMsgFrom(str)
-                        .setMsgType("friend").setCount(FriendHandler.unsentMessages.get(currentUsername).get(str).size()))));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            webSocketSession.send(new TextMessage(JSON.toJSONString(new TipsMsg().setMsgFrom(str)
+                    .setMsgType("friend").setCount(FriendHandler.unsentMessages.get(currentUsername).get(str).size()))));
         });
     }
 }

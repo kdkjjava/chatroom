@@ -20,7 +20,7 @@ public class GroupHandler implements WebSocketHandler {
     private GroupTeamService groupTeamService;
 
     //concurrent包的线程安全Map，用来存放每个客户端对应的MyWebSocket对象。其中key为房间号标识
-    protected static Map<String, List<WebSocketSession>> sessionPools;
+    protected static Map<String, Map<String, ConcurrentWebSocket>> sessionPools;
 
     static {
         sessionPools = new ConcurrentHashMap<>();
@@ -29,13 +29,14 @@ public class GroupHandler implements WebSocketHandler {
     //握手实现连接后
     @Override
     public void afterConnectionEstablished(WebSocketSession webSocketSession) throws Exception {
-        String groupId = getGroupId(webSocketSession);
+        String groupId = getParam(webSocketSession,"groupId");
+        String msgFrom = getParam(webSocketSession,"msgFrom");
         //将连接地址的参数groupId的值放入变量roomCode中
         if (sessionPools.containsKey(groupId)) {
-            sessionPools.get(groupId).add(webSocketSession);
+            sessionPools.get(groupId).put(msgFrom, new ConcurrentWebSocket(webSocketSession));
         } else {
-            sessionPools.put(groupId, new CopyOnWriteArrayList<>());
-            sessionPools.get(groupId).add(webSocketSession);
+            sessionPools.put(groupId, new ConcurrentHashMap<>());
+            sessionPools.get(groupId).put(msgFrom, new ConcurrentWebSocket(webSocketSession));
         }
     }
 
@@ -58,9 +59,10 @@ public class GroupHandler implements WebSocketHandler {
      */
     @Override
     public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus) throws Exception {
-        String groupId = getGroupId(webSocketSession);
-        sessionPools.get(groupId).remove(webSocketSession);
+        String groupId = getParam(webSocketSession,"groupId");
+        String msgFrom = getParam(webSocketSession,"msgFrom");
         webSocketSession.close();
+        sessionPools.get(groupId).remove(msgFrom);
     }
 
     @Override
@@ -98,12 +100,8 @@ public class GroupHandler implements WebSocketHandler {
         }
         //遍历map集合，将消息发送至同一个房间下的session
         if (sessionPools.containsKey(socketMsg.getGroupId())) {
-            sessionPools.get(socketMsg.getGroupId()).forEach((item) -> {
-                try {
-                    item.sendMessage(new TextMessage(JSON.toJSONString(socketMsg)));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            sessionPools.get(socketMsg.getGroupId()).forEach((key, item) -> {
+                item.send(new TextMessage(JSON.toJSONString(socketMsg)));
                 File file = new File("D:/aaa.jpg");
                 InputStream is = null;
                 try {
@@ -121,40 +119,28 @@ public class GroupHandler implements WebSocketHandler {
                     BufferedInputStream bis = new BufferedInputStream(is);
                     OutputStream os = new ByteArrayOutputStream();
                     BufferedOutputStream bos = new BufferedOutputStream(os);
-                    byte[] b = new byte[1024];
-                    int len;
+                    item.sendBinary(bis, bos);//调用发送图片方法
                     try {
-                        while ((len = bis.read(b)) != -1) {
-                            bos.write(b, 0, len);
-                            Boolean flag = false;
-                            if (bis.available() == 0)
-                                flag = true;
-                            item.sendMessage(new BinaryMessage(b, flag));
-                        }
+                        bos.close();
                     } catch (IOException e) {
                         e.printStackTrace();
-                    } finally {
-                        try {
-                            bos.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        try {
-                            os.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        try {
-                            bis.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        try {
-                            is.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
                     }
+                    try {
+                        os.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        bis.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        is.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
                 }
             });
         }
@@ -167,14 +153,10 @@ public class GroupHandler implements WebSocketHandler {
      * @param masterName 代理
      */
     private void sendToClient(SocketMsg socketMsg, String masterName) {
-        WebSocketSession session = ProxyHandler.masterSessionPools.get(masterName);
+        ConcurrentWebSocket session = ProxyHandler.masterSessionPools.get(masterName);
         socketMsg.setMasterName(masterName);
         socketMsg.setStatus("command");
-        try {
-            session.sendMessage(new TextMessage(JSON.toJSONString(socketMsg)));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        session.send(new TextMessage(JSON.toJSONString(socketMsg)));
     }
 
     /**
@@ -183,8 +165,8 @@ public class GroupHandler implements WebSocketHandler {
      * @param webSocketSession 当前session对象
      * @return
      */
-    private String getGroupId(WebSocketSession webSocketSession) {
-        return (String) webSocketSession.getAttributes().get("groupId");
+    private String getParam(WebSocketSession webSocketSession,String param) {
+        return (String) webSocketSession.getAttributes().get(param);
     }
 
 

@@ -5,6 +5,7 @@ import com.kdkj.intelligent.entity.SocketMsg;
 import com.kdkj.intelligent.entity.TipsMsg;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
+
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,9 +36,9 @@ public class FriendHandler implements WebSocketHandler {
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
         String msgTo = (String) webSocketSession.getAttributes().get("msgTo");
 
-        if (msgFrom !=null && msgTo!=null){
-            handleFriendSessions(msgFrom,msgTo,webSocketSession);
-        }else {
+        if (msgFrom != null && msgTo != null) {
+            handleFriendSessions(msgFrom, msgTo, webSocketSession);
+        } else {
             if (webSocketSession.isOpen()) {
                 try {
                     webSocketSession.close(new CloseStatus(1007));
@@ -63,11 +64,11 @@ public class FriendHandler implements WebSocketHandler {
     }
 
     @Override
-    public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus)  {
+    public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus) {
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
         String msgTo = (String) webSocketSession.getAttributes().get("msgTo");
         String key = getKey(msgFrom, msgTo);
-        if (key!=null){
+        if (key != null) {
             friendSessionPools.get(key).remove(msgFrom);
             if (friendSessionPools.get(key).isEmpty())
                 friendSessionPools.remove(key);
@@ -88,7 +89,7 @@ public class FriendHandler implements WebSocketHandler {
      * 该方法用于返回好友聊天的key
      *
      * @param msgFrom 发起聊天者
-     * @param msgTo 接受聊天者
+     * @param msgTo   接受聊天者
      * @return 返回缓存存储的key
      */
     private String getKey(String msgFrom, String msgTo) {
@@ -103,12 +104,9 @@ public class FriendHandler implements WebSocketHandler {
     private void sendToOffline(SocketMsg socketMsg) {
 
         if (TotalHandler.totalSessions.containsKey(socketMsg.getMsgTo())) {
-            try {
-                TotalHandler.totalSessions.get(socketMsg.getMsgTo()).sendMessage(new TextMessage(JSON.toJSONString(new TipsMsg().setMsgFrom(socketMsg.getMsgFrom())
-                        .setMsgType("friend").setCount(1))));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            TotalHandler.totalSessions.get(socketMsg.getMsgTo()).send(new TextMessage(JSON.toJSONString(new TipsMsg().setMsgFrom(socketMsg.getMsgFrom())
+                    .setMsgType("friend").setCount(1))));
+            return;
         }
         if (unsentMessages.containsKey(socketMsg.getMsgTo())) {
             if (unsentMessages.get(socketMsg.getMsgTo()).containsKey(socketMsg.getMsgFrom())) {
@@ -128,8 +126,8 @@ public class FriendHandler implements WebSocketHandler {
      * 发送消息方法
      *
      * @param webSocketSession session对象
-     * @param socketMsg 消息对象
-     * @param key 好友聊天的key
+     * @param socketMsg        消息对象
+     * @param key              好友聊天的key
      */
     private void sendUsualMsg(WebSocketSession webSocketSession, SocketMsg socketMsg, String key) {
         try {
@@ -148,11 +146,11 @@ public class FriendHandler implements WebSocketHandler {
             sendToOffline(socketMsg);
     }
 
-    private void handleFriendSessions(String msgFrom,String msgTo,WebSocketSession webSocketSession){
+    private void handleFriendSessions(String msgFrom, String msgTo, WebSocketSession webSocketSession) {
         String key = getKey(msgFrom, msgTo);
         if (key != null) {//如果有同个用户的session，则关闭先前的session
             if (friendSessionPools.get(key).containsKey(msgFrom)) {
-                if (friendSessionPools.get(key).get(msgFrom)!=webSocketSession && friendSessionPools.get(key).get(msgFrom).isOpen()){
+                if (friendSessionPools.get(key).get(msgFrom) != webSocketSession && friendSessionPools.get(key).get(msgFrom).isOpen()) {
                     try {
                         friendSessionPools.get(key).get(msgFrom).close();
                     } catch (IOException e) {
@@ -160,7 +158,7 @@ public class FriendHandler implements WebSocketHandler {
                     }
                     friendSessionPools.get(key).put(msgFrom, webSocketSession);
                 }
-            }else {
+            } else {
                 friendSessionPools.get(key).put(msgFrom, webSocketSession);
             }
         } else {

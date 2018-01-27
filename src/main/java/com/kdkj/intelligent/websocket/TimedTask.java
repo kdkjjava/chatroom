@@ -39,7 +39,7 @@ public class TimedTask {
             if (value.size() == 0)
                 GroupHandler.sessionPools.remove(key);
         });
-
+        System.out.println(GroupHandler.sessionPools);
     }
 
     private void deletePastMsg(int dayNow, int yearNow, List<AdminMsg> adminMsgList) {
