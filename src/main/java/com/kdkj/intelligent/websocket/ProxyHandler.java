@@ -28,8 +28,8 @@ public class ProxyHandler implements WebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession webSocketSession) throws Exception {
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
-        webSocketSession.setBinaryMessageSizeLimit(4194304);
-        webSocketSession.setTextMessageSizeLimit(4194304);
+        webSocketSession.setBinaryMessageSizeLimit(6666666);
+        webSocketSession.setTextMessageSizeLimit(6666666);
         if (masterSessionPools.containsKey(msgFrom) && masterSessionPools.get(msgFrom).getSession().isOpen())
             masterSessionPools.get(msgFrom).getSession().close();
         masterSessionPools.put(msgFrom, new ConcurrentWebSocket(webSocketSession));
@@ -39,8 +39,6 @@ public class ProxyHandler implements WebSocketHandler {
     public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage) {
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
         SocketMsg socketMsg = JSON.parseObject(webSocketMessage.getPayload().toString(), SocketMsg.class);
-        System.out.println("binary" + webSocketSession.getBinaryMessageSizeLimit());
-        System.out.println("text" + webSocketSession.getTextMessageSizeLimit());
         if (socketMsg.getMsg() != null) {
             //将用户发送的json消息解析为java对象
             new Thread(() -> sendUsualMsg(masterSessionPools.get(msgFrom), socketMsg)).start();
