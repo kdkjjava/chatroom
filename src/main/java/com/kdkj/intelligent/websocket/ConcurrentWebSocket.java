@@ -30,7 +30,7 @@ public class ConcurrentWebSocket {
     }
 
     public synchronized void send(WebSocketMessage<?> webSocketMessage) {
-        while (status==false) {
+        if (!status) {
             try {
                 wait();
             } catch (InterruptedException e) {
@@ -50,6 +50,7 @@ public class ConcurrentWebSocket {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        setStatus(socketMsg.getStatus());
         if (isStatus())
             notifyAll();
     }
