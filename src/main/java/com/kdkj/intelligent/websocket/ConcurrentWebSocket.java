@@ -1,13 +1,12 @@
 package com.kdkj.intelligent.websocket;
 
+import com.kdkj.intelligent.entity.SocketMsg;
 import org.springframework.web.socket.BinaryMessage;
-import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.util.Base64;
 
 /**
  * powered by IntelliJ IDEA
@@ -36,20 +35,13 @@ public class ConcurrentWebSocket {
         }
     }
 
-    public synchronized void sendBinary(BufferedInputStream bis, BufferedOutputStream bos) {
-        byte[] b = new byte[1024];
-        int len;
+    public synchronized void sendBinary(SocketMsg socketMsg) {
         try {
-            while ((len = bis.read(b)) != -1) {
-                bos.write(b, 0, len);
-                Boolean flag = false;
-                if (bis.available() == 0)
-                    flag = true;
-                session.sendMessage(new BinaryMessage(b, flag));
-            }
+            session.sendMessage(new BinaryMessage(Base64.getDecoder().decode(socketMsg.getBinary()),socketMsg.getStatus()));
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
 }
