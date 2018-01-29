@@ -160,9 +160,10 @@ public class GroupTeamController {
 	@RequestMapping(value = "/findMembers", method = RequestMethod.GET)
 	public Result findMembers(HttpServletRequest request, Integer id) {
 		List<Users> list = groupTeamService.selectUserByGroupId(id);
+		GroupTeam gp=groupTeamService.selectByPrimaryKey(id);
 		if (list != null && list.size() > 0)
-			return Result.ok("", list);
-		return Result.error("群成员列表为空");
+			return Result.ok("", list).put("id", gp.getId()).put("groupId", gp.getGroupId());
+		return Result.error("群成员列表为空").put("id", gp.getId()).put("groupId", gp.getGroupId());
 	}
 
 	private Users getUser(HttpServletRequest request) {
