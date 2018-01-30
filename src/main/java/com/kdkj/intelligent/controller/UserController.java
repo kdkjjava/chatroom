@@ -66,7 +66,7 @@ public class UserController {
 		Users nowuser=getUser(request);
 		Users olduser=usersService.selectByPrimaryKey(record.getId());
 		int nowType=Integer.valueOf(nowuser.getType());
-		int oldreType=Integer.valueOf(olduser.getType());
+		int oldreType=Integer.valueOf(olduser.getType()==null?"0":olduser.getType());
 		if((nowType<=oldreType && oldreType!=3) && nowuser.getId()!=record.getId())
 			return Result.error("您无此权限");
 		if(record.getType()!=null) {
