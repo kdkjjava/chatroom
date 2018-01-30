@@ -65,7 +65,7 @@ public class UserController {
 	public Result update(HttpServletRequest request, @RequestBody Users record) {
 		Users nowuser=getUser(request);
 		Users olduser=usersService.selectByPrimaryKey(record.getId());
-		int nowType=Integer.valueOf(nowuser.getType());
+		int nowType=Integer.valueOf(nowuser.getType()==null?"0":nowuser.getType());
 		int oldreType=Integer.valueOf(olduser.getType()==null?"0":olduser.getType());
 		if((nowType<=oldreType && oldreType!=3) && nowuser.getId()!=record.getId())
 			return Result.error("您无此权限");
