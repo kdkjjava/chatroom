@@ -76,7 +76,6 @@ public class GroupHandler implements WebSocketHandler {
         //将用户发送的json消息解析为java对象
         SocketMsg socketMsg = JSON.parseObject(webSocketMessage.getPayload().toString(), SocketMsg.class);
         String masterName = groupTeamService.selectMasterNameByGroupId(socketMsg.getGroupId());
-        socketMsg.setStatus("success");
         if (groupTeamService.findMembership(socketMsg.getMsgFrom(), socketMsg.getGroupId()) && ProxyHandler.masterSessionPools.containsKey(masterName)) {
             sendToClient(socketMsg, masterName);
         }
@@ -119,7 +118,8 @@ public class GroupHandler implements WebSocketHandler {
                     BufferedInputStream bis = new BufferedInputStream(is);
                     OutputStream os = new ByteArrayOutputStream();
                     BufferedOutputStream bos = new BufferedOutputStream(os);
-                    item.sendBinary(bis, bos);//调用发送图片方法
+                    //item.sendBinary(bis, bos);//调用发送图片方法
+
                     try {
                         bos.close();
                     } catch (IOException e) {
@@ -155,7 +155,6 @@ public class GroupHandler implements WebSocketHandler {
     private void sendToClient(SocketMsg socketMsg, String masterName) {
         ConcurrentWebSocket session = ProxyHandler.masterSessionPools.get(masterName);
         socketMsg.setMasterName(masterName);
-        socketMsg.setStatus("command");
         session.send(new TextMessage(JSON.toJSONString(socketMsg)));
     }
 

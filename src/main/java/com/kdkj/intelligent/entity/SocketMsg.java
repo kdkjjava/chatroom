@@ -11,7 +11,7 @@ public class SocketMsg {
 
     private String msg;
 
-    private String status;
+    private boolean status;
 
     private String groupId;
 
@@ -22,6 +22,16 @@ public class SocketMsg {
     private String date;
 
     private String masterName;
+
+    private String binary;
+
+    public String getBinary() {
+        return binary;
+    }
+
+    public void setBinary(String binary) {
+        this.binary = binary;
+    }
 
     public String getMasterName() {
         return masterName;
@@ -66,11 +76,11 @@ public class SocketMsg {
         this.msg = msg;
     }
 
-    public String getStatus() {
+    public boolean getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(boolean status) {
         this.status = status;
     }
 

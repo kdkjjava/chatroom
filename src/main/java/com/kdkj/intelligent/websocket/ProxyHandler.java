@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.kdkj.intelligent.entity.SocketMsg;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -27,6 +28,8 @@ public class ProxyHandler implements WebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession webSocketSession) throws Exception {
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
+        webSocketSession.setBinaryMessageSizeLimit(6666666);
+        webSocketSession.setTextMessageSizeLimit(6666666);
         if (masterSessionPools.containsKey(msgFrom) && masterSessionPools.get(msgFrom).getSession().isOpen())
             masterSessionPools.get(msgFrom).getSession().close();
         masterSessionPools.put(msgFrom, new ConcurrentWebSocket(webSocketSession));
@@ -34,15 +37,16 @@ public class ProxyHandler implements WebSocketHandler {
 
     @Override
     public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage) {
-        String msgFrom =(String) webSocketSession.getAttributes().get("msgFrom");
-        if (webSocketMessage instanceof TextMessage) {
+        String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
+        SocketMsg socketMsg = JSON.parseObject(webSocketMessage.getPayload().toString(), SocketMsg.class);
+        if (socketMsg.getMsg() != null) {
             //将用户发送的json消息解析为java对象
-            SocketMsg socketMsg = JSON.parseObject(webSocketMessage.getPayload().toString(), SocketMsg.class);
             new Thread(() -> sendUsualMsg(masterSessionPools.get(msgFrom), socketMsg)).start();
             return;
         }
-        if (webSocketMessage instanceof BinaryMessage) {
-            new Thread(() -> pushBinaryMsg(masterSessionPools.get(msgFrom), new BinaryMessage((byte[]) webSocketMessage.getPayload()))).start();
+
+        if (socketMsg.getBinary() != null) {
+            new Thread(() -> pushBinaryMsg(masterSessionPools.get(msgFrom), socketMsg)).start();
             return;
         }
         throw new IllegalStateException("Unexpected webSocket message type!");
@@ -68,21 +72,21 @@ public class ProxyHandler implements WebSocketHandler {
 
     /**
      * 普通文本消息发送方法
-     *  @param webSocketSession 当前session对象
+     *
+     * @param webSocketSession 当前session对象
      * @param socketMsg        待发送的消息对象
      */
     private void sendUsualMsg(ConcurrentWebSocket webSocketSession, SocketMsg socketMsg) {
 
         if (GroupHandler.sessionPools.containsKey(socketMsg.getGroupId())) {
             //将客户端的信息发送至指定的群聊天中
-            GroupHandler.sessionPools.get(socketMsg.getGroupId()).forEach((key,item) -> {
+            GroupHandler.sessionPools.get(socketMsg.getGroupId()).forEach((key, item) -> {
                 //将本条消息通过WebSocketSession发送至客户端
                 item.send(new TextMessage(JSON.toJSONString(socketMsg)));
             });
             if (GroupHandler.sessionPools.get(socketMsg.getGroupId()).isEmpty()) {
                 webSocketSession.send(new TextMessage("{\"errorCode\":\"NO_ONLINE_USERS\"}"));
             }
-
         } else {
             webSocketSession.send(new TextMessage("{\"errorCode\":\"群号不正确或者无在线用户\"}"));
         }
@@ -90,11 +94,20 @@ public class ProxyHandler implements WebSocketHandler {
 
     /**
      * 该方法用于发送二进制文件
-     *
-     * @param webSocketSession 当前session对象
+     *  @param webSocketSession 当前session对象
+     * @param socketMsg
      */
-    private void pushBinaryMsg(ConcurrentWebSocket webSocketSession, BinaryMessage binaryMessage) {
-            webSocketSession.send(binaryMessage);
+    private void pushBinaryMsg(ConcurrentWebSocket webSocketSession, SocketMsg socketMsg) {
+        if (GroupHandler.sessionPools.containsKey(socketMsg.getGroupId())) {
+            //将客户端的信息发送至指定的群聊天中
+            GroupHandler.sessionPools.get(socketMsg.getGroupId()).forEach((key, item) -> {
+                //将本条消息通过WebSocketSession发送至客户端
+                item.sendBinary(socketMsg);
+            });
+            if (GroupHandler.sessionPools.get(socketMsg.getGroupId()).isEmpty()) {
+                webSocketSession.send(new TextMessage("{\"errorCode\":\"NO_ONLINE_USERS\"}"));
+            }
+        }
     }
 
 }

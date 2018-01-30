@@ -1,13 +1,12 @@
 package com.kdkj.intelligent.websocket;
 
+import com.kdkj.intelligent.entity.SocketMsg;
 import org.springframework.web.socket.BinaryMessage;
-import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.util.Base64;
 
 /**
  * powered by IntelliJ IDEA
@@ -20,6 +19,8 @@ public class ConcurrentWebSocket {
 
     private WebSocketSession session;
 
+    private volatile boolean status;
+
     public WebSocketSession getSession() {
         return session;
     }
@@ -29,27 +30,36 @@ public class ConcurrentWebSocket {
     }
 
     public synchronized void send(WebSocketMessage<?> webSocketMessage) {
-        try {
-            session.sendMessage(webSocketMessage);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public synchronized void sendBinary(BufferedInputStream bis, BufferedOutputStream bos) {
-        byte[] b = new byte[1024];
-        int len;
-        try {
-            while ((len = bis.read(b)) != -1) {
-                bos.write(b, 0, len);
-                Boolean flag = false;
-                if (bis.available() == 0)
-                    flag = true;
-                session.sendMessage(new BinaryMessage(b, flag));
+        if (!status) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+            try {
+                session.sendMessage(webSocketMessage);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
     }
 
+    public synchronized void sendBinary(SocketMsg socketMsg) {
+            try {
+                session.sendMessage(new BinaryMessage(Base64.getDecoder().decode(socketMsg.getBinary()),socketMsg.getStatus()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        setStatus(socketMsg.getStatus());
+        if (isStatus())
+            notifyAll();
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
 }
