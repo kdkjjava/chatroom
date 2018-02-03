@@ -39,6 +39,8 @@ public class LoginController {
 			return Result.error("用户名或密码错误，请重新登录!");
 		}
 		user = list.get(0);
+		if("0".equals(user.getStatus()))
+			return Result.error("该用户已被禁用，请联系管理员！");
 		try {
 			String newpassword = MD5Encryption.getEncryption(record.getPassword());
 			if (newpassword.equals(user.getPassword())) {
