@@ -74,6 +74,13 @@ public class UserController {
 		  if((nowType<=reType && reType!=3) && nowuser.getId()!=record.getId())
 			return Result.error("您无此权限");
 		}
+		if(record.getPhone()!=null) {
+			Users record1=new Users();
+			record1.setPhone(record.getPhone());
+			List<Users> list=usersService.selectListByUser(record1);
+			if(list!=null && !list.isEmpty())
+				return Result.error("该手机号已经存在！");
+		}
 		if("1".equals(olduser.getType())&&"0".equals(record.getType()))
 			usersService.changetoLs(olduser.getUsername());
 		record.setPassword(null);
