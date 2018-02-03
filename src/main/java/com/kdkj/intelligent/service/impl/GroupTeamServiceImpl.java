@@ -31,7 +31,7 @@ public class GroupTeamServiceImpl implements GroupTeamService {
 	public int deleteByPrimaryKey(Integer id) {
 		Members record=new Members();
 		record.setGroupId(id);
-		usersMapper.updateNogroupMemberTime(id);
+		//usersMapper.updateNogroupMemberTime(id);
 		membersMapper.deleteMemberShip(record);
 		return groupTeamMapper.deleteByPrimaryKey(id);
 	}
@@ -96,14 +96,14 @@ public class GroupTeamServiceImpl implements GroupTeamService {
 		// 需要检查用户是否为其他代理商的用户 是否已经加群
 		String[] ids = userIds.split(",");
 		for (String userId : ids) {
-			List<GroupTeam> grouplist=groupTeamMapper.selectGroupByUserId(Integer.valueOf(userId));
-			if(grouplist!=null && !grouplist.isEmpty()) {
-				GroupTeam groupTeam=grouplist.get(0);
-				if(masterId.equals(groupTeam.getMasterId())) {
+			Users user=usersMapper.selectByPrimaryKey(Integer.valueOf(userId));
+			if(user!=null) {
+				if(!masterId.toString().equals(user.getMaster())&& !"1".equals(user.getMaster())&& !"2".equals(user.getMaster())) {
 					i++;
 					continue;
 				}
-			}
+			}else
+				continue;
 			Members member = new Members();
 			member.setGroupId(id);
 			member.setUserId(Integer.valueOf(userId));

@@ -100,7 +100,7 @@
 		 select id, username,nickname,type, 
 		     status,picture_address, phone 
 		 from users 
-		 where master=1
+		 where master='2'
 	</select>
 
     <select id="selectListByUser" resultMap="BaseResultMap"

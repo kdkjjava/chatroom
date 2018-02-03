@@ -20,6 +20,7 @@ import com.kdkj.intelligent.entity.Friendship;
 import com.kdkj.intelligent.entity.GroupTeam;
 import com.kdkj.intelligent.entity.Users;
 import com.kdkj.intelligent.service.FriendshipService;
+import com.kdkj.intelligent.service.GroupTeamService;
 import com.kdkj.intelligent.service.UsersService;
 import com.kdkj.intelligent.util.MD5Encryption;
 import com.kdkj.intelligent.util.Result;
@@ -32,6 +33,8 @@ public class UserController {
 	private UsersService usersService;
 	@Autowired
 	private FriendshipService friendshipService;
+	@Autowired
+	private GroupTeamService groupTeamService;
 
 	@RequestMapping(value = "/selectListByUser", method = RequestMethod.POST)
 	public Result selectListByUser(HttpServletRequest request, @RequestBody Users record) {
@@ -55,8 +58,13 @@ public class UserController {
 		Users user=usersService.selectByPrimaryKey(id);
 		if("1".equals(user.getType())&&!"2".equals(nowuser.getType()))
 			return Result.error("您无此权限！");
-		if("1".equals(user.getType())) 
-			usersService.changetoLs(user.getUsername());
+		if("1".equals(user.getType())) {
+			GroupTeam gt=new GroupTeam();
+			gt.setMasterId(id);
+			List<GroupTeam> list=groupTeamService.selectListByGroup(gt);
+			list.forEach(e ->groupTeamService.deleteByPrimaryKey(e.getId()));
+			usersService.changetoLs(user.getUsername());  //修改其成员为离散用户
+			}
 		usersService.deleteByPrimaryKey(id);
 		return Result.ok("删除成功");
 	}
@@ -82,7 +90,7 @@ public class UserController {
 				return Result.error("该手机号已经存在！");
 		}
 		if("1".equals(olduser.getType())&&"0".equals(record.getType()))
-			usersService.changetoLs(olduser.getUsername());
+			usersService.changetoLs(olduser.getUsername());  //修改其成员为离散用户
 		record.setPassword(null);
 		usersService.updateByPrimaryKey(record);
 		return Result.ok("修改成功");

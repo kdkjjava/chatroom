@@ -35,6 +35,7 @@ public class UsersServiceImpl implements UsersService{
 			keyword.setMasterId(String.valueOf(record.getId()));
 			keyWordMapper.insert(keyword);
 		}*/
+		record.setMaster("1");
 		record.setStatus("1");
 		record.setUsername(record.getPhone());
 		record.setRegistTime(new Date());
