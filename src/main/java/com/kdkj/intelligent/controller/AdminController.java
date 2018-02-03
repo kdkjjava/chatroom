@@ -18,7 +18,6 @@ import java.util.List;
  * @Date: 2018/1/23 18:14
  * @Description:
  **/
-@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/admin")
 public class AdminController {

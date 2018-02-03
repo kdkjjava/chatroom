@@ -38,4 +38,6 @@ public interface UsersMapper {
     Date selectExpireDate(String username);
 
 	void changetoLs(String master);
+
+    String selectTypeByUserName(String userName);
 }

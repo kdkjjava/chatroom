@@ -19,8 +19,6 @@ public class ConcurrentWebSocket {
 
     private WebSocketSession session;
 
-    private volatile boolean status;
-
     public WebSocketSession getSession() {
         return session;
     }
@@ -30,36 +28,20 @@ public class ConcurrentWebSocket {
     }
 
     public synchronized void send(WebSocketMessage<?> webSocketMessage) {
-        if (!status) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+
+        try {
+            session.sendMessage(webSocketMessage);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-            try {
-                session.sendMessage(webSocketMessage);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
     }
 
     public synchronized void sendBinary(SocketMsg socketMsg) {
-            try {
-                session.sendMessage(new BinaryMessage(Base64.getDecoder().decode(socketMsg.getBinary()),socketMsg.getStatus()));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        setStatus(socketMsg.getStatus());
-        if (isStatus())
-            notifyAll();
+        try {
+            session.sendMessage(new BinaryMessage(Base64.getDecoder().decode(socketMsg.getBinary()), socketMsg.getStatus()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public boolean isStatus() {
-        return status;
-    }
-
-    public void setStatus(boolean status) {
-        this.status = status;
-    }
 }

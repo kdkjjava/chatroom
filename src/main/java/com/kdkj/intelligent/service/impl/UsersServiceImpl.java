@@ -72,9 +72,7 @@ public class UsersServiceImpl implements UsersService{
 
 	@Override
 	public String selectTypeByUserName(String userName) {
-		Users user=new Users();
-		user.setUsername(userName);
-		return usersMapper.selectListByUser(user).get(0).getType();
+		return usersMapper.selectTypeByUserName(userName);
 	}
 
 	@Override
@@ -108,7 +106,8 @@ public class UsersServiceImpl implements UsersService{
 
 	@Override
 	public Boolean hasExpired(String username) {
-		return usersMapper.selectExpireDate(username).before(new Date());
+	    Date date =usersMapper.selectExpireDate(username);
+		return date!=null && date.before(new Date());
 	}
 
 	@Override

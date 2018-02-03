@@ -25,6 +25,16 @@ public class SocketMsg {
 
     private String binary;
 
+    private int number;
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
+
     public String getBinary() {
         return binary;
     }
@@ -37,16 +47,18 @@ public class SocketMsg {
         return masterName;
     }
 
-    public void setMasterName(String masterName) {
+    public SocketMsg setMasterName(String masterName) {
         this.masterName = masterName;
+        return this;
     }
 
     public String getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public SocketMsg setDate(String date) {
         this.date = date;
+        return this;
     }
 
     public SocketMsg() {
@@ -56,39 +68,45 @@ public class SocketMsg {
         return msgFrom;
     }
 
-    public void setMsgFrom(String msgFrom) {
+    public SocketMsg setMsgFrom(String msgFrom) {
         this.msgFrom = msgFrom;
+        return this;
     }
 
     public String getMsgTo() {
         return msgTo;
     }
 
-    public void setMsgTo(String msgTo) {
+    public SocketMsg setMsgTo(String msgTo) {
         this.msgTo = msgTo;
+        return this;
     }
 
     public String getMsg() {
         return msg;
     }
 
-    public void setMsg(String msg) {
+    public SocketMsg setMsg(String msg) {
         this.msg = msg;
+        return this;
     }
 
     public boolean getStatus() {
         return status;
     }
 
-    public void setStatus(boolean status) {
+    public SocketMsg setStatus(boolean status) {
         this.status = status;
+        return this;
     }
 
     public String getGroupId() {
         return groupId;
     }
 
-    public void setGroupId(String groupId) {
+    public SocketMsg setGroupId(String groupId) {
         this.groupId = groupId;
+        return this;
     }
+
 }

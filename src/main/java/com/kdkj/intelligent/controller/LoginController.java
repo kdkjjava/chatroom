@@ -20,7 +20,6 @@ import com.kdkj.intelligent.service.UsersService;
 import com.kdkj.intelligent.util.MD5Encryption;
 import com.kdkj.intelligent.util.Result;
 
-@CrossOrigin(origins = "*")
 @RestController
 public class LoginController {
 	@Autowired

@@ -35,7 +35,6 @@ public class FriendHandler implements WebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession webSocketSession) throws Exception {
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
         String msgTo = (String) webSocketSession.getAttributes().get("msgTo");
-
         if (msgFrom != null && msgTo != null) {
             handleFriendSessions(msgFrom, msgTo, webSocketSession);
         } else {
@@ -51,11 +50,13 @@ public class FriendHandler implements WebSocketHandler {
     }
 
     @Override
-    public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage) {
+    public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage) throws IOException {
+
         //将用户发送的json消息解析为java对象
         SocketMsg socketMsg = JSON.parseObject(webSocketMessage.getPayload().toString(), SocketMsg.class);
         String key = getKey(socketMsg.getMsgFrom(), socketMsg.getMsgTo());
         sendUsualMsg(webSocketSession, socketMsg, key);
+        webSocketSession.sendMessage(new TextMessage(JSON.toJSONString(new SocketMsg().setMsg("aaaaaaaaaaaaaaa\\nbbbbbbbbbb\\nccccccccc\\n").setMsgFrom(socketMsg.getMsgFrom()).setMsgTo(socketMsg.getMsgTo()))));
     }
 
     @Override
@@ -106,7 +107,6 @@ public class FriendHandler implements WebSocketHandler {
         if (TotalHandler.totalSessions.containsKey(socketMsg.getMsgTo())) {
             TotalHandler.totalSessions.get(socketMsg.getMsgTo()).send(new TextMessage(JSON.toJSONString(new TipsMsg().setMsgFrom(socketMsg.getMsgFrom())
                     .setMsgType("friend").setCount(1))));
-            return;
         }
         if (unsentMessages.containsKey(socketMsg.getMsgTo())) {
             if (unsentMessages.get(socketMsg.getMsgTo()).containsKey(socketMsg.getMsgFrom())) {
@@ -135,10 +135,12 @@ public class FriendHandler implements WebSocketHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        friendSessionPools.get(key).size();
         if (friendSessionPools.get(key).size() > 1) {
             try {
                 friendSessionPools.get(key).get(socketMsg.getMsgTo()).sendMessage(new TextMessage(JSON.toJSONString(socketMsg)));
+//                TextMessage textMessage = new TextMessage(JSON.toJSONString(new SocketMsg().setMsg("aaaaaaaaaaaaaaa\\nbbbbbbbbbb\\nccccccccc\\n").setMsgFrom(socketMsg.getMsgFrom()).setMsgTo(socketMsg.getMsgTo())));
+//                friendSessionPools.get(key).get(socketMsg.getMsgTo()).sendMessage(textMessage);
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
  * @Date: 2018/1/17 14:09
  * @Description:
  **/
-@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("message")
 public class MessageController {

@@ -30,7 +30,7 @@ public class TotalHandler implements WebSocketHandler {
     protected static Map<String, ConcurrentWebSocket> totalSessions;
 
     static {
-        totalSessions = new ConcurrentHashMap();
+        totalSessions = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -68,6 +68,7 @@ public class TotalHandler implements WebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus) {
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
+        System.out.println("用户total链接："+msgFrom+"\n关闭码:"+closeStatus.getCode()+"\n关闭原因:"+closeStatus.getReason());
         if (msgFrom != null && totalSessions.containsKey(msgFrom)) {
             totalSessions.remove(msgFrom);
         }

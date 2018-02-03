@@ -31,6 +31,8 @@ public class GroupHandler implements WebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession webSocketSession) throws Exception {
         String groupId = getParam(webSocketSession,"groupId");
         String msgFrom = getParam(webSocketSession,"msgFrom");
+        webSocketSession.setBinaryMessageSizeLimit(5242880);
+        webSocketSession.setTextMessageSizeLimit(5242880);
         //将连接地址的参数groupId的值放入变量roomCode中
         if (sessionPools.containsKey(groupId)) {
             sessionPools.get(groupId).put(msgFrom, new ConcurrentWebSocket(webSocketSession));
@@ -59,6 +61,7 @@ public class GroupHandler implements WebSocketHandler {
      */
     @Override
     public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus) throws Exception {
+        System.out.println("普通用户群链接："+getParam(webSocketSession,"msgFrom")+"\n关闭码:"+closeStatus.getCode()+"\n关闭原因:"+closeStatus.getReason());
         String groupId = getParam(webSocketSession,"groupId");
         String msgFrom = getParam(webSocketSession,"msgFrom");
         webSocketSession.close();
@@ -101,47 +104,6 @@ public class GroupHandler implements WebSocketHandler {
         if (sessionPools.containsKey(socketMsg.getGroupId())) {
             sessionPools.get(socketMsg.getGroupId()).forEach((key, item) -> {
                 item.send(new TextMessage(JSON.toJSONString(socketMsg)));
-                File file = new File("D:/aaa.jpg");
-                InputStream is = null;
-                try {
-                    is = new FileInputStream(file);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-                if (is == null) {
-                    try {
-                        is.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    BufferedInputStream bis = new BufferedInputStream(is);
-                    OutputStream os = new ByteArrayOutputStream();
-                    BufferedOutputStream bos = new BufferedOutputStream(os);
-                    //item.sendBinary(bis, bos);//调用发送图片方法
-
-                    try {
-                        bos.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    try {
-                        os.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    try {
-                        bis.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    try {
-                        is.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                }
             });
         }
     }

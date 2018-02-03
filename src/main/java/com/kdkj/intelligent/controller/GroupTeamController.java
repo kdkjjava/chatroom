@@ -19,7 +19,6 @@ import com.kdkj.intelligent.service.GroupTeamService;
 import com.kdkj.intelligent.service.UsersService;
 import com.kdkj.intelligent.util.Result;
 
-@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/group")
 public class GroupTeamController {
