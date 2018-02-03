@@ -57,7 +57,13 @@ public class TotalHandler implements WebSocketHandler {
 
     @Override
     public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage) throws Exception {
-
+        if (webSocketMessage.getPayload().equals("ping")) {
+            try {
+                webSocketSession.sendMessage(new TextMessage("pong"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override

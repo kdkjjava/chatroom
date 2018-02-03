@@ -40,7 +40,7 @@ public class FriendHandler implements WebSocketHandler {
         } else {
             if (webSocketSession.isOpen()) {
                 try {
-                    webSocketSession.close(new CloseStatus(1007));
+                    webSocketSession.close(CloseStatus.BAD_DATA);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -51,12 +51,18 @@ public class FriendHandler implements WebSocketHandler {
 
     @Override
     public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage) throws IOException {
-
+        if (webSocketMessage.getPayload().equals("ping")) {
+            try {
+                webSocketSession.sendMessage(new TextMessage("pong"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return;
+        }
         //将用户发送的json消息解析为java对象
         SocketMsg socketMsg = JSON.parseObject(webSocketMessage.getPayload().toString(), SocketMsg.class);
         String key = getKey(socketMsg.getMsgFrom(), socketMsg.getMsgTo());
         sendUsualMsg(webSocketSession, socketMsg, key);
-        webSocketSession.sendMessage(new TextMessage(JSON.toJSONString(new SocketMsg().setMsg("aaaaaaaaaaaaaaa\\nbbbbbbbbbb\\nccccccccc\\n").setMsgFrom(socketMsg.getMsgFrom()).setMsgTo(socketMsg.getMsgTo()))));
     }
 
     @Override
@@ -66,10 +72,12 @@ public class FriendHandler implements WebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus) {
+        if (closeStatus.getCode() == 9999)
+            return;
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
         String msgTo = (String) webSocketSession.getAttributes().get("msgTo");
         String key = getKey(msgFrom, msgTo);
-        if (key != null) {
+        if (key != null ) {
             friendSessionPools.get(key).remove(msgFrom);
             if (friendSessionPools.get(key).isEmpty())
                 friendSessionPools.remove(key);
@@ -154,11 +162,12 @@ public class FriendHandler implements WebSocketHandler {
             if (friendSessionPools.get(key).containsKey(msgFrom)) {
                 if (friendSessionPools.get(key).get(msgFrom) != webSocketSession && friendSessionPools.get(key).get(msgFrom).isOpen()) {
                     try {
-                        friendSessionPools.get(key).get(msgFrom).close();
+                        friendSessionPools.get(key).get(msgFrom).close(new CloseStatus(9999));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                     friendSessionPools.get(key).put(msgFrom, webSocketSession);
+
                 }
             } else {
                 friendSessionPools.get(key).put(msgFrom, webSocketSession);

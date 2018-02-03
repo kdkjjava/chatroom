@@ -76,6 +76,16 @@ public class GroupHandler implements WebSocketHandler {
     //发送信息前的处理
     @Override
     public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage) throws Exception {
+        if (webSocketMessage.getPayload().equals("ping")) {
+            new Thread(() -> {
+                try {
+                    webSocketSession.sendMessage(new TextMessage("pong"));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+            return;
+        }
         //将用户发送的json消息解析为java对象
         SocketMsg socketMsg = JSON.parseObject(webSocketMessage.getPayload().toString(), SocketMsg.class);
         String masterName = groupTeamService.selectMasterNameByGroupId(socketMsg.getGroupId());
