@@ -72,12 +72,12 @@ public class FriendHandler implements WebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus) {
-        if (closeStatus.getCode() == 9999)
+        if (closeStatus.getCode() == 3001)
             return;
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
         String msgTo = (String) webSocketSession.getAttributes().get("msgTo");
         String key = getKey(msgFrom, msgTo);
-        if (key != null ) {
+        if (key != null) {
             friendSessionPools.get(key).remove(msgFrom);
             if (friendSessionPools.get(key).isEmpty())
                 friendSessionPools.remove(key);
@@ -147,8 +147,6 @@ public class FriendHandler implements WebSocketHandler {
         if (friendSessionPools.get(key).size() > 1) {
             try {
                 friendSessionPools.get(key).get(socketMsg.getMsgTo()).sendMessage(new TextMessage(JSON.toJSONString(socketMsg)));
-//                TextMessage textMessage = new TextMessage(JSON.toJSONString(new SocketMsg().setMsg("aaaaaaaaaaaaaaa\\nbbbbbbbbbb\\nccccccccc\\n").setMsgFrom(socketMsg.getMsgFrom()).setMsgTo(socketMsg.getMsgTo())));
-//                friendSessionPools.get(key).get(socketMsg.getMsgTo()).sendMessage(textMessage);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -162,7 +160,7 @@ public class FriendHandler implements WebSocketHandler {
             if (friendSessionPools.get(key).containsKey(msgFrom)) {
                 if (friendSessionPools.get(key).get(msgFrom) != webSocketSession && friendSessionPools.get(key).get(msgFrom).isOpen()) {
                     try {
-                        friendSessionPools.get(key).get(msgFrom).close(new CloseStatus(9999));
+                        friendSessionPools.get(key).get(msgFrom).close(new CloseStatus(3001));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

@@ -45,6 +45,11 @@ public class ProxyHandler implements WebSocketHandler {
     public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage) {
 
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
+        if (webSocketMessage.getPayload().equals("ping")) {
+            new Thread(() -> masterSessionPools.get(msgFrom).send(new TextMessage("pong"))
+            ).start();
+            return;
+        }
         SocketMsg socketMsg = JSON.parseObject(webSocketMessage.getPayload().toString(), SocketMsg.class);
         if (socketMsg.getMsg() != null) {
             //将用户发送的json消息解析为java对象

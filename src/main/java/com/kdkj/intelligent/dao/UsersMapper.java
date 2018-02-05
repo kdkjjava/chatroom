@@ -40,4 +40,6 @@ public interface UsersMapper {
 	void changetoLs(String master);
 
     String selectTypeByUserName(String userName);
+
+    void updateMaster(Integer id);
 }

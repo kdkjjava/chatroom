@@ -64,6 +64,20 @@ public class AdminController {
             return Result.error("修改失败！");
     }
 
+    @PostMapping("proxyToUser")
+    public Result proxyToUser(@RequestBody Users user){
+        Users userMsg = usersService.selectByPrimaryKey(user.getId());
+        if (!"1".equals(userMsg.getType()))
+            return Result.error("修改失败，用户类型错误");
+        user.setType("0");
+        user.setProxyLevel("0");
+        Integer affect = usersService.proxyToUser(user);
+        if (affect>0)
+            return Result.ok("降级成功！");
+        else
+            return Result.error("降级失败！");
+    }
+
     /**
      * 新增广播消息
      * @param adminMsg

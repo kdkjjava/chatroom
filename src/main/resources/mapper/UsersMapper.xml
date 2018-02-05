@@ -191,4 +191,8 @@
     <select id="selectTypeByUserName" parameterType="java.lang.String" resultType="java.lang.String">
         select type from users where username = #{username,jdbcType=VARCHAR} limit 1
     </select>
+
+    <select id="updateMaster" parameterType="java.lang.Integer">
+        UPDATE  users set master = "0" where master = #{id,jdbcType=INTEGER}
+    </select>
 </mapper>

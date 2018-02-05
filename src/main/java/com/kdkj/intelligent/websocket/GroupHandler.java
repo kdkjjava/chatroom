@@ -29,8 +29,8 @@ public class GroupHandler implements WebSocketHandler {
     //握手实现连接后
     @Override
     public void afterConnectionEstablished(WebSocketSession webSocketSession) throws Exception {
-        String groupId = getParam(webSocketSession,"groupId");
-        String msgFrom = getParam(webSocketSession,"msgFrom");
+        String groupId = getParam(webSocketSession, "groupId");
+        String msgFrom = getParam(webSocketSession, "msgFrom");
         webSocketSession.setBinaryMessageSizeLimit(5242880);
         webSocketSession.setTextMessageSizeLimit(5242880);
         //将连接地址的参数groupId的值放入变量roomCode中
@@ -61,9 +61,9 @@ public class GroupHandler implements WebSocketHandler {
      */
     @Override
     public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus) throws Exception {
-        System.out.println("普通用户群链接："+getParam(webSocketSession,"msgFrom")+"\n关闭码:"+closeStatus.getCode()+"\n关闭原因:"+closeStatus.getReason());
-        String groupId = getParam(webSocketSession,"groupId");
-        String msgFrom = getParam(webSocketSession,"msgFrom");
+        System.out.println("普通用户群链接：" + getParam(webSocketSession, "msgFrom") + "\n关闭码:" + closeStatus.getCode() + "\n关闭原因:" + closeStatus.getReason());
+        String groupId = getParam(webSocketSession, "groupId");
+        String msgFrom = getParam(webSocketSession, "msgFrom");
         webSocketSession.close();
         sessionPools.get(groupId).remove(msgFrom);
     }
@@ -77,13 +77,8 @@ public class GroupHandler implements WebSocketHandler {
     @Override
     public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage) throws Exception {
         if (webSocketMessage.getPayload().equals("ping")) {
-            new Thread(() -> {
-                try {
-                    webSocketSession.sendMessage(new TextMessage("pong"));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }).start();
+                new Thread(() -> sessionPools.get(getParam(webSocketSession, "groupId")).get(getParam(webSocketSession, "msgFrom")).send(new TextMessage("pong"))
+            ).start();
             return;
         }
         //将用户发送的json消息解析为java对象
@@ -136,7 +131,7 @@ public class GroupHandler implements WebSocketHandler {
      * @param webSocketSession 当前session对象
      * @return
      */
-    private String getParam(WebSocketSession webSocketSession,String param) {
+    private String getParam(WebSocketSession webSocketSession, String param) {
         return (String) webSocketSession.getAttributes().get(param);
     }
 

@@ -114,4 +114,11 @@ public class UsersServiceImpl implements UsersService{
 		usersMapper.changetoLs(username);
 		
 	}
+
+	@Override
+	public Integer proxyToUser(Users user) {
+		Integer i =usersMapper.updateByPrimaryKey(user);
+		usersMapper.updateMaster(user.getId());
+		return i;
+	}
 }

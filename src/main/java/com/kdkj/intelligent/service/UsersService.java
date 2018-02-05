@@ -39,4 +39,5 @@ public interface UsersService {
 
 	void changetoLs(String username);
 
+    Integer proxyToUser(Users user);
 }
