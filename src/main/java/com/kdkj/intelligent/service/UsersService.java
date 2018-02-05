@@ -40,4 +40,6 @@ public interface UsersService {
 	void changetoLs(String username);
 
     Integer proxyToUser(Users user);
+
+	List<Users> findNewMembers(Long id, Long groupId);
 }

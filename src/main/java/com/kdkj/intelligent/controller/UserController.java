@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -92,7 +91,11 @@ public class UserController {
 		if("1".equals(olduser.getType())&&"0".equals(record.getType()))
 			usersService.changetoLs(olduser.getUsername());  //修改其成员为离散用户
 		record.setPassword(null);
+		try {
 		usersService.updateByPrimaryKey(record);
+		}catch(Exception e) {
+			return Result.error("您输入的用户名或者电话可能已存在，请重试。错误详情："+e);
+		}
 		return Result.ok("修改成功");
 	}
 
@@ -175,6 +178,12 @@ public class UserController {
 	@RequestMapping(value = "/findMyFriends", method = RequestMethod.GET)
 	public Result findMyFriends(HttpServletRequest request, Long id) {
 		List<Users> list = usersService.findMyFriends(id);
+		return Result.ok("", list);
+	}
+	
+	@RequestMapping(value = "/findNewMembers", method = RequestMethod.GET)
+	public Result findNewMembers(HttpServletRequest request, Long id,Long groupId) {
+		List<Users> list = usersService.findNewMembers(id,groupId);
 		return Result.ok("", list);
 	}
 	

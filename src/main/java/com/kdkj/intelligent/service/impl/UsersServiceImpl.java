@@ -121,4 +121,9 @@ public class UsersServiceImpl implements UsersService{
 		usersMapper.updateMaster(user.getId());
 		return i;
 	}
+
+	@Override
+	public List<Users> findNewMembers(Long id, Long groupId) {
+		return usersMapper.findNewMembers(id,groupId);
+	}
 }

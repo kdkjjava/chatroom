@@ -42,4 +42,6 @@ public interface UsersMapper {
     String selectTypeByUserName(String userName);
 
     void updateMaster(Integer id);
+
+	List<Users> findNewMembers(Long id, Long groupId);
 }
