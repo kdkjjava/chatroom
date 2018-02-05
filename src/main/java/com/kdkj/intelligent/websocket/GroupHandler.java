@@ -64,8 +64,9 @@ public class GroupHandler implements WebSocketHandler {
         System.out.println("普通用户群链接：" + getParam(webSocketSession, "msgFrom") + "\n关闭码:" + closeStatus.getCode() + "\n关闭原因:" + closeStatus.getReason());
         String groupId = getParam(webSocketSession, "groupId");
         String msgFrom = getParam(webSocketSession, "msgFrom");
-        webSocketSession.close();
         sessionPools.get(groupId).remove(msgFrom);
+        webSocketSession.close();
+
     }
 
     @Override

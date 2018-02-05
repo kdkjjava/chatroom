@@ -19,33 +19,36 @@ public class MessageController {
 
     /**
      * 获取用户建议
+     *
      * @return
      */
     @GetMapping("getAdvice")
-    public Result advice(){
-        return Result.ok("success",AdminHandler.adviceMsg);
+    public Result advice() {
+        return Result.ok("success", AdminHandler.adviceMsg);
     }
 
     /**
      * 获得管理员推送消息
+     *
      * @return
      */
     @GetMapping("broadcast")
-    public Result getBroadCast(){
-        return Result.ok("success",AdminHandler.broadCastMsg);
+    public Result getBroadCast() {
+        return Result.ok("success", AdminHandler.broadCastMsg);
     }
 
     /**
      * 新增建议消息
+     *
      * @param adminMsg
      * @return
      */
-    @PostMapping("addService")
-    public Result addService(@RequestBody AdminMsg adminMsg){
-        try{
+    @PostMapping("addAdvice")
+    public Result addService(@RequestBody AdminMsg adminMsg) {
+        try {
             AdminHandler.adviceMsg.add(adminMsg);
             return Result.ok("success");
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return Result.error("failing");
         }
