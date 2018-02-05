@@ -84,7 +84,7 @@
     
      <update id="changetoLs" parameterType="java.lang.String">
         update users
-       set  master='2'
+       set  master='0'
         where master=#{master,jdbcType=VARCHAR}
     </update>
     
@@ -101,7 +101,7 @@
 		 select id, username,nickname,type, 
 		     status,picture_address, phone 
 		 from users 
-		 where master='2'
+		 where master='0'
 	</select>
 
     <select id="selectListByUser" resultMap="BaseResultMap"

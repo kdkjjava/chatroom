@@ -77,7 +77,6 @@ public class UsersServiceImpl implements UsersService{
 
 	@Override
 	public List<Users> findMyFriends(Long id) {
-		// TODO Auto-generated method stub
 		return usersMapper.findMyFriends(id);
 	}
 

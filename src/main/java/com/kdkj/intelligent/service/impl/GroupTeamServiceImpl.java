@@ -98,7 +98,7 @@ public class GroupTeamServiceImpl implements GroupTeamService {
 		for (String userId : ids) {
 			Users user=usersMapper.selectByPrimaryKey(Integer.valueOf(userId));
 			if(user!=null) {
-				if(!masterId.toString().equals(user.getMaster())&& !"1".equals(user.getMaster())&& !"2".equals(user.getMaster())) {
+				if(!masterId.toString().equals(user.getMaster())&& !"1".equals(user.getMaster())&& !"0".equals(user.getMaster())) {
 					i++;
 					continue;
 				}

@@ -1,6 +1,7 @@
 package com.kdkj.intelligent.controller;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -159,10 +160,16 @@ public class UserController {
 
 	@RequestMapping(value = "/findGroups", method = RequestMethod.GET)
 	public Result findGroups(HttpServletRequest request) {
-		List<GroupTeam> list = usersService.selectGroupByUserId(getUser(request).getId());
-		if (list != null && !list.isEmpty())
+		List<GroupTeam> list=new ArrayList<GroupTeam>();
+		Users nowUser=getUser(request);
+		if("1".equals(nowUser.getType())) {
+			GroupTeam gt=new GroupTeam();
+			gt.setMasterId(nowUser.getId());
+			list=groupTeamService.selectListByGroup(gt);
+			return Result.ok("",list);
+		}
+		 list = usersService.selectGroupByUserId(getUser(request).getId());
 			return Result.ok("", list);
-		return Result.ok();
 	}
 
 	@RequestMapping(value = "/findMyFriends", method = RequestMethod.GET)
