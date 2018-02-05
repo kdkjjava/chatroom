@@ -101,6 +101,9 @@ public class GroupTeamServiceImpl implements GroupTeamService {
 				if(!masterId.toString().equals(user.getMaster())&& !"1".equals(user.getMaster())&& !"0".equals(user.getMaster())) {
 					i++;
 					continue;
+				}else  if("1".equals(user.getMaster())||"0".equals(user.getMaster())) {
+					user.setMaster(String.valueOf(masterId));
+					usersMapper.updateByPrimaryKey(user);
 				}
 			}else
 				continue;
