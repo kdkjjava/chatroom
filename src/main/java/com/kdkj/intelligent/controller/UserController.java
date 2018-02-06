@@ -42,7 +42,7 @@ public class UserController {
 		PageInfo<Users> page = new PageInfo<Users>(list);
 		return Result.ok("查询成功", page);
 	}
-
+	
 	@RequestMapping(value = "/selectById", method = RequestMethod.GET)
 	public Result selectById(HttpServletRequest request, int id) {
 		Users user = usersService.selectByPrimaryKey(id);

@@ -27,6 +27,14 @@ public class LoginController {
 	@Autowired
 	private UsersService usersService;
 
+	@RequestMapping(value = "/phoneifexist", method = RequestMethod.POST)
+	public Result phoneifexist(HttpServletRequest request, @RequestBody Users record) {
+		List<Users> list = usersService.selectListByUser(record);
+		if(list!=null && !list.isEmpty())
+			return Result.error(10, "");
+		return Result.ok();
+	}
+	
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public Result login(HttpServletRequest request,@RequestBody Users record) {
 		String pc=request.getHeader("xxxx");
