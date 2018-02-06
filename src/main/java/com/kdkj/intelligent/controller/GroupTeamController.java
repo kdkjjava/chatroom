@@ -108,7 +108,7 @@ public class GroupTeamController {
 		Integer masterId = getUser(request).getId();
 		int i = groupTeamService.addMember(masterId, id, userIds);
 		if (i > 0)
-			return Result.ok("有" + i + "个用户是其他代理商的用户，不能添加");
+			return Result.error(1, "有" + i + "个用户是其他代理商的用户，不能添加");
 		return Result.ok("添加用户成功！");
 	}
 

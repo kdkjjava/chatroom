@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.alibaba.druid.util.StringUtils;
 import com.kdkj.intelligent.entity.Users;
 import com.kdkj.intelligent.service.GroupTeamService;
 import com.kdkj.intelligent.service.UsersService;
@@ -27,6 +29,7 @@ public class LoginController {
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public Result login(HttpServletRequest request,@RequestBody Users record) {
+		String pc=request.getHeader("xxxx");
 		Users user = new Users();
 		user.setUsername(record.getUsername() != null ? record.getUsername() : null);
 		user.setPhone(record.getPhone() != null ? record.getPhone() : null);
@@ -40,6 +43,10 @@ public class LoginController {
 		user = list.get(0);
 		if("0".equals(user.getStatus()))
 			return Result.error("该用户已被禁用，请联系管理员！");
+		if(!StringUtils.isEmpty(pc) &&"pc".equals(pc) && !"1".equals(user.getType())) 
+			return Result.error("您不是管理员用户!");
+		if("1".equals(user.getType())&&user.getExpireDate()!=null && user.getExpireDate().before(new Date()))
+			return Result.error("您的代理商已经过期，请联系管理员!");
 		try {
 			String newpassword = MD5Encryption.getEncryption(record.getPassword());
 			if (newpassword.equals(user.getPassword())) {

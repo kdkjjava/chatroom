@@ -107,7 +107,7 @@
     <select id="selectListByUser" resultMap="BaseResultMap"
             parameterType="com.kdkj.intelligent.entity.Users">
         select id, username, password,nickname, type, status,score,
-        regist_time, picture_address,phone,last_login_time
+        regist_time, picture_address,phone,last_login_time,expire_date
         from users
         where 1=1
         <if test="username !=null and username !='' ">and username = #{username,jdbcType=VARCHAR}</if>
@@ -138,7 +138,7 @@
 	</select>
 
     <select id="findMyFriends" parameterType="java.lang.Long" resultMap="BaseResultMap">
-		select u.id,u.nickname,u.username,u.phone,u.picture_address,remarkName as password from
+		select u.id,u.nickname,u.username,u.phone,u.picture_address,remarkName as remark1 from
 		users u,(select uid1 as uid2,remark_name2 as remarkName from friendship where
 		uid2=#{id,jdbcType=BIGINT} Union all
 		select uid2,remark_name1 as remarkName from friendship where uid1=#{id,jdbcType=BIGINT}) f
@@ -146,11 +146,12 @@
 	</select>
 	
 	<select id="findNewMembers" parameterType="java.lang.Long" resultMap="BaseResultMap">
-		select u.id,u.nickname,u.username,u.phone,u.picture_address,remarkName as password from
+		select u.id,u.nickname,u.username,u.phone,u.picture_address,remarkName as remark1 from
 		users u,(select uid1 as uid2,remark_name2 as remarkName from friendship where
 		uid2=#{id,jdbcType=BIGINT} Union all
 		select uid2,remark_name1 as remarkName from friendship where uid1=#{id,jdbcType=BIGINT}) f
 		where u.id=f.uid2 and u.id not in (select user_id from members where group_id=#{groupId,jdbcType=BIGINT})
+		and u.master in(#{id,jdbcType=BIGINT},1,0)
 	</select>
 
     <select id="selectAll" resultMap="BaseResultMap">

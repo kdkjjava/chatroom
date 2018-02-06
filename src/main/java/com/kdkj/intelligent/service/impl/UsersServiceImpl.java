@@ -2,7 +2,9 @@ package com.kdkj.intelligent.service.impl;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
@@ -124,6 +126,9 @@ public class UsersServiceImpl implements UsersService{
 
 	@Override
 	public List<Users> findNewMembers(Long id, Long groupId) {
-		return usersMapper.findNewMembers(id,groupId);
+		Map<String,Long> map=new HashMap<String,Long>();
+		map.put("id", id);
+		map.put("groupId", groupId);
+		return usersMapper.findNewMembers(map);
 	}
 }

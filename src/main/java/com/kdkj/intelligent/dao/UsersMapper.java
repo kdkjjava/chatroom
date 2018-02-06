@@ -2,6 +2,7 @@ package com.kdkj.intelligent.dao;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.stereotype.Repository;
@@ -43,5 +44,5 @@ public interface UsersMapper {
 
     void updateMaster(Integer id);
 
-	List<Users> findNewMembers(Long id, Long groupId);
+	List<Users> findNewMembers(Map<String,Long> map);
 }
