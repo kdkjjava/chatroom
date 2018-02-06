@@ -27,6 +27,16 @@ public class SocketMsg {
 
     private int number;
 
+    private String pictureAddress;
+
+    public String getPictureAddress() {
+        return pictureAddress;
+    }
+
+    public void setPictureAddress(String pictureAddress) {
+        this.pictureAddress = pictureAddress;
+    }
+
     public int getNumber() {
         return number;
     }
