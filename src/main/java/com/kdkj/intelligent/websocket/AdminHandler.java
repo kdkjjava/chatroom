@@ -29,16 +29,6 @@ public class AdminHandler  implements WebSocketHandler {
     static {
         adviceMsg=new ArrayList<>();
         broadCastMsg=new ArrayList<>();
-
-        AdminMsg adminMsg1 =new AdminMsg().setAdmin("admin").setMsg("消息111111").setDate(new Date()).setTitle("title1");
-        AdminMsg adminMsg2 =new AdminMsg().setAdmin("admin").setMsg("消息222222").setDate(new Date()).setTitle("title2");
-        AdminMsg adminMsg3 =new AdminMsg().setAdmin("admin").setMsg("消息333333").setDate(new Date()).setTitle("title3");
-        AdminMsg adminMsg4 =new AdminMsg().setAdmin("admin").setMsg("消息444444").setDate(new Date()).setTitle("title4");
-
-        broadCastMsg.add(adminMsg1);
-        broadCastMsg.add(adminMsg2);
-        broadCastMsg.add(adminMsg3);
-        broadCastMsg.add(adminMsg4);
     }
 
     @Override

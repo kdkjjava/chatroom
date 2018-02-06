@@ -5,6 +5,7 @@ import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.Base64;
 
@@ -15,7 +16,7 @@ import java.util.Base64;
  * @Date: 2018/1/27 14:23
  * @Description:
  **/
-public class ConcurrentWebSocket {
+public class ConcurrentWebSocket implements Closeable{
 
     private WebSocketSession session;
 
@@ -44,4 +45,8 @@ public class ConcurrentWebSocket {
         }
     }
 
+    @Override
+    public void close() throws IOException {
+        this.session.close();
+    }
 }
