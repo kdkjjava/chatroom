@@ -131,4 +131,6 @@ public class UsersServiceImpl implements UsersService{
 		map.put("groupId", groupId);
 		return usersMapper.findNewMembers(map);
 	}
+
+
 }

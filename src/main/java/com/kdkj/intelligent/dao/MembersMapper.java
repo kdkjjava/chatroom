@@ -14,4 +14,7 @@ public interface MembersMapper {
 
     int update(Members record);
 
+    List<String> selectUsernameInGroup(String groupId);
+
+    List<String> selectGroupIdByUsername(String username);
 }

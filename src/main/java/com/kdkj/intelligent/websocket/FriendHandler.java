@@ -140,6 +140,7 @@ public class FriendHandler implements WebSocketHandler {
     private void sendUsualMsg(WebSocketSession webSocketSession, SocketMsg socketMsg, String key) {
         try {
             webSocketSession.sendMessage(new TextMessage(JSON.toJSONString(socketMsg)));
+            webSocketSession.sendMessage(new TextMessage(JSON.toJSONString(new SocketMsg().setMsg("换行\n123换行\n456"))));
         } catch (IOException e) {
             e.printStackTrace();
         }

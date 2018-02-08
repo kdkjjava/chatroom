@@ -2,14 +2,18 @@ package com.kdkj.intelligent.websocket;
 
 import com.alibaba.fastjson.JSON;
 import com.kdkj.intelligent.entity.SocketMsg;
+import com.kdkj.intelligent.entity.TipsMsg;
+import com.kdkj.intelligent.service.MembersService;
 import com.kdkj.intelligent.service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * powered by IntelliJ IDEA
@@ -23,6 +27,9 @@ public class ProxyHandler implements WebSocketHandler {
 
     @Autowired
     private UsersService usersService;
+
+    @Autowired
+    private MembersService membersService;
 
     //该变量用于保存master的session
     protected static Map<String, ConcurrentWebSocket> masterSessionPools;
@@ -91,7 +98,6 @@ public class ProxyHandler implements WebSocketHandler {
      * @param socketMsg        待发送的消息对象
      */
     private void sendUsualMsg(ConcurrentWebSocket webSocketSession, SocketMsg socketMsg ) {
-        String s = usersService.selectTypeByUserName(socketMsg.getMsgFrom());
         if ("3".equals(usersService.selectTypeByUserName(socketMsg.getMsgFrom()))){
             webSocketSession.send(new TextMessage(JSON.toJSONString(socketMsg)));
         }
@@ -101,6 +107,7 @@ public class ProxyHandler implements WebSocketHandler {
                 //将本条消息通过WebSocketSession发送至客户端
                 item.send(new TextMessage(JSON.toJSONString(socketMsg)));
             });
+            sendOffMsg(socketMsg);
             if (GroupHandler.sessionPools.get(socketMsg.getGroupId()).isEmpty()) {
                 webSocketSession.send(new TextMessage("{\"errorCode\":\"NO_ONLINE_USERS\"}"));
             }
@@ -121,10 +128,24 @@ public class ProxyHandler implements WebSocketHandler {
                 //将本条消息通过WebSocketSession发送至客户端
                 item.sendBinary(socketMsg);
             });
+            sendOffMsg(socketMsg);
             if (GroupHandler.sessionPools.get(socketMsg.getGroupId()).isEmpty()) {
                 webSocketSession.send(new TextMessage("{\"errorCode\":\"NO_ONLINE_USERS\"}"));
             }
         }
+    }
+
+    private void sendOffMsg(SocketMsg socketMsg){
+        List<String> groupMembers = membersService.selectUsernameInGroup(socketMsg.getGroupId());
+        groupMembers.forEach(item ->{
+            if (TotalHandler.totalSessions.containsKey(item) && !GroupHandler.sessionPools.get(socketMsg.getGroupId()).containsKey(item)){
+                TotalHandler.totalSessions.get(item).send(new TextMessage(JSON.toJSONString(new TipsMsg().setGroupId(socketMsg.getMsgFrom())
+                        .setMsgType("group").setCount(1))));
+                if (!GroupHandler.leaveMsg.get(socketMsg.getGroupId()).containsKey(item))
+                    GroupHandler.leaveMsg.get(socketMsg.getGroupId()).put(item,new CopyOnWriteArrayList<>());
+                GroupHandler.leaveMsg.get(socketMsg.getGroupId()).get(item).add(socketMsg);
+            }
+        });
     }
 
 }

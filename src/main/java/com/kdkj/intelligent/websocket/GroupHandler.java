@@ -1,13 +1,17 @@
 package com.kdkj.intelligent.websocket;
 
 import com.alibaba.fastjson.JSON;
+import com.kdkj.intelligent.entity.GroupTeam;
 import com.kdkj.intelligent.entity.SocketMsg;
+import com.kdkj.intelligent.entity.TipsMsg;
 import com.kdkj.intelligent.service.GroupTeamService;
+import com.kdkj.intelligent.service.MembersService;
 import com.kdkj.intelligent.service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 
+import javax.annotation.PostConstruct;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,11 +23,22 @@ public class GroupHandler implements WebSocketHandler {
     @Autowired
     private GroupTeamService groupTeamService;
 
+    @Autowired
+    private MembersService membersService;
+
     //concurrent包的线程安全Map，用来存放每个客户端对应的MyWebSocket对象。其中key为房间号标识
     protected static Map<String, Map<String, ConcurrentWebSocket>> sessionPools;
+    //外层key为用户名，内层key为房间号
+    protected static Map<String, Map<String, List<SocketMsg>>> leaveMsg;
 
     static {
         sessionPools = new ConcurrentHashMap<>();
+        leaveMsg = new ConcurrentHashMap<>();
+    }
+
+    @PostConstruct
+    private void leaveMsgInit() {
+        groupTeamService.selectAll().forEach(item -> leaveMsg.put(item.getGroupId(), new ConcurrentHashMap<>()));
     }
 
     //握手实现连接后
@@ -40,6 +55,24 @@ public class GroupHandler implements WebSocketHandler {
             sessionPools.put(groupId, new ConcurrentHashMap<>());
             sessionPools.get(groupId).put(msgFrom, new ConcurrentWebSocket(webSocketSession));
         }
+        if (leaveMsg.get(groupId).containsKey(msgFrom))
+            getUnReceivedMsg(groupId, msgFrom);
+    }
+
+    /**
+     * 获取在线期间未接受的消息
+     *
+     * @param groupId
+     * @param msgFrom
+     */
+    private void getUnReceivedMsg(String groupId, String msgFrom) {
+        leaveMsg.get(groupId).get(msgFrom).forEach(item -> {
+            if (item.getMsg() != null)
+                sessionPools.get(groupId).get(msgFrom).send(new TextMessage(JSON.toJSONString(item)));
+            if (item.getBinary()!=null)
+                sessionPools.get(groupId).get(msgFrom).sendBinary(item);
+        });
+        leaveMsg.get(groupId).remove(msgFrom);
     }
 
 
@@ -61,7 +94,7 @@ public class GroupHandler implements WebSocketHandler {
      */
     @Override
     public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus) throws Exception {
-        System.out.println("group群链接：" + getParam(webSocketSession, "msgFrom") + "\n关闭码:" + closeStatus.getCode() + "\n关闭原因:" + closeStatus.getReason());
+        //System.out.println("group群链接：" + getParam(webSocketSession, "msgFrom") + "\n关闭码:" + closeStatus.getCode() + "\n关闭原因:" + closeStatus.getReason());
         String groupId = getParam(webSocketSession, "groupId");
         String msgFrom = getParam(webSocketSession, "msgFrom");
         sessionPools.get(groupId).remove(msgFrom);
@@ -78,7 +111,7 @@ public class GroupHandler implements WebSocketHandler {
     @Override
     public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage) throws Exception {
         if (webSocketMessage.getPayload().equals("ping")) {
-                new Thread(() -> sessionPools.get(getParam(webSocketSession, "groupId")).get(getParam(webSocketSession, "msgFrom")).send(new TextMessage("pong"))
+            new Thread(() -> sessionPools.get(getParam(webSocketSession, "groupId")).get(getParam(webSocketSession, "msgFrom")).send(new TextMessage("pong"))
             ).start();
             return;
         }
@@ -112,6 +145,16 @@ public class GroupHandler implements WebSocketHandler {
                 item.send(new TextMessage(JSON.toJSONString(socketMsg)));
             });
         }
+        List<String> groupMembers = membersService.selectUsernameInGroup(groupId);
+        groupMembers.forEach(item -> {
+            if (TotalHandler.totalSessions.containsKey(item) && !sessionPools.get(groupId).containsKey(item)) {
+                TotalHandler.totalSessions.get(item).send(new TextMessage(JSON.toJSONString(new TipsMsg().setGroupId(socketMsg.getMsgFrom())
+                        .setMsgType("group").setCount(1))));
+                if (!leaveMsg.get(groupId).containsKey(item))
+                    leaveMsg.get(groupId).put(item, new CopyOnWriteArrayList<>());
+                leaveMsg.get(groupId).get(item).add(socketMsg);
+            }
+        });
     }
 
     /**

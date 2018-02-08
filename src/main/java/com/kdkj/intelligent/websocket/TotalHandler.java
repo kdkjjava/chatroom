@@ -5,6 +5,7 @@ import com.kdkj.intelligent.entity.AdminMsg;
 import com.kdkj.intelligent.entity.SocketMsg;
 import com.kdkj.intelligent.entity.TipsMsg;
 import com.kdkj.intelligent.service.GroupTeamService;
+import com.kdkj.intelligent.service.MembersService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,9 @@ import java.util.concurrent.ConcurrentHashMap;
  **/
 @Component
 public class TotalHandler implements WebSocketHandler {
+
+    @Autowired
+    private MembersService membersService;
 
     //该变量用于存储用户的总的session
     protected static Map<String, ConcurrentWebSocket> totalSessions;
@@ -75,6 +79,7 @@ public class TotalHandler implements WebSocketHandler {
     public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus) {
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
         System.out.println("用户total链接："+msgFrom+"\n关闭码:"+closeStatus.getCode()+"\n关闭原因:"+closeStatus.getReason());
+        membersService.selectGroupIdByUsername(msgFrom).forEach(item -> GroupHandler.leaveMsg.get(item).remove(msgFrom));//删除群缓存里的个人消息
         if (msgFrom != null && totalSessions.containsKey(msgFrom)) {
             totalSessions.remove(msgFrom);
         }

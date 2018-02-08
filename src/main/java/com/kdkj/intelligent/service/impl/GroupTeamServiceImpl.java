@@ -3,6 +3,7 @@ package com.kdkj.intelligent.service.impl;
 import java.util.Date;
 import java.util.List;
 
+import com.kdkj.intelligent.websocket.WebSocketApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,8 @@ public class GroupTeamServiceImpl implements GroupTeamService {
 	@Autowired
 	UsersMapper usersMapper;
 
+	@Autowired
+	private WebSocketApi webSocketApi;
 
 	@Override
 	public int deleteByPrimaryKey(Integer id) {
@@ -33,6 +36,8 @@ public class GroupTeamServiceImpl implements GroupTeamService {
 		record.setGroupId(id);
 		//usersMapper.updateNogroupMemberTime(id);
 		membersMapper.deleteMemberShip(record);
+		int i = groupTeamMapper.deleteByPrimaryKey(id);
+		webSocketApi.deleteGroup(id);
 		return groupTeamMapper.deleteByPrimaryKey(id);
 	}
 
@@ -48,6 +53,7 @@ public class GroupTeamServiceImpl implements GroupTeamService {
 		record.setGroupId(groupTeam.getGroupId());
 		record.setBuildTime(new Date());
 		int i = groupTeamMapper.insert(record);
+		webSocketApi.insertGroup(record);
 		Members member = new Members();
 		member.setBuildTime(new Date());
 		member.setGroupId(record.getId());

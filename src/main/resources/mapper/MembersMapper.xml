@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kdkj.intelligent.dao.MembersMapper">
-	<cache eviction="LRU" flushInterval="500" size="50" readOnly="true"></cache>
-	<resultMap id="BaseResultMap" type="com.kdkj.intelligent.entity.Members">
-		<id column="id" jdbcType="BIGINT" property="id" />
-		<result column="user_id" jdbcType="INTEGER" property="userId" />
-		<result column="group_id" jdbcType="INTEGER" property="groupId" />
-		<result column="status" jdbcType="VARCHAR" property="status" />
-		<result column="build_time" jdbcType="TIMESTAMP" property="buildTime" />
-	</resultMap>
+    <cache eviction="LRU" flushInterval="500" size="50" readOnly="true"></cache>
+    <resultMap id="BaseResultMap" type="com.kdkj.intelligent.entity.Members">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="group_id" jdbcType="INTEGER" property="groupId"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
+        <result column="build_time" jdbcType="TIMESTAMP" property="buildTime"/>
+    </resultMap>
 
-	<delete id="deleteMemberShip" parameterType="com.kdkj.intelligent.entity.Members">
-		delete from members
-		where 
-		<if test="userId !=null ">user_id = #{userId,jdbcType=BIGINT} and </if>
-		 group_id= #{groupId,jdbcType=BIGINT}
-	</delete>
+    <delete id="deleteMemberShip" parameterType="com.kdkj.intelligent.entity.Members">
+        delete from members
+        where
+        <if test="userId !=null ">user_id = #{userId,jdbcType=BIGINT} and</if>
+        group_id= #{groupId,jdbcType=BIGINT}
+    </delete>
 
-	<insert id="insert" parameterType="com.kdkj.intelligent.entity.Members">
+    <insert id="insert" parameterType="com.kdkj.intelligent.entity.Members">
 		insert into members (id, user_id, group_id,
 		status, build_time)
 		values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=INTEGER},
@@ -25,19 +25,30 @@
 		#{status,jdbcType=VARCHAR}, #{buildTime,jdbcType=TIMESTAMP})
 	</insert>
 
-   <select id="findMemberShip" parameterType="com.kdkj.intelligent.entity.Members" resultMap="BaseResultMap">
+    <select id="findMemberShip" parameterType="com.kdkj.intelligent.entity.Members" resultMap="BaseResultMap">
    select group_id ,user_id 
    from members 
    where user_id = #{userId,jdbcType=BIGINT}
 		and group_id= #{groupId,jdbcType=BIGINT}
    </select>
 
-	<update id="update" parameterType="com.kdkj.intelligent.entity.Members">
-		update members
-		<set>
-			<if test="status !=null and status !='' "> status = #{status,jdbcType=VARCHAR},</if>
-		</set>
-		where user_id = #{userId,jdbcType=BIGINT}
-		and group_id= #{groupId,jdbcType=BIGINT}
-	</update>
+    <update id="update" parameterType="com.kdkj.intelligent.entity.Members">
+        update members
+        <set>
+            <if test="status !=null and status !='' ">status = #{status,jdbcType=VARCHAR},</if>
+        </set>
+        where user_id = #{userId,jdbcType=BIGINT}
+        and group_id= #{groupId,jdbcType=BIGINT}
+    </update>
+
+    <select id="selectUsernameInGroup" parameterType="java.lang.String" resultType="java.lang.String">
+		select username from users where id in(
+          select m.user_id from members m LEFT JOIN group_team g on m.group_id=g.id where g.group_id = #{groupId,jdbcType=VARCHAR})
+	</select>
+
+    <select id="selectGroupIdByUsername" parameterType="java.lang.String" resultType="java.lang.String">
+        select group_id from group_team where id in (
+        select group_id from members where user_id = (
+        select id from users where username = #{username,jdbcType=VARCHAR} limit 1));
+    </select>
 </mapper>

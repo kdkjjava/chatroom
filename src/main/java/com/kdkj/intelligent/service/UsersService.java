@@ -42,4 +42,5 @@ public interface UsersService {
     Integer proxyToUser(Users user);
 
 	List<Users> findNewMembers(Long id, Long groupId);
+
 }

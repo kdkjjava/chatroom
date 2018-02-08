@@ -15,6 +15,17 @@ public class TipsMsg {
 
     private Integer count;
 
+    private String groupId;
+
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public TipsMsg setGroupId(String groupId) {
+        this.groupId = groupId;
+        return this;
+    }
+
     public String getMsgFrom() {
         return msgFrom;
     }

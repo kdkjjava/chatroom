@@ -166,6 +166,7 @@
         select id,username,nickname,type,status,picture_address,phone,level
         <if test="type == '1'.toString()">,proxy_level,expire_date</if>
         from users where type = #{type}
+        <if test="type == '0'.toString()">or type = '3' </if>
         <if test="keyWord !=null and keyWord != ''">and phone rlike #{keyWord}</if>
         order by ${orderBy}
         <if test="'desc'.equals(sort) ">desc</if>
