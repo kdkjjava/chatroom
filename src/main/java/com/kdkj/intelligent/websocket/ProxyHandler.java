@@ -51,8 +51,8 @@ public class ProxyHandler implements WebSocketHandler {
     @Override
     public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage) {
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
-        if (webSocketMessage instanceof PingMessage){
-            masterSessionPools.get(msgFrom).sendPong(new PongMessage(((PingMessage) webSocketMessage).getPayload()));
+        if ("ping".equals(webSocketMessage.getPayload())) {
+            masterSessionPools.get(msgFrom).send(new TextMessage("pong"));
             return;
         }
         SocketMsg socketMsg = JSON.parseObject(webSocketMessage.getPayload().toString(), SocketMsg.class);
