@@ -62,7 +62,7 @@ public class FriendHandler implements WebSocketHandler {
         //将用户发送的json消息解析为java对象
         SocketMsg socketMsg = JSON.parseObject(webSocketMessage.getPayload().toString(), SocketMsg.class);
         String key = getKey(socketMsg.getMsgFrom(), socketMsg.getMsgTo());
-        sendUsualMsg(webSocketSession, socketMsg, key);
+        sendUsualMsg(webSocketSession, socketMsg, key,webSocketMessage);
     }
 
     @Override
@@ -132,21 +132,22 @@ public class FriendHandler implements WebSocketHandler {
 
     /**
      * 发送消息方法
-     *
-     * @param webSocketSession session对象
+     *  @param webSocketSession session对象
      * @param socketMsg        消息对象
      * @param key              好友聊天的key
+     * @param webSocketMessage
      */
-    private void sendUsualMsg(WebSocketSession webSocketSession, SocketMsg socketMsg, String key) {
+    private void sendUsualMsg(WebSocketSession webSocketSession, SocketMsg socketMsg, String key, WebSocketMessage<?> webSocketMessage) {
         try {
-            webSocketSession.sendMessage(new TextMessage(JSON.toJSONString(socketMsg)));
-            webSocketSession.sendMessage(new TextMessage(JSON.toJSONString(new SocketMsg().setMsg("换行\n123换行\n456"))));
+            webSocketSession.sendMessage(webSocketMessage);
+            //webSocketSession.sendMessage(new TextMessage(JSON.toJSONString(new SocketMsg().setMsg("换行\n123换行\n456"))));
         } catch (IOException e) {
             e.printStackTrace();
         }
+        System.out.println(friendSessionPools);
         if (friendSessionPools.get(key).size() > 1) {
             try {
-                friendSessionPools.get(key).get(socketMsg.getMsgTo()).sendMessage(new TextMessage(JSON.toJSONString(socketMsg)));
+                friendSessionPools.get(key).get(socketMsg.getMsgTo()).sendMessage(webSocketMessage);
             } catch (IOException e) {
                 e.printStackTrace();
             }

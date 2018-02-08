@@ -2,6 +2,7 @@ package com.kdkj.intelligent.websocket;
 
 import com.kdkj.intelligent.entity.SocketMsg;
 import org.springframework.web.socket.BinaryMessage;
+import org.springframework.web.socket.PongMessage;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -48,5 +49,13 @@ public class ConcurrentWebSocket implements Closeable{
     @Override
     public void close() throws IOException {
         this.session.close();
+    }
+
+    public synchronized void sendPong(PongMessage pongMessage) {
+        try {
+            session.sendMessage(pongMessage);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

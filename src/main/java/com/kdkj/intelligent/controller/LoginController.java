@@ -9,11 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.alibaba.druid.util.StringUtils;
 import com.kdkj.intelligent.entity.Users;
@@ -63,6 +59,7 @@ public class LoginController {
 				usersService.updateByPrimaryKey(user);
 				user = usersService.selectByPrimaryKey(user.getId());
 				HttpSession session = request.getSession();
+				session.setMaxInactiveInterval(82800);
 				user.setPassword(null);
 				session.setAttribute("user", user);
 				if ("2".equals(user.getType()))//若为管理员登陆，则往session域里添加一个标记
@@ -114,5 +111,10 @@ public class LoginController {
 			request.removeAttribute("token");
 		}
 		return Result.ok();
+	}
+
+	@GetMapping(value = "keepAlive")
+	public String keepAlive(){
+		return "ok";
 	}
 }

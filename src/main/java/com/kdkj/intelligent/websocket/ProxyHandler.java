@@ -41,8 +41,8 @@ public class ProxyHandler implements WebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession webSocketSession) throws Exception {
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
-        webSocketSession.setBinaryMessageSizeLimit(5242880);
-        webSocketSession.setTextMessageSizeLimit(5242880);
+        webSocketSession.setBinaryMessageSizeLimit(524288);
+        webSocketSession.setTextMessageSizeLimit(524288);
         if (masterSessionPools.containsKey(msgFrom) && masterSessionPools.get(msgFrom).getSession().isOpen())
             masterSessionPools.get(msgFrom).getSession().close();
         masterSessionPools.put(msgFrom, new ConcurrentWebSocket(webSocketSession));
@@ -50,18 +50,15 @@ public class ProxyHandler implements WebSocketHandler {
 
     @Override
     public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage) {
-
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
-        if (webSocketMessage.getPayload().equals("ping")) {
-            new Thread(() -> masterSessionPools.get(msgFrom).send(new TextMessage("pong"))
-            ).start();
+        if (webSocketMessage instanceof PingMessage){
+            masterSessionPools.get(msgFrom).sendPong(new PongMessage(((PingMessage) webSocketMessage).getPayload()));
             return;
         }
         SocketMsg socketMsg = JSON.parseObject(webSocketMessage.getPayload().toString(), SocketMsg.class);
         if (socketMsg.getMsg() != null) {
             //将用户发送的json消息解析为java对象
-            new Thread(() -> sendUsualMsg(masterSessionPools.get(msgFrom), socketMsg)).start();
-
+            new Thread(() -> sendUsualMsg(masterSessionPools.get(msgFrom), socketMsg,webSocketMessage)).start();
             return;
         }
         if (socketMsg.getBinary() != null) {
@@ -93,19 +90,19 @@ public class ProxyHandler implements WebSocketHandler {
 
     /**
      * 普通文本消息发送方法
-     *
-     * @param webSocketSession 当前session对象
+     *  @param webSocketSession 当前session对象
      * @param socketMsg        待发送的消息对象
+     * @param webSocketMessage
      */
-    private void sendUsualMsg(ConcurrentWebSocket webSocketSession, SocketMsg socketMsg ) {
+    private void sendUsualMsg(ConcurrentWebSocket webSocketSession, SocketMsg socketMsg, WebSocketMessage<?> webSocketMessage) {
         if ("3".equals(usersService.selectTypeByUserName(socketMsg.getMsgFrom()))){
-            webSocketSession.send(new TextMessage(JSON.toJSONString(socketMsg)));
+            webSocketSession.send(webSocketMessage);
         }
         if (GroupHandler.sessionPools.containsKey(socketMsg.getGroupId())) {
             //将客户端的信息发送至指定的群聊天中
             GroupHandler.sessionPools.get(socketMsg.getGroupId()).forEach((key, item) -> {
                 //将本条消息通过WebSocketSession发送至客户端
-                item.send(new TextMessage(JSON.toJSONString(socketMsg)));
+                item.send(webSocketMessage);
             });
             sendOffMsg(socketMsg);
             if (GroupHandler.sessionPools.get(socketMsg.getGroupId()).isEmpty()) {
@@ -139,8 +136,8 @@ public class ProxyHandler implements WebSocketHandler {
         List<String> groupMembers = membersService.selectUsernameInGroup(socketMsg.getGroupId());
         groupMembers.forEach(item ->{
             if (TotalHandler.totalSessions.containsKey(item) && !GroupHandler.sessionPools.get(socketMsg.getGroupId()).containsKey(item)){
-                TotalHandler.totalSessions.get(item).send(new TextMessage(JSON.toJSONString(new TipsMsg().setGroupId(socketMsg.getMsgFrom())
-                        .setMsgType("group").setCount(1))));
+                /*TotalHandler.totalSessions.get(item).send(new TextMessage(JSON.toJSONString(new TipsMsg().setGroupId(socketMsg.getMsgFrom())
+                        .setMsgType("group").setCount(1))));*/
                 if (!GroupHandler.leaveMsg.get(socketMsg.getGroupId()).containsKey(item))
                     GroupHandler.leaveMsg.get(socketMsg.getGroupId()).put(item,new CopyOnWriteArrayList<>());
                 GroupHandler.leaveMsg.get(socketMsg.getGroupId()).get(item).add(socketMsg);

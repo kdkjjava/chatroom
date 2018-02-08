@@ -1,12 +1,9 @@
 package com.kdkj.intelligent.websocket;
 
 import com.alibaba.fastjson.JSON;
-import com.kdkj.intelligent.entity.GroupTeam;
 import com.kdkj.intelligent.entity.SocketMsg;
-import com.kdkj.intelligent.entity.TipsMsg;
 import com.kdkj.intelligent.service.GroupTeamService;
 import com.kdkj.intelligent.service.MembersService;
-import com.kdkj.intelligent.service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
@@ -46,8 +43,8 @@ public class GroupHandler implements WebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession webSocketSession) throws Exception {
         String groupId = getParam(webSocketSession, "groupId");
         String msgFrom = getParam(webSocketSession, "msgFrom");
-        webSocketSession.setBinaryMessageSizeLimit(5242880);
-        webSocketSession.setTextMessageSizeLimit(5242880);
+        webSocketSession.setBinaryMessageSizeLimit(524288);
+        webSocketSession.setTextMessageSizeLimit(524288);
         //将连接地址的参数groupId的值放入变量roomCode中
         if (sessionPools.containsKey(groupId)) {
             sessionPools.get(groupId).put(msgFrom, new ConcurrentWebSocket(webSocketSession));
@@ -111,7 +108,10 @@ public class GroupHandler implements WebSocketHandler {
     @Override
     public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage) throws Exception {
         if (webSocketMessage.getPayload().equals("ping")) {
-            new Thread(() -> sessionPools.get(getParam(webSocketSession, "groupId")).get(getParam(webSocketSession, "msgFrom")).send(new TextMessage("pong"))
+            new Thread(() -> {
+                if (sessionPools.get(getParam(webSocketSession, "groupId")).containsKey(getParam(webSocketSession, "msgFrom")))
+                    sessionPools.get(getParam(webSocketSession, "groupId")).get(getParam(webSocketSession, "msgFrom")).send(new TextMessage("pong"));
+            }
             ).start();
             return;
         }
@@ -122,15 +122,16 @@ public class GroupHandler implements WebSocketHandler {
             sendToClient(socketMsg, masterName);
         }
         //调用普通信息的发送方法
-        new Thread(() -> sendUsualMessage(webSocketSession, socketMsg)).start();
+        new Thread(() -> sendUsualMessage(webSocketSession, socketMsg,webSocketMessage)).start();
     }
 
     /**
      * 本方法用于处理玩家发送的普通消息
      *
      * @param webSocketSession 当前session对象
+     * @param webSocketMessage
      */
-    private void sendUsualMessage(WebSocketSession webSocketSession, SocketMsg socketMsg) {
+    private void sendUsualMessage(WebSocketSession webSocketSession, SocketMsg socketMsg, WebSocketMessage<?> webSocketMessage) {
         String groupId = (String) webSocketSession.getAttributes().get("groupId");
         if (!groupId.equals(socketMsg.getGroupId())) {
             try {
@@ -140,18 +141,17 @@ public class GroupHandler implements WebSocketHandler {
             }
         }
         //遍历map集合，将消息发送至同一个房间下的session
-        if (sessionPools.containsKey(socketMsg.getGroupId())) {
-            sessionPools.get(socketMsg.getGroupId()).forEach((key, item) -> {
-                item.send(new TextMessage(JSON.toJSONString(socketMsg)));
-            });
-        }
+        if (sessionPools.containsKey(socketMsg.getGroupId()))
+            sessionPools.get(socketMsg.getGroupId()).forEach((key, item) -> item.send(webSocketMessage));
         List<String> groupMembers = membersService.selectUsernameInGroup(groupId);
         groupMembers.forEach(item -> {
             if (TotalHandler.totalSessions.containsKey(item) && !sessionPools.get(groupId).containsKey(item)) {
-                TotalHandler.totalSessions.get(item).send(new TextMessage(JSON.toJSONString(new TipsMsg().setGroupId(socketMsg.getMsgFrom())
-                        .setMsgType("group").setCount(1))));
-                if (!leaveMsg.get(groupId).containsKey(item))
-                    leaveMsg.get(groupId).put(item, new CopyOnWriteArrayList<>());
+                /*TotalHandler.totalSessions.get(item).send(new TextMessage(JSON.toJSONString(new TipsMsg().setGroupId(socketMsg.getMsgFrom())
+                        .setMsgType("group").setCount(1))));*/
+                synchronized (this){
+                    if (!leaveMsg.get(groupId).containsKey(item))
+                        leaveMsg.get(groupId).put(item, new CopyOnWriteArrayList<>());
+                }
                 leaveMsg.get(groupId).get(item).add(socketMsg);
             }
         });
@@ -159,8 +159,7 @@ public class GroupHandler implements WebSocketHandler {
 
     /**
      * 本方法用于发送信息至客户端
-     *
-     * @param socketMsg  消息对象
+     *  @param socketMsg  消息对象
      * @param masterName 代理
      */
     private void sendToClient(SocketMsg socketMsg, String masterName) {
