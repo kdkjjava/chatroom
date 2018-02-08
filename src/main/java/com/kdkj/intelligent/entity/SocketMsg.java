@@ -17,6 +17,8 @@ public class SocketMsg {
 
     private String msgFrom;
 
+    private String nickname;
+
     private String msgTo;
 
     private String date;
@@ -28,6 +30,14 @@ public class SocketMsg {
     private int number;
 
     private String pictureAddress;
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
 
     public String getPictureAddress() {
         return pictureAddress;

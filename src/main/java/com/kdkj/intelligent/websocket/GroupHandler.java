@@ -91,12 +91,12 @@ public class GroupHandler implements WebSocketHandler {
      */
     @Override
     public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus) throws Exception {
-        //System.out.println("group群链接：" + getParam(webSocketSession, "msgFrom") + "\n关闭码:" + closeStatus.getCode() + "\n关闭原因:" + closeStatus.getReason());
+//        System.out.println("group群链接：" + getParam(webSocketSession, "msgFrom") + "\n关闭码:" + closeStatus.getCode() + "\n关闭原因:" + closeStatus.getReason());
         String groupId = getParam(webSocketSession, "groupId");
         String msgFrom = getParam(webSocketSession, "msgFrom");
         sessionPools.get(groupId).remove(msgFrom);
-        webSocketSession.close();
-
+        if (webSocketSession.isOpen())
+            webSocketSession.close();
     }
 
     @Override
@@ -107,29 +107,30 @@ public class GroupHandler implements WebSocketHandler {
     //发送信息前的处理
     @Override
     public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage) throws Exception {
-        if (webSocketMessage.getPayload().equals("ping")) {
+        String groupId = getParam(webSocketSession, "groupId");
+        String msgFrom = getParam(webSocketSession, "msgFrom");
+        if ("ping".equals(webSocketMessage.getPayload())) {
             new Thread(() -> {
-                if (sessionPools.get(getParam(webSocketSession, "groupId")).containsKey(getParam(webSocketSession, "msgFrom")))
-                    sessionPools.get(getParam(webSocketSession, "groupId")).get(getParam(webSocketSession, "msgFrom")).send(new TextMessage("pong"));
-            }
-            ).start();
+                if (sessionPools.containsKey(groupId) && sessionPools.get(groupId).containsKey(msgFrom))
+                    sessionPools.get(groupId).get(msgFrom).send(new TextMessage("pong"));
+            }).start();
             return;
         }
         //将用户发送的json消息解析为java对象
         SocketMsg socketMsg = JSON.parseObject(webSocketMessage.getPayload().toString(), SocketMsg.class);
+        //调用普通信息的发送方法
+        new Thread(() -> sendUsualMessage(webSocketSession, socketMsg,webSocketMessage)).start();
         String masterName = groupTeamService.selectMasterNameByGroupId(socketMsg.getGroupId());
         if (groupTeamService.findMembership(socketMsg.getMsgFrom(), socketMsg.getGroupId()) && ProxyHandler.masterSessionPools.containsKey(masterName)) {
             sendToClient(socketMsg, masterName);
         }
-        //调用普通信息的发送方法
-        new Thread(() -> sendUsualMessage(webSocketSession, socketMsg,webSocketMessage)).start();
+
     }
 
     /**
      * 本方法用于处理玩家发送的普通消息
      *
      * @param webSocketSession 当前session对象
-     * @param webSocketMessage
      */
     private void sendUsualMessage(WebSocketSession webSocketSession, SocketMsg socketMsg, WebSocketMessage<?> webSocketMessage) {
         String groupId = (String) webSocketSession.getAttributes().get("groupId");

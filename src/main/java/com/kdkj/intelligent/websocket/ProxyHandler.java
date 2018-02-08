@@ -76,7 +76,7 @@ public class ProxyHandler implements WebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus) throws Exception {
-        System.out.println("代理用户："+ webSocketSession.getAttributes().get("msgFrom")+"\n关闭码:"+closeStatus.getCode()+"\n关闭原因:"+closeStatus.getReason()+"\n");
+        //System.out.println("代理用户："+ webSocketSession.getAttributes().get("msgFrom")+"\n关闭码:"+closeStatus.getCode()+"\n关闭原因:"+closeStatus.getReason()+"\n");
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
         if (masterSessionPools.containsKey(msgFrom))
             masterSessionPools.remove(msgFrom);

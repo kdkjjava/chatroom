@@ -78,7 +78,7 @@ public class TotalHandler implements WebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus) {
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
-        System.out.println("用户total链接："+msgFrom+"\n关闭码:"+closeStatus.getCode()+"\n关闭原因:"+closeStatus.getReason());
+        //System.out.println("用户total链接："+msgFrom+"\n关闭码:"+closeStatus.getCode()+"\n关闭原因:"+closeStatus.getReason());
         membersService.selectGroupIdByUsername(msgFrom).forEach(item -> GroupHandler.leaveMsg.get(item).remove(msgFrom));//删除群缓存里的个人消息
         if (msgFrom != null && totalSessions.containsKey(msgFrom)) {
             totalSessions.remove(msgFrom);

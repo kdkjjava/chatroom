@@ -59,7 +59,6 @@ public class LoginController {
 				usersService.updateByPrimaryKey(user);
 				user = usersService.selectByPrimaryKey(user.getId());
 				HttpSession session = request.getSession();
-				session.setMaxInactiveInterval(82800);
 				user.setPassword(null);
 				session.setAttribute("user", user);
 				if ("2".equals(user.getType()))//若为管理员登陆，则往session域里添加一个标记
