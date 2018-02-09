@@ -43,7 +43,7 @@
         #{nickname,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR},
         #{status,jdbcType=VARCHAR},#{score,jdbcType=BIGINT},
         #{registTime,jdbcType=TIMESTAMP}, #{pictureAddress,jdbcType=VARCHAR},
-        #{phone,jdbcType=VARCHAR},#{token,jdbcType=VARCHAR},
+        #{phone,jdbcType=VARCHAR},REPLACE(uuid(),'-',''),
         #{registTime,jdbcType=TIMESTAMP}, #{master,jdbcType=VARCHAR})
     </insert>
 
