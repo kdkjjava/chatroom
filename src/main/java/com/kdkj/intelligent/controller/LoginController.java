@@ -54,9 +54,20 @@ public class LoginController {
 		try {
 			String newpassword = MD5Encryption.getEncryption(record.getPassword());
 			if (newpassword.equals(user.getPassword())) {
-				user.setToken("newToken");
-				user.setLastLoginTime(new Date());
-				usersService.updateByPrimaryKey(user);
+				if(user.getLastLoginTime()==null) {
+					user.setToken("newToken");
+					user.setLastLoginTime(new Date());
+					usersService.updateByPrimaryKey(user);
+				}else {
+					Calendar cal1=Calendar.getInstance();
+					cal1.setTime(user.getLastLoginTime());
+					cal1.add(2,3);
+					if(cal1.getTime().before(new Date())) {
+						user.setToken("newToken");
+						user.setLastLoginTime(new Date());
+						usersService.updateByPrimaryKey(user);
+					}
+				}
 				user = usersService.selectByPrimaryKey(user.getId());
 				HttpSession session = request.getSession();
 				user.setPassword(null);
@@ -86,7 +97,6 @@ public class LoginController {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
 		cal.add(2,3);
-		cal.getTime();
 		Calendar cal2 = Calendar.getInstance();
 		cal2.setTime(new Date());
 		boolean bl = cal.after(cal2);
