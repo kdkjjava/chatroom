@@ -88,7 +88,7 @@ public class VisitFilter implements Filter {
 		}
 		if (session.getAttribute("user") == null) {
 			if (req.getHeader("token") != null) {
-				String token = req.getHeader("token");;
+				String token = req.getHeader("token");
 				Users user = new Users();
 				user.setToken(token);
 				List<Users> list = usersService.selectListByUser(user);
