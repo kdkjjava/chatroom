@@ -54,6 +54,7 @@ public class WebSocketApi {
         String groupId = groupTeamService.selectByPrimaryKey(id).getGroupId();
         if (GroupHandler.leaveMsg.containsKey(groupId))
             GroupHandler.leaveMsg.remove(groupId);
+
     }
 
 }
