@@ -78,10 +78,16 @@ public class GroupTeamController {
 
 	@RequestMapping(value = "/addGroup", method = RequestMethod.POST)
 	public Result addGroup(HttpServletRequest request, @RequestBody GroupTeam record) {
+		Users nowUser=getUser(request);
 		if (!"1".equals(getUser(request).getType()))
 			return Result.error("当前用户无此权限!");
 		if (record.getMasterId() == null || record.getGroupName() == null) 
 			return Result.error("请检查参数是否填写完整");
+		GroupTeam gt=new GroupTeam();
+		gt.setMasterId(nowUser.getId());
+		List<GroupTeam> list=groupTeamService.selectListByGroup(gt);
+		if(list!=null &&list.size()>0)
+			return Result.error("您已有群，不能再建群了！");
 		groupTeamService.insert(record);
 		return Result.ok("新建群成功", record);
 	}
