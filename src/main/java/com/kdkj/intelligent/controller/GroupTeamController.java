@@ -151,7 +151,7 @@ public class GroupTeamController {
 			return Result.error("您无权限做此操作！");
 		if (groupTeamService.findMembership(record)) {
 			groupTeamService.updateMemberShip(record);
-			return Result.ok();
+			return Result.ok(usersService.selectByPrimaryKey(record.getUserId()).getUsername());
 		} else
 			return Result.error("群中无此用户");
 	}
