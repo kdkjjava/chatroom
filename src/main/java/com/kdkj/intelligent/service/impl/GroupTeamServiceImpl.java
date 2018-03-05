@@ -34,10 +34,11 @@ public class GroupTeamServiceImpl implements GroupTeamService {
 	public int deleteByPrimaryKey(Integer id) {
 		Members record=new Members();
 		record.setGroupId(id);
+		webSocketApi.deleteGroup(id);
 		//usersMapper.updateNogroupMemberTime(id);
 		membersMapper.deleteMemberShip(record);
 		int i = groupTeamMapper.deleteByPrimaryKey(id);
-		webSocketApi.deleteGroup(id);
+
 		return groupTeamMapper.deleteByPrimaryKey(id);
 	}
 

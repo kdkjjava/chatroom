@@ -51,7 +51,8 @@ public class WebSocketApi {
      * @param id
      */
     public void deleteGroup(Integer id){
-        String groupId = groupTeamService.selectByPrimaryKey(id).getGroupId();
+        GroupTeam groupTeam = groupTeamService.selectByPrimaryKey(id);
+        String groupId = groupTeam.getGroupId();
         if (GroupHandler.leaveMsg.containsKey(groupId))
             GroupHandler.leaveMsg.remove(groupId);
 
