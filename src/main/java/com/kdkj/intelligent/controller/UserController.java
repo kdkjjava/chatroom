@@ -40,6 +40,8 @@ public class UserController {
 		PageHelper.startPage(record.getCurrent(), record.getPageSize());
 		List<Users> list = usersService.selectListByUser(record);
 		PageInfo<Users> page = new PageInfo<Users>(list);
+		if(page.getTotal()==0)
+			return Result.error("你查询的用户为空!");
 		return Result.ok("查询成功", page);
 	}
 	

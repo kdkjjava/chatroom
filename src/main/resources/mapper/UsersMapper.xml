@@ -122,9 +122,9 @@
         <if test="phone !=null and phone !=''">and phone = #{phone,jdbcType=VARCHAR}</if>
         <if test="token !=null and token !=''">and token = #{token,jdbcType=VARCHAR}</if>
         <if test="lastLoginTime !=null">and last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP}</if>
-        <if test="level !=null and level != ''">level = #{level,jdbcType=VARCHAR},</if>
-        <if test="proxyLevel !=null and proxyLevel !=''">and proxy_level = #{proxyLevel,jdbcType=VARCHAR},</if>
-        <if test="expireDate !=null and expireDate !=''">and expire_date = #{expireDate,jdbcType=DATE},</if>
+        <if test="level !=null and level != ''">and level = #{level,jdbcType=VARCHAR}</if>
+        <if test="proxyLevel !=null and proxyLevel !=''">and proxy_level = #{proxyLevel,jdbcType=VARCHAR}</if>
+        <if test="expireDate !=null and expireDate !=''">and expire_date = #{expireDate,jdbcType=DATE}</if>
     </select>
 
     <select id="selectUserByGroupId" parameterType="java.lang.Integer"
