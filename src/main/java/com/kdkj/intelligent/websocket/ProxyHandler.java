@@ -51,7 +51,7 @@ public class ProxyHandler implements WebSocketHandler {
     @Override
     public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage) {
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
-        if ("ping".equals(webSocketMessage.getPayload())) {
+        if ("ping".equals(webSocketMessage.getPayload()) && masterSessionPools.get(msgFrom)!=null) {
             masterSessionPools.get(msgFrom).send(new TextMessage("pong"));
             return;
         }
@@ -109,6 +109,8 @@ public class ProxyHandler implements WebSocketHandler {
                 webSocketSession.send(new TextMessage("{\"errorCode\":\"NO_ONLINE_USERS\"}"));
             }
         } else {
+            if (webSocketSession ==null)
+                return;
             webSocketSession.send(new TextMessage("{\"errorCode\":\"群号不正确或者无在线用户\"}"));
         }
     }

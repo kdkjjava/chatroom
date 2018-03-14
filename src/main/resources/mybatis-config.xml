@@ -3,7 +3,7 @@
 <configuration>
 	<settings>
 		<!-- 打印查询语句 -->
-		<setting name="logImpl" value="STDOUT_LOGGING" />
+		<!--<setting name="logImpl" value="STDOUT_LOGGING" />-->
 		<!-- 这个配置使全局的映射器启用或禁用缓存 -->
 		<setting name="cacheEnabled" value="true" />
 		<!-- 对于未知的SQL查询，允许返回不同的结果集以达到通用的效果 -->
