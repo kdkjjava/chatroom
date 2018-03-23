@@ -32,7 +32,7 @@ public class ProxyHandler implements WebSocketHandler {
     private MembersService membersService;
 
     //该变量用于保存master的session
-    protected static Map<String, ConcurrentWebSocket> masterSessionPools;
+    public static Map<String, ConcurrentWebSocket> masterSessionPools;
 
     static {
         masterSessionPools = new ConcurrentHashMap<>();
@@ -43,9 +43,12 @@ public class ProxyHandler implements WebSocketHandler {
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
         webSocketSession.setBinaryMessageSizeLimit(524288);
         webSocketSession.setTextMessageSizeLimit(524288);
-        if (masterSessionPools.containsKey(msgFrom) && masterSessionPools.get(msgFrom).getSession().isOpen())
+        ConcurrentWebSocket concurrentWebSocket = new ConcurrentWebSocket(webSocketSession);
+        if (masterSessionPools.containsKey(msgFrom) && masterSessionPools.get(msgFrom).getSession().isOpen()){
+            concurrentWebSocket.setOnlineRobots(masterSessionPools.get(msgFrom).getOnlineRobots());
             masterSessionPools.get(msgFrom).getSession().close();
-        masterSessionPools.put(msgFrom, new ConcurrentWebSocket(webSocketSession));
+        }
+        masterSessionPools.put(msgFrom, concurrentWebSocket);
     }
 
     @Override
@@ -96,7 +99,12 @@ public class ProxyHandler implements WebSocketHandler {
      */
     private void sendUsualMsg(ConcurrentWebSocket webSocketSession, SocketMsg socketMsg, WebSocketMessage<?> webSocketMessage) {
         if ("3".equals(usersService.selectTypeByUserName(socketMsg.getMsgFrom()))){
-            webSocketSession.send(webSocketMessage);
+            if (webSocketSession.getOnlineRobots().get(socketMsg.getMsgFrom()) != null)
+                webSocketSession.send(webSocketMessage);
+            else {
+                webSocketSession.send(new TextMessage("no_validate"));
+                return;
+            }
         }
         if (GroupHandler.sessionPools.containsKey(socketMsg.getGroupId())) {
             //将客户端的信息发送至指定的群聊天中

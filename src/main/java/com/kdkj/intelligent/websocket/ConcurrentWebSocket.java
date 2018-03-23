@@ -8,7 +8,7 @@ import org.springframework.web.socket.WebSocketSession;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.Base64;
+import java.util.*;
 
 /**
  * powered by IntelliJ IDEA
@@ -21,12 +21,23 @@ public class ConcurrentWebSocket implements Closeable{
 
     private WebSocketSession session;
 
+    private Map<String,Object> onlineRobots;
+
+    public Map<String,Object> getOnlineRobots() {
+        return onlineRobots;
+    }
+
+    public void setOnlineRobots(Map<String,Object> onlineRobots) {
+        this.onlineRobots = onlineRobots;
+    }
+
     public WebSocketSession getSession() {
         return session;
     }
 
     public ConcurrentWebSocket(WebSocketSession session) {
         this.session = session;
+        onlineRobots = new HashMap<>();
     }
 
     public synchronized void send(WebSocketMessage<?> webSocketMessage) {

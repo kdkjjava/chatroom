@@ -9,10 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -274,6 +271,8 @@ public class UserController {
 			return Result.error("删除失败，你们不是好友");
 		}
 	}
+
+
 
 	private Users getUser(HttpServletRequest request) {
 		return (Users) request.getSession().getAttribute("user");

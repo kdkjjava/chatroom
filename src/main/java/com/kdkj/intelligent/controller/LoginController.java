@@ -8,6 +8,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.kdkj.intelligent.websocket.ProxyHandler;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,55 +35,7 @@ public class LoginController {
 	
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public Result login(HttpServletRequest request,@RequestBody Users record) {
-		String pc=request.getHeader("xxxx");
-		Users user = new Users();
-		user.setUsername(record.getUsername() != null ? record.getUsername() : null);
-		user.setPhone(record.getPhone() != null ? record.getPhone() : null);
-		if (user.getUsername() == null && user.getPhone() == null) {
-			return Result.error("用户名或密码不能为空");
-		}
-		List<Users> list = usersService.selectListByUser(user);
-		if (list == null || list.isEmpty()) {
-			return Result.error("用户名或密码错误，请重新登录!");
-		}
-		user = list.get(0);
-		if("0".equals(user.getStatus()))
-			return Result.error("该用户已被禁用，请联系管理员！");
-		if(!StringUtils.isEmpty(pc) &&"pc".equals(pc) && !"1".equals(user.getType())) 
-			return Result.error("您不是管理员用户!");
-		if("1".equals(user.getType())&&user.getExpireDate()!=null && user.getExpireDate().before(new Date()))
-			return Result.error("您的代理商已经过期，请联系管理员!");
-		try {
-			String newpassword = MD5Encryption.getEncryption(record.getPassword());
-			if (newpassword.equals(user.getPassword())) {
-				if(user.getLastLoginTime()==null) {
-					user.setToken("newToken");
-					user.setLastLoginTime(new Date());
-					usersService.updateByPrimaryKey(user);
-				}else {
-					Calendar cal1=Calendar.getInstance();
-					cal1.setTime(user.getLastLoginTime());
-					cal1.add(2,3);
-					if(cal1.getTime().before(new Date())) {
-						user.setToken("newToken");
-						user.setLastLoginTime(new Date());
-						usersService.updateByPrimaryKey(user);
-					}
-				}
-				user = usersService.selectByPrimaryKey(user.getId());
-				HttpSession session = request.getSession();
-				user.setPassword(null);
-				session.setAttribute("user", user);
-				if ("2".equals(user.getType()))//若为管理员登陆，则往session域里添加一个标记
-				    session.setAttribute("admin","admin");
-				return Result.ok("登录成功", user);
-			} else {
-				return Result.error("用户名或密码错误，请重新登录!");
-			}
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-			return Result.error("密码加密错误，请重试！");
-		}
+		return loginAction(request,record);
 	}
 
 	@RequestMapping(value = "/tokenLogin", method = RequestMethod.GET)
@@ -126,4 +80,75 @@ public class LoginController {
 	public String keepAlive(){
 		return "ok";
 	}
+
+	@PostMapping("validate")
+	public Result validate(HttpServletRequest request,@RequestParam Users users){
+		Result result = loginAction(request, users);
+		if (result.get("code").equals(0)){
+			Users returnUsers = (Users) result.get("data");
+			String username = returnUsers.getUsername();
+			Users master = usersService.selectByPrimaryKey(Integer.parseInt(returnUsers.getMaster()));
+			if (master.getUsername()==null)
+				return Result.error("登录失败");
+			if (ProxyHandler.masterSessionPools.get(master.getUsername())!=null){
+				ProxyHandler.masterSessionPools.get(master.getUsername()).getOnlineRobots().put(username,true);
+			}else {
+				return Result.error("请先登陆主账号");
+			}
+		}
+		return result;
+	}
+
+	private Result loginAction(HttpServletRequest request,Users record){
+		String pc=request.getHeader("xxxx");
+		Users user = new Users();
+		user.setUsername(record.getUsername());
+		user.setPhone(record.getPhone());
+		if (user.getUsername() == null && user.getPhone() == null) {
+			return Result.error("用户名或密码不能为空");
+		}
+		List<Users> list = usersService.selectListByUser(user);
+		if (list == null || list.isEmpty()) {
+			return Result.error("用户名或密码错误，请重新登录!");
+		}
+		user = list.get(0);
+		if("0".equals(user.getStatus()))
+			return Result.error("该用户已被禁用，请联系管理员！");
+		if(!StringUtils.isEmpty(pc) &&"pc".equals(pc) && !"1".equals(user.getType()))
+			return Result.error("您不是管理员用户!");
+		if("1".equals(user.getType())&&user.getExpireDate()!=null && user.getExpireDate().before(new Date()))
+			return Result.error("您的代理商已经过期，请联系管理员!");
+		try {
+			String newpassword = MD5Encryption.getEncryption(record.getPassword());
+			if (newpassword.equals(user.getPassword())) {
+				if(user.getLastLoginTime()==null) {
+					user.setToken("newToken");
+					user.setLastLoginTime(new Date());
+					usersService.updateByPrimaryKey(user);
+				}else {
+					Calendar cal1=Calendar.getInstance();
+					cal1.setTime(user.getLastLoginTime());
+					cal1.add(2,3);
+					if(cal1.getTime().before(new Date())) {
+						user.setToken("newToken");
+						user.setLastLoginTime(new Date());
+						usersService.updateByPrimaryKey(user);
+					}
+				}
+				user = usersService.selectByPrimaryKey(user.getId());
+				HttpSession session = request.getSession();
+				user.setPassword(null);
+				session.setAttribute("user", user);
+				if ("2".equals(user.getType()))//若为管理员登陆，则往session域里添加一个标记
+					session.setAttribute("admin","admin");
+				return Result.ok("登录成功", user);
+			} else {
+				return Result.error("用户名或密码错误，请重新登录!");
+			}
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			return Result.error("密码加密错误，请重试！");
+		}
+	}
+
 }
