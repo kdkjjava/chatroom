@@ -39,6 +39,7 @@ public class ExceptionAll {
 	@ResponseStatus(HttpStatus.UNAUTHORIZED)
 	@ResponseBody
 	public Result processUnauthenticatedException(NativeWebRequest request, Exception e) {
+		e.printStackTrace();
 		return Result.error("你没有对应权限或内部错误请联系管理员"); //返回一个逻辑视图名
 	}
     

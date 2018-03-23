@@ -1,16 +1,14 @@
 package com.kdkj.intelligent.controller;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.kdkj.intelligent.entity.GroupTeam;
 import com.kdkj.intelligent.entity.Members;
@@ -128,7 +126,7 @@ public class GroupTeamController {
 	public Result delMembers(HttpServletRequest request, @RequestBody Members record) {
 		if (record.getGroupId() == null || record.getUserId() == null)
 			return Result.error("请确认参数是否输入！");
-		if (ifGroupMaster(request, record.getGroupId()) && !record.getUserId().equals(getUser(request).getId())) 
+		if (ifGroupMaster(request, record.getGroupId()) && !record.getUserId().equals(getUser(request).getId()))
 			return Result.error("您没有此权限!");
 		if (getUser(request).getId().equals(record.getUserId()) && "1".equals(getUser(request).getType()))
 			return Result.error("您不能删除自己！");
@@ -170,6 +168,56 @@ public class GroupTeamController {
 			return Result.ok("", list).put("id", gp.getId()).put("groupId", gp.getGroupId());
 		return Result.error("群成员列表为空").put("id", gp.getId()).put("groupId", gp.getGroupId());
 	}
+
+	/**
+	 * 开启频繁发言防御和炸房踢人接口
+	 * @param map
+	 * @return
+	 */
+	@PostMapping(value = "defense")
+	public Result changeDefense(@RequestBody Map<String, Object> map) {
+		GroupTeam groupTeam = mapToObj(GroupTeam.class, map);
+
+		if (groupTeam !=null ){
+			Integer affect = groupTeamService.updateDefenseStrategy(groupTeam);
+			if (affect>0)
+				return Result.ok("0",groupTeam);
+			return Result.error("修改失败");
+		}
+
+		return Result.error("参数传递错误");
+	}
+	/**
+	 * 将map集合封装为对象
+	 *
+	 * @param clazz
+	 * @param map
+	 * @param <T>
+	 */
+	private <T> T mapToObj(Class<T> clazz, Map<String, Object> map) {
+		T instance = null;
+		boolean flag = true;
+		try {
+			instance = clazz.newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
+			flag = false;
+		}
+		for (Map.Entry<String, Object> entry : map.entrySet()) {
+			String s = entry.getKey().substring(0, 1).toUpperCase() + entry.getKey().substring(1);
+			try {
+				Method method = clazz.getMethod("set" + s, entry.getValue().getClass());
+				method.invoke(instance, entry.getValue());
+			} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+				e.printStackTrace();
+				flag = false;
+			}
+		}
+		if (flag)
+			return instance;
+		return null;
+	}
+
 
 	private Users getUser(HttpServletRequest request) {
 		if (request.getSession().getAttribute("user") != null)

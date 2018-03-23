@@ -161,6 +161,11 @@ public class GroupTeamServiceImpl implements GroupTeamService {
 	}
 
 	@Override
+	public Integer updateDefenseStrategy(GroupTeam groupTeam) {
+		return groupTeamMapper.updateDefenseByMasterId(groupTeam);
+	}
+
+	@Override
 	public String selectMasterNameByGroupId(String groupId) {
 		return groupTeamMapper.selectMasterNameByGroupId(groupId);
 	}

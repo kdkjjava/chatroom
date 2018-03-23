@@ -49,7 +49,31 @@ public class GroupTeam implements Serializable{
 	 * 群公告
 	 */
     private String notice;
-    
+    /*
+        消息炸弹防御
+     */
+    private String flushSwitch;
+    /*
+        刷屏防御
+     */
+    private String boomSwitch;
+
+    public String getFlushSwitch() {
+        return flushSwitch;
+    }
+
+    public void setFlushSwitch(String flushSwitch) {
+        this.flushSwitch = flushSwitch;
+    }
+
+    public String getBoomSwitch() {
+        return boomSwitch;
+    }
+
+    public void setBoomSwitch(String boomSwitch) {
+        this.boomSwitch = boomSwitch;
+    }
+
     public String getIcon() {
 		return icon;
 	}

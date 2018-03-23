@@ -14,6 +14,8 @@
         <result column="game_id" jdbcType="INTEGER" property="gameId"/>
         <result column="icon" jdbcType="VARCHAR" property="icon"/>
         <result column="notice" jdbcType="VARCHAR" property="notice"/>
+        <result column="flushSwitch" jdbcType="VARCHAR" property="flushSwitch"/>
+        <result column="boomSwitch" jdbcType="VARCHAR" property="boomSwitch"/>
     </resultMap>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
 		delete from group_team
@@ -71,14 +73,14 @@
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer"
             resultMap="BaseResultMap">
 		select id, group_id, group_name, master_id, upper_limit, status, type,
-		build_time,game_id,icon,notice
+		build_time,game_id,icon,notice,
 		from group_team
 		where id = #{id,jdbcType=INTEGER}
 	</select>
     <select id="selectListByGroup" resultMap="BaseResultMap"
             parameterType="com.kdkj.intelligent.entity.GroupTeam">
         select id, group_id, group_name, master_id, upper_limit, status, type,
-        build_time,game_id,icon,notice
+        build_time,game_id,icon,notice,flushSwitch,boomSwitch
         from group_team
         where 1=1
         <if test="groupId !=null and groupId !='' ">and group_id = #{groupId,jdbcType=VARCHAR}</if>
@@ -110,6 +112,14 @@
         (select id from users where username = #{username,jdbcType=VARCHAR} LIMIT 1)  and STATUS ="1") ;
 	</select>
 
+    <update id="updateDefenseByMasterId" parameterType="com.kdkj.intelligent.entity.GroupTeam">
+        UPDATE group_team
+        <set>
+            <if test="flushSwitch !=null and flushSwitch !='' ">flushSwitch = #{flushSwitch,jdbcType=VARCHAR},</if>
+            <if test="boomSwitch !=null and boomSwitch !='' ">boomSwitch = #{boomSwitch,jdbcType=VARCHAR},</if>
+        </set>
+        where master_id=#{masterId,jdbcType=INTEGER}
+    </update>
 
 
 </mapper>

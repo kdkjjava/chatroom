@@ -81,8 +81,8 @@ public class LoginController {
 		return "ok";
 	}
 
-	@PostMapping("validate")
-	public Result validate(HttpServletRequest request,@RequestParam Users users){
+	@PostMapping(value = "validate")
+	public Result validate(HttpServletRequest request,@RequestBody Users users){
 		Result result = loginAction(request, users);
 		if (result.get("code").equals(0)){
 			Users returnUsers = (Users) result.get("data");

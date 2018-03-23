@@ -38,4 +38,6 @@ public interface GroupTeamService {
     String selectMasterNameByGroupId(String groupId);
 
     Integer selectMasterIdByUsername(String username);
+
+    Integer updateDefenseStrategy(GroupTeam groupTeam);
 }
