@@ -28,4 +28,9 @@ public class MembersServiceImpl implements MembersService{
     public List<String> selectGroupIdByUsername(String username) {
         return membersMapper.selectGroupIdByUsername(username);
     }
+
+    @Override
+    public Integer deleteMemberShip(String groupId, String msgFrom) {
+        return membersMapper.deleteMember(groupId,msgFrom);
+    }
 }

@@ -33,15 +33,15 @@ public class ProxyInterceptor implements HandshakeInterceptor {
     public boolean beforeHandshake(ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse, WebSocketHandler webSocketHandler, Map<String, Object> map) throws Exception {
         if (serverHttpRequest instanceof ServletServerHttpRequest) {
             HttpServletRequest request = ((ServletServerHttpRequest) serverHttpRequest).getServletRequest();
-            HttpServletResponse response =((ServletServerHttpResponse)serverHttpResponse).getServletResponse();
+            HttpServletResponse response = ((ServletServerHttpResponse) serverHttpResponse).getServletResponse();
             String msgFrom = request.getHeader("msgFrom");
-            if (msgFrom!=null) {
+            if (msgFrom != null) {
                 if (usersService.hasExpired(msgFrom)) {
                     response.getWriter().write("{\"code\":\"500\",\"msg\":\"您的用户已过期，请联系管理员\"}");
                     return false;
                 }
                 map.put("msgFrom", msgFrom);
-            }else {
+            } else {
                 response.getWriter().write("{\"code\":\"500\",\"msg\":\"请求参数不完整\"}");
                 return false;
             }

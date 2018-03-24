@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -52,10 +53,19 @@ public class WebSocketApi {
      */
     public void deleteGroup(Integer id){
         GroupTeam groupTeam = groupTeamService.selectByPrimaryKey(id);
-        String groupId = groupTeam.getGroupId();
-        if (GroupHandler.leaveMsg.containsKey(groupId))
-            GroupHandler.leaveMsg.remove(groupId);
+        String groupId;
+        if (groupTeam!=null)
+            groupId = groupTeam.getGroupId();
+        else
+            return;
+        removeParam(GroupHandler.leaveMsg,groupId);
+        removeParam(GroupHandler.getDefenseSetting(),groupId);
+        removeParam(GroupHandler.sessionPools,groupId);
+    }
 
+    private void removeParam(Map map,Object obj){
+        if (map.containsKey(obj))
+            map.remove(obj);
     }
 
 }

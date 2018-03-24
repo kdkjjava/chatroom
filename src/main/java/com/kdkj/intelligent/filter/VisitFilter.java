@@ -83,6 +83,11 @@ public class VisitFilter implements Filter {
 		String path3 = "/tokenLogin";
 		String path5 ="/phoneifexist";
 		String path6 ="/validate";
+		if ("/test".equals(path)){
+			chain.doFilter(request, response);
+			return;
+		}
+
 		if (path1.equals(path) || path2.equals(path) || path3.equals(path)|| path6.equals(path)|| path.contains(path5)) {
 			chain.doFilter(request, response);
 			return;

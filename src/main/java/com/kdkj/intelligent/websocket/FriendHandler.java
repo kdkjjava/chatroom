@@ -144,7 +144,6 @@ public class FriendHandler implements WebSocketHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(friendSessionPools);
         if (friendSessionPools.get(key).size() > 1) {
             try {
                 friendSessionPools.get(key).get(socketMsg.getMsgTo()).sendMessage(webSocketMessage);

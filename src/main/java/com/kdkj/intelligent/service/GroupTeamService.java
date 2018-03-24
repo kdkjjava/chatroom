@@ -9,7 +9,7 @@ import java.util.List;
 public interface GroupTeamService {
     int deleteByPrimaryKey(Integer id);
 
-    int insert(GroupTeam record);
+    Object[] insert(GroupTeam record);
 
     GroupTeam selectByPrimaryKey(Integer id);
     
@@ -40,4 +40,6 @@ public interface GroupTeamService {
     Integer selectMasterIdByUsername(String username);
 
     Integer updateDefenseStrategy(GroupTeam groupTeam);
+
+    List<String> selectGroupIdByMasterId(GroupTeam groupTeam);
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.kdkj.intelligent.entity.GroupTeam;
 import org.springframework.stereotype.Repository;
 
 import com.kdkj.intelligent.entity.Users;
@@ -45,4 +46,6 @@ public interface UsersMapper {
     void updateMaster(Integer id);
 
 	List<Users> findNewMembers(Map<String,Long> map);
+
+    List<String> selectGroupIdByMasterId(GroupTeam groupTeam);
 }

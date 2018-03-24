@@ -1,6 +1,7 @@
 package com.kdkj.intelligent.dao;
 
 import com.kdkj.intelligent.entity.Members;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,4 +18,6 @@ public interface MembersMapper {
     List<String> selectUsernameInGroup(String groupId);
 
     List<String> selectGroupIdByUsername(String username);
+
+    Integer deleteMember(@Param("groupId") String groupId, @Param("msgFrom") String msgFrom);
 }

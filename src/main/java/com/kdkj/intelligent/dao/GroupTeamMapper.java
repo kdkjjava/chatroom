@@ -29,4 +29,6 @@ public interface GroupTeamMapper {
     String selectMasterNameByGroupId(String groupId);
 
     Integer updateDefenseByMasterId(GroupTeam groupTeam);
+
+    GroupTeam selectDefenseSetting(Integer masterId);
 }

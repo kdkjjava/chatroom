@@ -13,4 +13,6 @@ public interface MembersService {
     List<String> selectUsernameInGroup(String groupId);
 
     List<String> selectGroupIdByUsername(String username);
+
+    Integer deleteMemberShip(String groupId, String msgFrom);
 }

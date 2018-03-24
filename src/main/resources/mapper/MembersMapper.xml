@@ -51,4 +51,8 @@
         select group_id from members where user_id = (
         select id from users where username = #{username,jdbcType=VARCHAR} limit 1));
     </select>
+    <delete id="deleteMember" parameterType="java.lang.String">
+        delete from members where user_id = (select id from users where username = #{msgFrom,jdbcType=VARCHAR})
+        and group_id = (select id from group_team where group_id = #{groupId,jdbcType=VARCHAR})
+    </delete>
 </mapper>

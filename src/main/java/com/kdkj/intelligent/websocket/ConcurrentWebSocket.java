@@ -1,10 +1,7 @@
 package com.kdkj.intelligent.websocket;
 
 import com.kdkj.intelligent.entity.SocketMsg;
-import org.springframework.web.socket.BinaryMessage;
-import org.springframework.web.socket.PongMessage;
-import org.springframework.web.socket.WebSocketMessage;
-import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.*;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -17,17 +14,23 @@ import java.util.*;
  * @Date: 2018/1/27 14:23
  * @Description:
  **/
-public class ConcurrentWebSocket implements Closeable{
+public class ConcurrentWebSocket implements Closeable {
 
     private WebSocketSession session;
 
-    private Map<String,Object> onlineRobots;
+    private Map<String, Object> onlineRobots;
 
-    public Map<String,Object> getOnlineRobots() {
+    private int hz;
+
+    private long lastTalking;
+
+    private int talkingStatus;
+
+    public Map<String, Object> getOnlineRobots() {
         return onlineRobots;
     }
 
-    public void setOnlineRobots(Map<String,Object> onlineRobots) {
+    public void setOnlineRobots(Map<String, Object> onlineRobots) {
         this.onlineRobots = onlineRobots;
     }
 
@@ -38,15 +41,30 @@ public class ConcurrentWebSocket implements Closeable{
     public ConcurrentWebSocket(WebSocketSession session) {
         this.session = session;
         onlineRobots = new HashMap<>();
+        hz = 0;
+        lastTalking = System.currentTimeMillis();
     }
 
     public synchronized void send(WebSocketMessage<?> webSocketMessage) {
 
         try {
-            session.sendMessage(webSocketMessage);
+            if (talkingStatus == 0)
+                session.sendMessage(webSocketMessage);
+            else
+                session.sendMessage(new TextMessage("发送频率过快！！！"));
         } catch (IOException e) {
             e.printStackTrace();
         }
+        /*long sendTime = System.currentTimeMillis();
+
+        if (sendTime - lastTalking < 2000)//如果发送时间间隔小于两秒，则计数器+1
+            hz++;
+        if (sendTime - lastTalking > 30000)
+            hz = 0;
+        if (hz > 10)//如果超过10次频繁发言则将禁言状态改为1
+            talkingStatus = 1;
+
+        lastTalking = sendTime;*/
     }
 
     public synchronized void sendBinary(SocketMsg socketMsg) {

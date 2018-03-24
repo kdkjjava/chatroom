@@ -8,6 +8,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.kdkj.intelligent.service.MembersService;
 import com.kdkj.intelligent.websocket.ProxyHandler;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -150,5 +151,14 @@ public class LoginController {
 			return Result.error("密码加密错误，请重试！");
 		}
 	}
+/*	@Autowired
+	private MembersService membersService;
+	@PostMapping("test")
+	public Result delete(@RequestParam("msgFrom") String msgFrom ,@RequestParam("groupId") String groupId){
+		Integer integer = membersService.deleteMemberShip(groupId, msgFrom);
+		if (integer>0)
+			return Result.ok();
+		return Result.error();
+	}*/
 
 }

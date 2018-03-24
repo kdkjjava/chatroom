@@ -4,9 +4,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.kdkj.intelligent.websocket.GroupHandler;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -76,17 +79,24 @@ public class GroupTeamController {
 
 	@RequestMapping(value = "/addGroup", method = RequestMethod.POST)
 	public Result addGroup(HttpServletRequest request, @RequestBody GroupTeam record) {
+
 		Users nowUser=getUser(request);
 		if (!"1".equals(getUser(request).getType()))
 			return Result.error("当前用户无此权限!");
 		if (record.getMasterId() == null || record.getGroupName() == null) 
 			return Result.error("请检查参数是否填写完整");
-		GroupTeam gt=new GroupTeam();
+		/*GroupTeam gt=new GroupTeam();
 		gt.setMasterId(nowUser.getId());
 		List<GroupTeam> list=groupTeamService.selectListByGroup(gt);
 		if(list!=null &&list.size()>0)
-			return Result.error("您已有群，不能再建群了！");
-		groupTeamService.insert(record);
+			return Result.error("您已有群，不能再建群了！");*/
+		Object[] affect = groupTeamService.insert(record);
+		if ((Integer)affect[0]>0){
+			String groupId = (String)affect[1];
+			GroupHandler.getDefenseSetting().put(groupId,new ConcurrentHashMap<>());
+			GroupHandler.getDefenseSetting().get(groupId).put("flushSwitch",record.getFlushSwitch());
+			GroupHandler.getDefenseSetting().get(groupId).put("boomSwitch",record.getBoomSwitch());
+		}
 		return Result.ok("新建群成功", record);
 	}
 
@@ -180,8 +190,15 @@ public class GroupTeamController {
 
 		if (groupTeam !=null ){
 			Integer affect = groupTeamService.updateDefenseStrategy(groupTeam);
-			if (affect>0)
+			if (affect>0){
+				List<String> groupIds = groupTeamService.selectGroupIdByMasterId(groupTeam);
+				for (String groupId:groupIds){
+					GroupHandler.getDefenseSetting().get(groupId).put("flushSwitch",groupTeam.getFlushSwitch());
+					GroupHandler.getDefenseSetting().get(groupId).put("boomSwitch",groupTeam.getBoomSwitch());
+				}
 				return Result.ok("0",groupTeam);
+			}
+
 			return Result.error("修改失败");
 		}
 
@@ -235,5 +252,6 @@ public class GroupTeamController {
 			bl = false;
 		return bl;
 	}
+
 
 }

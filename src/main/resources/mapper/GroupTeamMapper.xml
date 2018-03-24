@@ -27,13 +27,14 @@
         </selectKey>
         insert into group_team (id, group_id, group_name,
         master_id, upper_limit, status,
-        type, build_time, game_id,icon,notice
+        type, build_time, game_id,icon,notice,flushSwitch,boomSwitch
         )
         values (#{id,jdbcType=INTEGER}, #{groupId,jdbcType=VARCHAR},
         #{groupName,jdbcType=VARCHAR},
         #{masterId,jdbcType=INTEGER}, #{upperLimit,jdbcType=INTEGER}, #{status,jdbcType=VARCHAR},
         #{type,jdbcType=VARCHAR}, #{buildTime,jdbcType=TIMESTAMP},
-        #{gameId,jdbcType=INTEGER},#{icon,jdbcType=VARCHAR},#{notice,jdbcType=VARCHAR}
+        #{gameId,jdbcType=INTEGER},#{icon,jdbcType=VARCHAR},#{notice,jdbcType=VARCHAR},#{flushSwitch,jdbcType=VARCHAR},
+        #{boomSwitch,jdbcType=VARCHAR}
         )
     </insert>
     <select id="selectMasterIdByUsername" resultType="java.lang.Integer" parameterType="java.lang.String">
@@ -73,7 +74,7 @@
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer"
             resultMap="BaseResultMap">
 		select id, group_id, group_name, master_id, upper_limit, status, type,
-		build_time,game_id,icon,notice,
+		build_time,game_id,icon,notice,flushSwitch,boomSwitch
 		from group_team
 		where id = #{id,jdbcType=INTEGER}
 	</select>
@@ -103,7 +104,7 @@
 
     <select id="selectAll" resultMap="BaseResultMap">
 		select id, group_id, group_name, master_id, upper_limit, status, type,
-		build_time,game_id,icon,notice
+		build_time,game_id,icon,notice,flushSwitch,boomSwitch
 		from group_team
 	</select>
 
@@ -120,6 +121,11 @@
         </set>
         where master_id=#{masterId,jdbcType=INTEGER}
     </update>
-
+    <select id="selectGroupIdByMasterId" parameterType="com.kdkj.intelligent.entity.GroupTeam" resultType="java.lang.String">
+        select group_id from group_team where master_id = #{masterId,jdbcType=INTEGER}
+    </select>
+    <select id="selectDefenseSetting" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select flushSwitch,boomSwitch from group_team where master_id = #{masterId,jdbcType=INTEGER} limit 1
+    </select>
 
 </mapper>
