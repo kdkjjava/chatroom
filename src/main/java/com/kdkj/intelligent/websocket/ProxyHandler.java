@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,6 +45,7 @@ public class ProxyHandler implements WebSocketHandler {
         webSocketSession.setBinaryMessageSizeLimit(524288);
         webSocketSession.setTextMessageSizeLimit(524288);
         ConcurrentWebSocket concurrentWebSocket = new ConcurrentWebSocket(webSocketSession);
+        concurrentWebSocket.setOnlineRobots(new HashMap<>());
         if (masterSessionPools.containsKey(msgFrom) && masterSessionPools.get(msgFrom).getSession().isOpen()){
             concurrentWebSocket.setOnlineRobots(masterSessionPools.get(msgFrom).getOnlineRobots());
             masterSessionPools.get(msgFrom).getSession().close();
@@ -146,8 +148,6 @@ public class ProxyHandler implements WebSocketHandler {
         List<String> groupMembers = membersService.selectUsernameInGroup(socketMsg.getGroupId());
         groupMembers.forEach(item ->{
             if (TotalHandler.totalSessions.containsKey(item) && !GroupHandler.sessionPools.get(socketMsg.getGroupId()).containsKey(item)){
-                /*TotalHandler.totalSessions.get(item).send(new TextMessage(JSON.toJSONString(new TipsMsg().setGroupId(socketMsg.getMsgFrom())
-                        .setMsgType("group").setCount(1))));*/
                 if (!GroupHandler.leaveMsg.get(socketMsg.getGroupId()).containsKey(item))
                     GroupHandler.leaveMsg.get(socketMsg.getGroupId()).put(item,new CopyOnWriteArrayList<>());
                 GroupHandler.leaveMsg.get(socketMsg.getGroupId()).get(item).add(socketMsg);

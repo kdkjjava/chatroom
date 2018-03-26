@@ -26,6 +26,10 @@ public class ConcurrentWebSocket implements Closeable {
 
     private int talkingStatus;
 
+    public int getTalkingStatus() {
+        return talkingStatus;
+    }
+
     public Map<String, Object> getOnlineRobots() {
         return onlineRobots;
     }
@@ -40,7 +44,6 @@ public class ConcurrentWebSocket implements Closeable {
 
     public ConcurrentWebSocket(WebSocketSession session) {
         this.session = session;
-        onlineRobots = new HashMap<>();
         hz = 0;
         lastTalking = System.currentTimeMillis();
     }
@@ -51,20 +54,29 @@ public class ConcurrentWebSocket implements Closeable {
             if (talkingStatus == 0)
                 session.sendMessage(webSocketMessage);
             else
-                session.sendMessage(new TextMessage("发送频率过快！！！"));
+                session.sendMessage(new TextMessage("您已被禁言！！！"));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        /*long sendTime = System.currentTimeMillis();
 
+    }
+
+    public synchronized void sendGroupMsg(WebSocketMessage<?> webSocketMessage){
+        try {
+            if (talkingStatus == 0)
+                session.sendMessage(webSocketMessage);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        long sendTime = System.currentTimeMillis();
         if (sendTime - lastTalking < 2000)//如果发送时间间隔小于两秒，则计数器+1
             hz++;
         if (sendTime - lastTalking > 30000)
             hz = 0;
         if (hz > 10)//如果超过10次频繁发言则将禁言状态改为1
             talkingStatus = 1;
-
-        lastTalking = sendTime;*/
+        lastTalking = sendTime;
+        System.out.println(hz);
     }
 
     public synchronized void sendBinary(SocketMsg socketMsg) {
@@ -80,11 +92,11 @@ public class ConcurrentWebSocket implements Closeable {
         this.session.close();
     }
 
-    public synchronized void sendPong(PongMessage pongMessage) {
+    /*public synchronized void sendPong(PongMessage pongMessage) {
         try {
             session.sendMessage(pongMessage);
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 }

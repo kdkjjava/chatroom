@@ -138,13 +138,13 @@ public class GroupHandler implements WebSocketHandler {
 
         if (defenseSetting.get(groupId) != null && "on".equals(defenseSetting.get(groupId).get("boomSwitch")) && socketMsg.getMsg().length() > 200) {
             webSocketSession.close(new CloseStatus(4995, "消息内容过长，您将被踢出群聊"));
-            membersService.deleteMemberShip(groupId,msgFrom);
+            membersService.deleteMemberShip(groupId, msgFrom);
             return;
         }
 
 
         //调用普通信息的发送方法
-        new Thread(() -> sendUsualMessage(webSocketSession, socketMsg, webSocketMessage)).start();
+        new Thread(() -> sendUsualMessage(sessionPools.get(groupId).get(msgFrom), socketMsg, webSocketMessage)).start();
         String masterName = groupTeamService.selectMasterNameByGroupId(socketMsg.getGroupId());
         if (groupTeamService.findMembership(socketMsg.getMsgFrom(), socketMsg.getGroupId()) && ProxyHandler.masterSessionPools.containsKey(masterName)) {
             sendToClient(socketMsg, masterName);
@@ -155,30 +155,30 @@ public class GroupHandler implements WebSocketHandler {
     /**
      * 本方法用于处理玩家发送的普通消息
      *
-     * @param webSocketSession 当前session对象
+     * @param concurrentWebSocket 当前session对象
      */
-    private void sendUsualMessage(WebSocketSession webSocketSession, SocketMsg socketMsg, WebSocketMessage<?> webSocketMessage) {
-        String groupId = (String) webSocketSession.getAttributes().get("groupId");
+    private void sendUsualMessage(ConcurrentWebSocket concurrentWebSocket, SocketMsg socketMsg, WebSocketMessage<?> webSocketMessage) {
+        String groupId = (String) concurrentWebSocket.getSession().getAttributes().get("groupId");
         if (!groupId.equals(socketMsg.getGroupId())) {
-            try {
-                webSocketSession.sendMessage(new TextMessage("{\"errorCode\":\"请求参数错误！\"}"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            concurrentWebSocket.send(new TextMessage("{\"errorCode\":\"请求参数错误！\"}"));
         }
-        //遍历map集合，将消息发送至同一个房间下的session
-        if (sessionPools.containsKey(socketMsg.getGroupId()))
-            sessionPools.get(socketMsg.getGroupId()).forEach((key, item) -> item.send(webSocketMessage));
-        List<String> groupMembers = membersService.selectUsernameInGroup(groupId);
-        groupMembers.forEach(item -> {
-            if (TotalHandler.totalSessions.containsKey(item) && !sessionPools.get(groupId).containsKey(item)) {
-                synchronized (this) {
-                    if (!leaveMsg.get(groupId).containsKey(item))
-                        leaveMsg.get(groupId).put(item, new CopyOnWriteArrayList<>());
+        if (concurrentWebSocket.getTalkingStatus()==0){
+            //遍历map集合，将消息发送至同一个房间下的session
+            if (sessionPools.containsKey(socketMsg.getGroupId()) )
+                sessionPools.get(socketMsg.getGroupId()).forEach((key, item) -> item.sendGroupMsg(webSocketMessage));
+            List<String> groupMembers = membersService.selectUsernameInGroup(groupId);
+            groupMembers.forEach(item -> {
+                if (TotalHandler.totalSessions.containsKey(item) && !sessionPools.get(groupId).containsKey(item)) {
+                    synchronized (this) {
+                        if (!leaveMsg.get(groupId).containsKey(item))
+                            leaveMsg.get(groupId).put(item, new CopyOnWriteArrayList<>());
+                    }
+                    leaveMsg.get(groupId).get(item).add(socketMsg);
                 }
-                leaveMsg.get(groupId).get(item).add(socketMsg);
-            }
-        });
+            });
+        }else {
+            concurrentWebSocket.send(new TextMessage("发送频率过高，您已被禁言！！！"));
+        }
     }
 
     /**
