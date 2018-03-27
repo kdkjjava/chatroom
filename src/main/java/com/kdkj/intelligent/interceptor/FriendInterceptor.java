@@ -1,5 +1,6 @@
 package com.kdkj.intelligent.interceptor;
 
+import com.kdkj.intelligent.util.Variables;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -26,14 +27,14 @@ public class FriendInterceptor implements HandshakeInterceptor {
         if (serverHttpRequest instanceof ServletServerHttpRequest) {
             HttpServletRequest request = ((ServletServerHttpRequest) serverHttpRequest).getServletRequest();
             HttpServletResponse response = ((ServletServerHttpResponse) serverHttpResponse).getServletResponse();
-            String msgFrom = request.getParameter("msgFrom");
+            String msgFrom = request.getParameter(Variables.MSGFROM);
             String msgTo = request.getParameter("msgTo");
             if (msgFrom == null || msgTo == null) {
                 response.getWriter().write("{\"code\":\"500\",\"msg\":\"请求参数不完整\"}");
                 return false;
             } else {
-                map.put("msgFrom", msgFrom);
-                map.put("msgTo", msgTo);
+                map.put(Variables.MSGFROM, msgFrom);
+                map.put(Variables.MSGTO, msgTo);
             }
         } else {
             return false;
@@ -43,6 +44,6 @@ public class FriendInterceptor implements HandshakeInterceptor {
 
     @Override
     public void afterHandshake(ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse, WebSocketHandler webSocketHandler, Exception e) {
-
+        //握手后执行的方法
     }
 }

@@ -6,6 +6,8 @@ import com.kdkj.intelligent.entity.Users;
 import com.kdkj.intelligent.service.UsersService;
 import com.kdkj.intelligent.util.Result;
 import com.kdkj.intelligent.websocket.AdminHandler;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -21,6 +23,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
+
+    private static final Logger logger = LogManager.getLogger(AdminController.class);
 
     @Resource
     private UsersService usersService;
@@ -89,7 +93,7 @@ public class AdminController {
             AdminHandler.broadCastMsg.add(adminMsg);
             return Result.ok("success");
         }catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage());
             return Result.error("failing");
         }
     }

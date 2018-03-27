@@ -3,6 +3,9 @@ package com.kdkj.intelligent.websocket;
 import com.alibaba.fastjson.JSON;
 import com.kdkj.intelligent.entity.SocketMsg;
 import com.kdkj.intelligent.entity.TipsMsg;
+import com.kdkj.intelligent.util.Variables;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 
@@ -20,6 +23,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class FriendHandler implements WebSocketHandler {
 
+    private static final Logger logger = LogManager.getLogger(FriendHandler.class);
+
     //创建一个保存好友聊天的WebSocketSession
     private static Map<String, Map<String, WebSocketSession>> friendSessionPools;
 
@@ -33,8 +38,8 @@ public class FriendHandler implements WebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession webSocketSession) throws Exception {
-        String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
-        String msgTo = (String) webSocketSession.getAttributes().get("msgTo");
+        String msgFrom = (String) webSocketSession.getAttributes().get(Variables.MSGFROM);
+        String msgTo = (String) webSocketSession.getAttributes().get(Variables.MSGTO);
         if (msgFrom != null && msgTo != null) {
             handleFriendSessions(msgFrom, msgTo, webSocketSession);
         } else {
@@ -42,7 +47,7 @@ public class FriendHandler implements WebSocketHandler {
                 try {
                     webSocketSession.close(CloseStatus.BAD_DATA);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
             }
         }
@@ -51,11 +56,11 @@ public class FriendHandler implements WebSocketHandler {
 
     @Override
     public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage) throws IOException {
-        if (webSocketMessage.getPayload().equals("ping")) {
+        if (webSocketMessage.getPayload().equals(Variables.PING)) {
             try {
-                webSocketSession.sendMessage(new TextMessage("pong"));
+                webSocketSession.sendMessage(new TextMessage(Variables.PONG));
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
             return;
         }
@@ -67,15 +72,15 @@ public class FriendHandler implements WebSocketHandler {
 
     @Override
     public void handleTransportError(WebSocketSession webSocketSession, Throwable throwable) throws Exception {
-
+        logger.error(throwable.getMessage());
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus) {
         if (closeStatus.getCode() == 3001)
             return;
-        String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
-        String msgTo = (String) webSocketSession.getAttributes().get("msgTo");
+        String msgFrom = (String) webSocketSession.getAttributes().get(Variables.MSGFROM);
+        String msgTo = (String) webSocketSession.getAttributes().get(Variables.MSGTO);
         String key = getKey(msgFrom, msgTo);
         if (key != null) {
             friendSessionPools.get(key).remove(msgFrom);
@@ -85,7 +90,7 @@ public class FriendHandler implements WebSocketHandler {
         try {
             webSocketSession.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 
@@ -140,15 +145,14 @@ public class FriendHandler implements WebSocketHandler {
     private void sendUsualMsg(WebSocketSession webSocketSession, SocketMsg socketMsg, String key, WebSocketMessage<?> webSocketMessage) {
         try {
             webSocketSession.sendMessage(webSocketMessage);
-            //webSocketSession.sendMessage(new TextMessage(JSON.toJSONString(new SocketMsg().setMsg("换行\n123换行\n456"))));
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         if (friendSessionPools.get(key).size() > 1) {
             try {
                 friendSessionPools.get(key).get(socketMsg.getMsgTo()).sendMessage(webSocketMessage);
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
         } else //如果对方不在线或者未打开聊天窗口，则保存到缓存中或进行消息提醒
             sendToOffline(socketMsg);
@@ -162,7 +166,7 @@ public class FriendHandler implements WebSocketHandler {
                     try {
                         friendSessionPools.get(key).get(msgFrom).close(new CloseStatus(3001));
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        logger.error(e.getMessage());
                     }
                     friendSessionPools.get(key).put(msgFrom, webSocketSession);
 
@@ -181,7 +185,7 @@ public class FriendHandler implements WebSocketHandler {
                 try {
                     webSocketSession.sendMessage(new TextMessage(JSON.toJSONString(socketMsg)));
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
             });
             unsentMessages.get(msgFrom).remove(msgTo);

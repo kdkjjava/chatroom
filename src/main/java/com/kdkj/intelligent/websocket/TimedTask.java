@@ -2,8 +2,6 @@ package com.kdkj.intelligent.websocket;
 
 import com.kdkj.intelligent.entity.AdminMsg;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -43,7 +41,6 @@ public class TimedTask {
 
     private void deletePastMsg(int dayNow, int yearNow, List<AdminMsg> adminMsgList) {
         for (AdminMsg adminMsg : adminMsgList) {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
             Date date = null;
             date = adminMsg.getDate();//将消息的时间字符串转换成日期格式
             Calendar calForMsg = Calendar.getInstance();

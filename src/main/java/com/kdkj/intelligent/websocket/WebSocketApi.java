@@ -2,6 +2,8 @@ package com.kdkj.intelligent.websocket;
 
 import com.kdkj.intelligent.entity.GroupTeam;
 import com.kdkj.intelligent.service.GroupTeamService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,9 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class WebSocketApi {
 
-    @Autowired
-    private GroupHandler groupHandler;
-
+    private static final Logger logger = LogManager.getLogger(WebSocketApi.class);
     @Autowired
     private GroupTeamService groupTeamService;
 
@@ -34,7 +34,7 @@ public class WebSocketApi {
             try {
                 value.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
         });
     }

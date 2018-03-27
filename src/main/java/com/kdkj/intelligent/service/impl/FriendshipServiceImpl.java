@@ -14,7 +14,6 @@ public class FriendshipServiceImpl implements FriendshipService {
 	private FriendshipMapper friendshipMapper;
 	@Override
 	public int deleteByPrimaryKey(Long id) {
-		// TODO Auto-generated method stub
 		return friendshipMapper.deleteByPrimaryKey(id);
 	}
 
@@ -25,25 +24,21 @@ public class FriendshipServiceImpl implements FriendshipService {
 
 	@Override
 	public Friendship selectByPrimaryKey(Long id) {
-		// TODO Auto-generated method stub
 		return friendshipMapper.selectByPrimaryKey(id);
 	}
 
 	@Override
 	public List<Friendship> selectAll() {
-		// TODO Auto-generated method stub
 		return friendshipMapper.selectAll();
 	}
 
 	@Override
 	public int updateByPrimaryKey(Friendship record) {
-		// TODO Auto-generated method stub
 		return friendshipMapper.updateByPrimaryKey(record);
 	}
 
 	@Override
 	public List<Friendship> selectByAttribute(Friendship record) {
-		// TODO Auto-generated method stub
 		return friendshipMapper.selectByAttribute(record);
 	}
 

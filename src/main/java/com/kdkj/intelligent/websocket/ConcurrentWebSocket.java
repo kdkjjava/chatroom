@@ -1,6 +1,8 @@
 package com.kdkj.intelligent.websocket;
 
 import com.kdkj.intelligent.entity.SocketMsg;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.web.socket.*;
 
 import java.io.Closeable;
@@ -15,6 +17,8 @@ import java.util.*;
  * @Description:
  **/
 public class ConcurrentWebSocket implements Closeable {
+
+    private static final Logger logger = LogManager.getLogger(ConcurrentWebSocket.class);
 
     private WebSocketSession session;
 
@@ -56,7 +60,7 @@ public class ConcurrentWebSocket implements Closeable {
             else
                 session.sendMessage(new TextMessage("您已被禁言！！！"));
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
 
     }
@@ -66,7 +70,7 @@ public class ConcurrentWebSocket implements Closeable {
             if (talkingStatus == 0)
                 session.sendMessage(webSocketMessage);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         long sendTime = System.currentTimeMillis();
         if (sendTime - lastTalking < 2000)//如果发送时间间隔小于两秒，则计数器+1
@@ -76,14 +80,13 @@ public class ConcurrentWebSocket implements Closeable {
         if (hz > 10)//如果超过10次频繁发言则将禁言状态改为1
             talkingStatus = 1;
         lastTalking = sendTime;
-        System.out.println(hz);
     }
 
     public synchronized void sendBinary(SocketMsg socketMsg) {
         try {
             session.sendMessage(new BinaryMessage(Base64.getDecoder().decode(socketMsg.getBinary()), socketMsg.getStatus()));
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 
@@ -92,11 +95,4 @@ public class ConcurrentWebSocket implements Closeable {
         this.session.close();
     }
 
-    /*public synchronized void sendPong(PongMessage pongMessage) {
-        try {
-            session.sendMessage(pongMessage);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }*/
 }

@@ -1,6 +1,8 @@
 package com.kdkj.intelligent.controller;
 
 import com.kdkj.intelligent.util.Result;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,6 +25,8 @@ import javax.servlet.http.HttpServletRequest;
 @ControllerAdvice
 public class ExceptionAll {
 
+	private static final  Logger logger = LogManager.getLogger(ExceptionAll.class);
+
 	/**
 	 * 处理文件过大异常
 	 * @param request
@@ -32,14 +36,15 @@ public class ExceptionAll {
 	@ExceptionHandler(value = MultipartException.class)
 	@ResponseStatus(HttpStatus.PAYLOAD_TOO_LARGE)
 	@ResponseBody
-	public Result MultipartExceptionErrorHandler(HttpServletRequest request, Exception e) {
+	public Result multipartExceptionErrorHandler(HttpServletRequest request, Exception e) {
+		logger.error(e.getMessage());
 		return Result.error("文件过大或类型不匹配");
 	}
 	@ExceptionHandler(Exception.class)
 	@ResponseStatus(HttpStatus.UNAUTHORIZED)
 	@ResponseBody
 	public Result processUnauthenticatedException(NativeWebRequest request, Exception e) {
-		e.printStackTrace();
+		logger.error(e.getMessage());
 		return Result.error("你没有对应权限或内部错误请联系管理员"); //返回一个逻辑视图名
 	}
     

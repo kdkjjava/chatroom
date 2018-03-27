@@ -1,19 +1,14 @@
 package com.kdkj.intelligent.websocket;
 
 import com.alibaba.fastjson.JSON;
-import com.kdkj.intelligent.entity.AdminMsg;
-import com.kdkj.intelligent.entity.SocketMsg;
 import com.kdkj.intelligent.entity.TipsMsg;
-import com.kdkj.intelligent.service.GroupTeamService;
 import com.kdkj.intelligent.service.MembersService;
-import org.junit.Test;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
-
 import java.io.*;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,6 +21,8 @@ import java.util.concurrent.ConcurrentHashMap;
  **/
 @Component
 public class TotalHandler implements WebSocketHandler {
+
+    private static final Logger logger = LogManager.getLogger(TotalHandler.class);
 
     @Autowired
     private MembersService membersService;
@@ -54,7 +51,7 @@ public class TotalHandler implements WebSocketHandler {
             try {
                 webSocketSession.close(new CloseStatus(1007));
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
         }
     }
@@ -65,20 +62,19 @@ public class TotalHandler implements WebSocketHandler {
             try {
                 webSocketSession.sendMessage(new TextMessage("pong"));
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
         }
     }
 
     @Override
     public void handleTransportError(WebSocketSession webSocketSession, Throwable throwable) throws Exception {
-
+        logger.error(throwable.getMessage());
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus) {
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
-        //System.out.println("用户total链接："+msgFrom+"\n关闭码:"+closeStatus.getCode()+"\n关闭原因:"+closeStatus.getReason());
         membersService.selectGroupIdByUsername(msgFrom).forEach(item -> GroupHandler.leaveMsg.get(item).remove(msgFrom));//删除群缓存里的个人消息
         if (msgFrom != null && totalSessions.containsKey(msgFrom)) {
             totalSessions.remove(msgFrom);
@@ -86,7 +82,7 @@ public class TotalHandler implements WebSocketHandler {
         try {
             webSocketSession.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 
@@ -102,9 +98,8 @@ public class TotalHandler implements WebSocketHandler {
      * @param currentUsername  当前用户名
      */
     private void pushMsg(ConcurrentWebSocket webSocketSession, String currentUsername) {
-        FriendHandler.unsentMessages.get(currentUsername).keySet().forEach(str -> {
+        FriendHandler.unsentMessages.get(currentUsername).keySet().forEach(str ->
             webSocketSession.send(new TextMessage(JSON.toJSONString(new TipsMsg().setMsgFrom(str)
-                    .setMsgType("friend").setCount(FriendHandler.unsentMessages.get(currentUsername).get(str).size()))));
-        });
+                    .setMsgType("friend").setCount(FriendHandler.unsentMessages.get(currentUsername).get(str).size())))));
     }
 }

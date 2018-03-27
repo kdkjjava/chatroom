@@ -20,7 +20,7 @@ import java.io.IOException;
 public class AdminFilter implements Filter{
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-
+        //过滤器初始化方法
     }
 
     /**
@@ -44,6 +44,6 @@ public class AdminFilter implements Filter{
 
     @Override
     public void destroy() {
-
+        //过滤器销毁方法
     }
 }

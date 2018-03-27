@@ -1,6 +1,7 @@
 package com.kdkj.intelligent.filter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -33,7 +34,21 @@ public class VisitFilter implements Filter {
 	
 	//@Autowired
 	private UsersService usersService;
-	
+
+	private static List<String> allowedPath;
+
+	private static List<String> containPath;
+	static {
+		allowedPath=new ArrayList<>();
+		containPath = new ArrayList<>();
+		allowedPath.add("/login");
+		allowedPath.add("/user/addUser");
+		allowedPath.add("/tokenLogin");
+		allowedPath.add("/validate");
+		containPath.add("/phoneifexist");
+		containPath.add("/test");
+	}
+
 	/**
 	 * @see Filter#init(FilterConfig)
 	 */
@@ -44,19 +59,12 @@ public class VisitFilter implements Filter {
 	        	usersService=(UsersService)cxt.getBean("usersServiceImpl");   
 	}
 
-	
-	/**
-	 * Default constructor.
-	 */
-	public VisitFilter() {
-		// TODO Auto-generated constructor stub
-	}
-
 	/**
 	 * @see Filter#destroy()
 	 */
+	@Override
 	public void destroy() {
-		// TODO Auto-generated method stub
+		// 销毁方法
 	}
 
 	/**
@@ -64,7 +72,6 @@ public class VisitFilter implements Filter {
 	 */
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-		// TODO Auto-generated method stub
 		// place your code here
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse rep = (HttpServletResponse) response;
@@ -78,27 +85,29 @@ public class VisitFilter implements Filter {
 		String s = JSON.toJSONString((Result.error("用户尚未登录或者登录已过期，请重新登录！")));
 		HttpSession session = req.getSession();
 		String path = req.getServletPath();
-		String path1 = "/login";
-		String path2 = "/user/addUser";
-		String path3 = "/tokenLogin";
-		String path5 ="/phoneifexist";
-		String path6 ="/validate";
-		if ("/test".equals(path)){
-			chain.doFilter(request, response);
-			return;
+
+		//放行指定路径
+		for (String item :allowedPath){
+			if (item.equals(path)){
+				chain.doFilter(request, response);
+				return;
+			}
+		}
+		//放行包含路径
+		for (String item :containPath){
+			if (path.contains(item)){
+				chain.doFilter(request, response);
+				return;
+			}
 		}
 
-		if (path1.equals(path) || path2.equals(path) || path3.equals(path)|| path6.equals(path)|| path.contains(path5)) {
-			chain.doFilter(request, response);
-			return;
-		}
 		if (session.getAttribute("user") == null) {
 			if (req.getHeader("token") != null) {
 				String token = req.getHeader("token");
 				Users user = new Users();
 				user.setToken(token);
 				List<Users> list = usersService.selectListByUser(user);
-				if (list != null && list.size() > 0) {
+				if (list != null && !list.isEmpty()) {
 					Users olduser = list.get(0);
 					Date date = olduser.getLastLoginTime();
 					Calendar cal = Calendar.getInstance();

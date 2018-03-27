@@ -205,4 +205,10 @@
     <select id="updateMaster" parameterType="java.lang.Integer">
         UPDATE  users set master = "0" where master = #{id,jdbcType=INTEGER}
     </select>
+    <select id="selectByUserName" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select * from users where username = #{username,jdbcType=VARCHAR}
+    </select>
+    <select id="selectMasterByUsername" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select * from users where id = (select master from users where username = #{username,jdbcType=VARCHAR} limit 1) limit 1
+    </select>
 </mapper>

@@ -5,6 +5,9 @@ import com.kdkj.intelligent.entity.GroupTeam;
 import com.kdkj.intelligent.entity.SocketMsg;
 import com.kdkj.intelligent.service.GroupTeamService;
 import com.kdkj.intelligent.service.MembersService;
+import com.kdkj.intelligent.util.Variables;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
@@ -17,6 +20,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
 public class GroupHandler implements WebSocketHandler {
+    private static final  Logger logger = LogManager.getLogger(GroupHandler.class);
 
     @Autowired
     private GroupTeamService groupTeamService;
@@ -57,8 +61,8 @@ public class GroupHandler implements WebSocketHandler {
     //握手实现连接后
     @Override
     public void afterConnectionEstablished(WebSocketSession webSocketSession) throws Exception {
-        String groupId = getParam(webSocketSession, "groupId");
-        String msgFrom = getParam(webSocketSession, "msgFrom");
+        String groupId = getParam(webSocketSession, Variables.GROUPID);
+        String msgFrom = getParam(webSocketSession, Variables.MSGFROM);
         webSocketSession.setBinaryMessageSizeLimit(524288);
         webSocketSession.setTextMessageSizeLimit(524288);
         //将连接地址的参数groupId的值放入变量roomCode中
@@ -91,7 +95,7 @@ public class GroupHandler implements WebSocketHandler {
 
     @Override
     public void handleTransportError(WebSocketSession webSocketSession, Throwable throwable) throws Exception {
-
+        logger.error(throwable.getMessage());
     }
 
     /**
@@ -107,9 +111,8 @@ public class GroupHandler implements WebSocketHandler {
      */
     @Override
     public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus) throws Exception {
-//        System.out.println("group群链接：" + getParam(webSocketSession, "msgFrom") + "\n关闭码:" + closeStatus.getCode() + "\n关闭原因:" + closeStatus.getReason());
-        String groupId = getParam(webSocketSession, "groupId");
-        String msgFrom = getParam(webSocketSession, "msgFrom");
+        String groupId = getParam(webSocketSession, Variables.GROUPID);
+        String msgFrom = getParam(webSocketSession, Variables.MSGFROM);
         if (sessionPools.get(groupId) != null)
             sessionPools.get(groupId).remove(msgFrom);
         if (webSocketSession.isOpen())
@@ -124,12 +127,12 @@ public class GroupHandler implements WebSocketHandler {
     //发送信息前的处理
     @Override
     public void handleMessage(WebSocketSession webSocketSession, WebSocketMessage<?> webSocketMessage) throws Exception {
-        String groupId = getParam(webSocketSession, "groupId");
-        String msgFrom = getParam(webSocketSession, "msgFrom");
-        if ("ping".equals(webSocketMessage.getPayload())) {
+        String groupId = getParam(webSocketSession, Variables.GROUPID);
+        String msgFrom = getParam(webSocketSession, Variables.MSGFROM);
+        if (Variables.PING.equals(webSocketMessage.getPayload())) {
             new Thread(() -> {
                 if (sessionPools.containsKey(groupId) && sessionPools.get(groupId).containsKey(msgFrom))
-                    sessionPools.get(groupId).get(msgFrom).send(new TextMessage("pong"));
+                    sessionPools.get(groupId).get(msgFrom).send(new TextMessage(Variables.PONG));
             }).start();
             return;
         }
@@ -158,7 +161,7 @@ public class GroupHandler implements WebSocketHandler {
      * @param concurrentWebSocket 当前session对象
      */
     private void sendUsualMessage(ConcurrentWebSocket concurrentWebSocket, SocketMsg socketMsg, WebSocketMessage<?> webSocketMessage) {
-        String groupId = (String) concurrentWebSocket.getSession().getAttributes().get("groupId");
+        String groupId = (String) concurrentWebSocket.getSession().getAttributes().get(Variables.GROUPID);
         if (!groupId.equals(socketMsg.getGroupId())) {
             concurrentWebSocket.send(new TextMessage("{\"errorCode\":\"请求参数错误！\"}"));
         }

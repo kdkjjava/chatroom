@@ -5,14 +5,12 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import javax.servlet.http.HttpServletRequest;
-
 import com.kdkj.intelligent.websocket.GroupHandler;
-import org.junit.Test;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import com.kdkj.intelligent.entity.GroupTeam;
 import com.kdkj.intelligent.entity.Members;
 import com.kdkj.intelligent.entity.Users;
@@ -27,6 +25,8 @@ public class GroupTeamController {
 	private GroupTeamService groupTeamService;
 	@Autowired
 	private UsersService usersService;
+
+	private static final Logger logger = LogManager.getLogger(GroupTeamController.class);
 
 	@RequestMapping(value = "/selectListByGroup", method = RequestMethod.POST)
 	public Result selectListByGroup(HttpServletRequest request, @RequestBody GroupTeam record) {
@@ -80,16 +80,11 @@ public class GroupTeamController {
 	@RequestMapping(value = "/addGroup", method = RequestMethod.POST)
 	public Result addGroup(HttpServletRequest request, @RequestBody GroupTeam record) {
 
-		Users nowUser=getUser(request);
 		if (!"1".equals(getUser(request).getType()))
 			return Result.error("当前用户无此权限!");
 		if (record.getMasterId() == null || record.getGroupName() == null) 
 			return Result.error("请检查参数是否填写完整");
-		/*GroupTeam gt=new GroupTeam();
-		gt.setMasterId(nowUser.getId());
-		List<GroupTeam> list=groupTeamService.selectListByGroup(gt);
-		if(list!=null &&list.size()>0)
-			return Result.error("您已有群，不能再建群了！");*/
+
 		Object[] affect = groupTeamService.insert(record);
 		if ((Integer)affect[0]>0){
 			String groupId = (String)affect[1];
@@ -217,7 +212,7 @@ public class GroupTeamController {
 		try {
 			instance = clazz.newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage());
 			flag = false;
 		}
 		for (Map.Entry<String, Object> entry : map.entrySet()) {
@@ -226,7 +221,7 @@ public class GroupTeamController {
 				Method method = clazz.getMethod("set" + s, entry.getValue().getClass());
 				method.invoke(instance, entry.getValue());
 			} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-				e.printStackTrace();
+				logger.error(e.getMessage());
 				flag = false;
 			}
 		}

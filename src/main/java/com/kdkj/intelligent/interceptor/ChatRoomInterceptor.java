@@ -1,5 +1,6 @@
 package com.kdkj.intelligent.interceptor;
 
+import com.kdkj.intelligent.util.Variables;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -23,19 +24,20 @@ import java.util.Map;
 @Component
 public class ChatRoomInterceptor implements HandshakeInterceptor {
 
+
     @Override
     public boolean beforeHandshake(ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse, WebSocketHandler webSocketHandler, Map<String, Object> map) throws Exception {
         if (serverHttpRequest instanceof ServletServerHttpRequest) {
             HttpServletRequest request = ((ServletServerHttpRequest) serverHttpRequest).getServletRequest();
             HttpServletResponse response = ((ServletServerHttpResponse) serverHttpResponse).getServletResponse();
-            String msgFrom = request.getParameter("msgFrom");
-            String groupId = request.getParameter("groupId");
+            String msgFrom = request.getParameter(Variables.MSGFROM);
+            String groupId = request.getParameter(Variables.GROUPID);
             if (msgFrom == null || groupId == null) {
                 response.getWriter().write("{\"code\":\"500\",\"msg\":\"请求参数不完整\"}");
                 return false;
             } else {
-                map.put("msgFrom", request.getParameter("msgFrom"));
-                map.put("groupId", request.getParameter("groupId"));
+                map.put(Variables.MSGFROM, request.getParameter(Variables.MSGFROM));
+                map.put(Variables.GROUPID, request.getParameter(Variables.GROUPID));
             }
         } else {
             return false;

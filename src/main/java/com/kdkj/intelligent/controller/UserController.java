@@ -1,20 +1,14 @@
 package com.kdkj.intelligent.controller;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
-
-import org.junit.Test;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.kdkj.intelligent.entity.Friendship;
@@ -29,6 +23,7 @@ import com.kdkj.intelligent.util.Result;
 @RestController
 @RequestMapping("/user")
 public class UserController {
+    private static final Logger logger = LogManager.getLogger(UserController.class);
     @Autowired
     private UsersService usersService;
     @Autowired
@@ -40,7 +35,7 @@ public class UserController {
     public Result selectListByUser(HttpServletRequest request, @RequestBody Users record) {
         PageHelper.startPage(record.getCurrent(), record.getPageSize());
         List<Users> list = usersService.selectListByUser(record);
-        PageInfo<Users> page = new PageInfo<Users>(list);
+        PageInfo<Users> page = new PageInfo<>(list);
         if (page.getTotal() == 0)
             return Result.error("你查询的用户为空!");
         return Result.ok("查询成功", page);
@@ -75,12 +70,12 @@ public class UserController {
     public Result update(HttpServletRequest request, @RequestBody Users record) {
         Users nowuser = getUser(request);
         Users olduser = usersService.selectByPrimaryKey(record.getId());
-        int nowType = Integer.valueOf(nowuser.getType() == null ? "0" : nowuser.getType());
-        int oldreType = Integer.valueOf(olduser.getType() == null ? "0" : olduser.getType());
+        int nowType = Integer.parseInt(nowuser.getType() == null ? "0" : nowuser.getType());
+        int oldreType = Integer.parseInt(olduser.getType() == null ? "0" : olduser.getType());
         if ((nowType <= oldreType && oldreType != 3) && nowuser.getId() != record.getId())
             return Result.error("您无此权限");
         if (record.getType() != null) {
-            int reType = Integer.valueOf(record.getType());
+            int reType = Integer.parseInt(record.getType());
             if ((nowType <= reType && reType != 3) && nowuser.getId() != record.getId())
                 return Result.error("您无此权限");
         }
@@ -115,7 +110,7 @@ public class UserController {
                 return Result.error("密码不正确");
             }
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
             return Result.error("修改密码失败");
         }
     }
@@ -131,7 +126,7 @@ public class UserController {
             usersService.updateByPrimaryKey(record);
             return Result.ok("修改成功");
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
             return Result.error("修改密码失败，请重试！");
         }
     }
@@ -159,14 +154,14 @@ public class UserController {
             usersService.insert(record);
             return Result.ok("新增用户成功", record);
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
             return Result.error("密码加密失败，请重试！");
         }
     }
 
     @RequestMapping(value = "/findGroups", method = RequestMethod.GET)
     public Result findGroups(HttpServletRequest request) {
-        List<GroupTeam> list = new ArrayList<GroupTeam>();
+        List<GroupTeam> list;
         Users nowUser = getUser(request);
         if ("1".equals(nowUser.getType())) {
             GroupTeam gt = new GroupTeam();

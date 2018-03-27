@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.kdkj.intelligent.entity.AdminMsg;
 import com.kdkj.intelligent.util.Result;
 import com.kdkj.intelligent.websocket.AdminHandler;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -16,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("message")
 public class MessageController {
-
+    private static final Logger logger = LogManager.getLogger(MessageController.class);
     /**
      * 获取用户建议
      *
@@ -49,7 +51,7 @@ public class MessageController {
             AdminHandler.adviceMsg.add(adminMsg);
             return Result.ok("success");
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
             return Result.error("failing");
         }
     }

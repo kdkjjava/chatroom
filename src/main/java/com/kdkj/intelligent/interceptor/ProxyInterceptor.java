@@ -1,8 +1,8 @@
 package com.kdkj.intelligent.interceptor;
 
 import com.kdkj.intelligent.service.UsersService;
+import com.kdkj.intelligent.util.Variables;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -10,8 +10,6 @@ import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
-
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
@@ -34,13 +32,13 @@ public class ProxyInterceptor implements HandshakeInterceptor {
         if (serverHttpRequest instanceof ServletServerHttpRequest) {
             HttpServletRequest request = ((ServletServerHttpRequest) serverHttpRequest).getServletRequest();
             HttpServletResponse response = ((ServletServerHttpResponse) serverHttpResponse).getServletResponse();
-            String msgFrom = request.getHeader("msgFrom");
+            String msgFrom = request.getHeader(Variables.MSGFROM);
             if (msgFrom != null) {
                 if (usersService.hasExpired(msgFrom)) {
                     response.getWriter().write("{\"code\":\"500\",\"msg\":\"您的用户已过期，请联系管理员\"}");
                     return false;
                 }
-                map.put("msgFrom", msgFrom);
+                map.put(Variables.MSGFROM, msgFrom);
             } else {
                 response.getWriter().write("{\"code\":\"500\",\"msg\":\"请求参数不完整\"}");
                 return false;
@@ -53,6 +51,6 @@ public class ProxyInterceptor implements HandshakeInterceptor {
 
     @Override
     public void afterHandshake(ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse, WebSocketHandler webSocketHandler, Exception e) {
-
+        //握手后执行的方法
     }
 }

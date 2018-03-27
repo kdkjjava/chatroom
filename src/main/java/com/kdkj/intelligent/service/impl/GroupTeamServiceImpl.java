@@ -35,10 +35,7 @@ public class GroupTeamServiceImpl implements GroupTeamService {
         Members record = new Members();
         record.setGroupId(id);
         webSocketApi.deleteGroup(id);
-        //usersMapper.updateNogroupMemberTime(id);
         membersMapper.deleteMemberShip(record);
-        int i = groupTeamMapper.deleteByPrimaryKey(id);
-
         return groupTeamMapper.deleteByPrimaryKey(id);
     }
 
@@ -99,9 +96,7 @@ public class GroupTeamServiceImpl implements GroupTeamService {
     @Override
     public Boolean findMembership(Members record) {
         List<Members> list = membersMapper.findMemberShip(record);
-        if (list != null && list.size() > 0)
-            return true;
-        return false;
+        return list != null && !list.isEmpty();
     }
 
     @Override
@@ -186,5 +181,6 @@ public class GroupTeamServiceImpl implements GroupTeamService {
     public String selectMasterNameByGroupId(String groupId) {
         return groupTeamMapper.selectMasterNameByGroupId(groupId);
     }
+
 
 }

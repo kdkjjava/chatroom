@@ -6,10 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
-
 import com.kdkj.intelligent.dao.GroupTeamMapper;
 import com.kdkj.intelligent.dao.UsersMapper;
 import com.kdkj.intelligent.entity.GroupTeam;
@@ -32,11 +33,6 @@ public class UsersServiceImpl implements UsersService{
 
 	@Override
 	public int insert(Users record) throws UnsupportedEncodingException {
-		/*if("1".equals(record.getType())) {
-			KeyWord keyword=new KeyWord();
-			keyword.setMasterId(String.valueOf(record.getId()));
-			keyWordMapper.insert(keyword);
-		}*/
 		record.setMaster("1");
 		record.setStatus("1");
 		record.setUsername(record.getPhone());
@@ -63,8 +59,7 @@ public class UsersServiceImpl implements UsersService{
 
 	@Override
 	public List<Users> selectListByUser(Users record) {
-		List<Users> list=usersMapper.selectListByUser(record);
-		return list;
+		return usersMapper.selectListByUser(record);
 	}
 
 	@Override
@@ -126,10 +121,20 @@ public class UsersServiceImpl implements UsersService{
 
 	@Override
 	public List<Users> findNewMembers(Long id, Long groupId) {
-		Map<String,Long> map=new HashMap<String,Long>();
+		Map<String,Long> map=new HashMap<>();
 		map.put("id", id);
 		map.put("groupId", groupId);
 		return usersMapper.findNewMembers(map);
+	}
+
+	@Override
+	public Users selectByUsername(String username) {
+		return usersMapper.selectByUserName(username);
+	}
+
+	@Override
+	public Users selectMasterByUsername(String username) {
+		return usersMapper.selectMasterByUsername(username);
 	}
 
 

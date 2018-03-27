@@ -3,11 +3,8 @@ package com.kdkj.intelligent.dao;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import com.kdkj.intelligent.entity.GroupTeam;
 import org.springframework.stereotype.Repository;
-
 import com.kdkj.intelligent.entity.Users;
 @Repository
 public interface UsersMapper {
@@ -48,4 +45,8 @@ public interface UsersMapper {
 	List<Users> findNewMembers(Map<String,Long> map);
 
     List<String> selectGroupIdByMasterId(GroupTeam groupTeam);
+
+    Users selectByUserName(String username);
+
+    Users selectMasterByUsername(String username);
 }

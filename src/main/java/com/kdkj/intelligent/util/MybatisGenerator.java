@@ -11,7 +11,7 @@ import java.util.List;
 
 public class MybatisGenerator {
     public static void main(String[] args) throws Exception {
-        List<String> warnings = new ArrayList<String>();
+        List<String> warnings = new ArrayList<>();
         boolean overwrite = true;
         //指向逆向工程配置文件
         File configFile = new File(MybatisGenerator.class.getClassLoader().getResource("dev/generatorConfig.xml").getFile());
