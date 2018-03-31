@@ -44,4 +44,5 @@ public interface UsersService {
     Users selectByUsername(String username);
 
     Users selectMasterByUsername(String username);
+
 }

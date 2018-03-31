@@ -78,8 +78,8 @@ public class ProxyHandler implements WebSocketHandler {
 
     @Override
     public void handleTransportError(WebSocketSession webSocketSession, Throwable throwable) throws Exception {
-        throwable.printStackTrace();
-        logger.error(throwable.getMessage());
+        /*throwable.printStackTrace();
+        logger.error(throwable.getMessage());*/
     }
 
     @Override

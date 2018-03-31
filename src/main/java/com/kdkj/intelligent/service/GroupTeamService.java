@@ -42,4 +42,6 @@ public interface GroupTeamService {
     Integer updateDefenseStrategy(GroupTeam groupTeam);
 
     List<String> selectGroupIdByMasterId(GroupTeam groupTeam);
+
+    GroupTeam selectDefenseSetting(GroupTeam groupTeam);
 }

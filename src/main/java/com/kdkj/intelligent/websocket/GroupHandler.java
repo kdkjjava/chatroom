@@ -2,6 +2,7 @@ package com.kdkj.intelligent.websocket;
 
 import com.alibaba.fastjson.JSON;
 import com.kdkj.intelligent.entity.GroupTeam;
+import com.kdkj.intelligent.entity.Members;
 import com.kdkj.intelligent.entity.SocketMsg;
 import com.kdkj.intelligent.service.GroupTeamService;
 import com.kdkj.intelligent.service.MembersService;
@@ -20,7 +21,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
 public class GroupHandler implements WebSocketHandler {
-    private static final  Logger logger = LogManager.getLogger(GroupHandler.class);
+    private static final Logger logger = LogManager.getLogger(GroupHandler.class);
 
     @Autowired
     private GroupTeamService groupTeamService;
@@ -65,12 +66,17 @@ public class GroupHandler implements WebSocketHandler {
         String msgFrom = getParam(webSocketSession, Variables.MSGFROM);
         webSocketSession.setBinaryMessageSizeLimit(524288);
         webSocketSession.setTextMessageSizeLimit(524288);
+        Members members = membersService.selectBlockStatus(groupId, msgFrom);
+        ConcurrentWebSocket concurrentWebSocket = new ConcurrentWebSocket(webSocketSession);
+        //判断当前用户是否被禁言
+        if (members != null && isBlock(members, concurrentWebSocket))
+            concurrentWebSocket.setTalkingStatus(1);
         //将连接地址的参数groupId的值放入变量roomCode中
         if (sessionPools.containsKey(groupId)) {
-            sessionPools.get(groupId).put(msgFrom, new ConcurrentWebSocket(webSocketSession));
+            sessionPools.get(groupId).put(msgFrom, concurrentWebSocket);
         } else {
             sessionPools.put(groupId, new ConcurrentHashMap<>());
-            sessionPools.get(groupId).put(msgFrom, new ConcurrentWebSocket(webSocketSession));
+            sessionPools.get(groupId).put(msgFrom, concurrentWebSocket);
         }
         if (leaveMsg.get(groupId).containsKey(msgFrom))
             getUnReceivedMsg(groupId, msgFrom);
@@ -144,10 +150,15 @@ public class GroupHandler implements WebSocketHandler {
             membersService.deleteMemberShip(groupId, msgFrom);
             return;
         }
-
-
+        ConcurrentWebSocket concurrentWebSocket = sessionPools.get(groupId).get(msgFrom);
+        //记录发送间隔
+        recording(concurrentWebSocket);
+        if (concurrentWebSocket.getTalkingStatus() != 0) {
+            concurrentWebSocket.send(new TextMessage("禁言"));
+            return;
+        }
         //调用普通信息的发送方法
-        new Thread(() -> sendUsualMessage(sessionPools.get(groupId).get(msgFrom), socketMsg, webSocketMessage)).start();
+        new Thread(() -> sendUsualMessage(concurrentWebSocket, socketMsg, webSocketMessage)).start();
         String masterName = groupTeamService.selectMasterNameByGroupId(socketMsg.getGroupId());
         if (groupTeamService.findMembership(socketMsg.getMsgFrom(), socketMsg.getGroupId()) && ProxyHandler.masterSessionPools.containsKey(masterName)) {
             sendToClient(socketMsg, masterName);
@@ -161,14 +172,17 @@ public class GroupHandler implements WebSocketHandler {
      * @param concurrentWebSocket 当前session对象
      */
     private void sendUsualMessage(ConcurrentWebSocket concurrentWebSocket, SocketMsg socketMsg, WebSocketMessage<?> webSocketMessage) {
+
+
         String groupId = (String) concurrentWebSocket.getSession().getAttributes().get(Variables.GROUPID);
+
         if (!groupId.equals(socketMsg.getGroupId())) {
             concurrentWebSocket.send(new TextMessage("{\"errorCode\":\"请求参数错误！\"}"));
         }
-        if (concurrentWebSocket.getTalkingStatus()==0){
+        if (concurrentWebSocket.getTalkingStatus() == 0) {
             //遍历map集合，将消息发送至同一个房间下的session
-            if (sessionPools.containsKey(socketMsg.getGroupId()) )
-                sessionPools.get(socketMsg.getGroupId()).forEach((key, item) -> item.sendGroupMsg(webSocketMessage));
+            if (sessionPools.containsKey(socketMsg.getGroupId()))
+                sessionPools.get(socketMsg.getGroupId()).forEach((key, item) -> item.send(webSocketMessage));
             List<String> groupMembers = membersService.selectUsernameInGroup(groupId);
             groupMembers.forEach(item -> {
                 if (TotalHandler.totalSessions.containsKey(item) && !sessionPools.get(groupId).containsKey(item)) {
@@ -179,7 +193,7 @@ public class GroupHandler implements WebSocketHandler {
                     leaveMsg.get(groupId).get(item).add(socketMsg);
                 }
             });
-        }else {
+        } else {
             concurrentWebSocket.send(new TextMessage("发送频率过高，您已被禁言！！！"));
         }
     }
@@ -204,6 +218,45 @@ public class GroupHandler implements WebSocketHandler {
      */
     private String getParam(WebSocketSession webSocketSession, String param) {
         return (String) webSocketSession.getAttributes().get(param);
+    }
+
+    /**
+     * 记录发言时间间隔
+     *
+     * @param concurrentWebSocket
+     */
+    private void recording(ConcurrentWebSocket concurrentWebSocket) {
+        long sendTime = System.currentTimeMillis();
+        if (sendTime - concurrentWebSocket.getLastTalking() < 2000)//如果发送时间间隔小于两秒，则计数器+1
+            concurrentWebSocket.setHz(concurrentWebSocket.getHz() + 1);
+        if (sendTime - concurrentWebSocket.getLastTalking() > 30000)
+            concurrentWebSocket.setHz(0);
+        //如果超过10次频繁发言则将禁言状态改为1
+        if (concurrentWebSocket.getHz() > 10) {
+            concurrentWebSocket.setTalkingStatus(1);
+            membersService.updateSpeakStatus((String) concurrentWebSocket.getSession().getAttributes().get(Variables.MSGFROM), (String) concurrentWebSocket.getSession().getAttributes().get(Variables.GROUPID), 1);
+        }
+        concurrentWebSocket.setLastTalking(sendTime);
+    }
+
+    /**
+     * 判断是否被禁言
+     */
+    private boolean isBlock(Members members, ConcurrentWebSocket concurrentWebSocket) {
+        if (members.getBlock() == 0)
+            return false;
+        Date date = members.getBlockTime();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.HOUR, 1);
+        Calendar now = Calendar.getInstance();
+        now.setTime(new Date());
+        if (now.before(calendar))
+            return true;
+        else {
+            membersService.updateSpeakStatus((String) concurrentWebSocket.getSession().getAttributes().get(Variables.MSGFROM), (String) concurrentWebSocket.getSession().getAttributes().get(Variables.GROUPID), 0);
+            return false;
+        }
     }
 
 

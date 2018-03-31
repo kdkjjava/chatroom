@@ -174,7 +174,7 @@ public class GroupTeamServiceImpl implements GroupTeamService {
 
     @Override
     public List<String> selectGroupIdByMasterId(GroupTeam groupTeam) {
-        return usersMapper.selectGroupIdByMasterId(groupTeam);
+        return groupTeamMapper.selectGroupIdByMasterId(groupTeam);
     }
 
     @Override
@@ -182,5 +182,8 @@ public class GroupTeamServiceImpl implements GroupTeamService {
         return groupTeamMapper.selectMasterNameByGroupId(groupId);
     }
 
-
+    @Override
+    public GroupTeam selectDefenseSetting(GroupTeam groupTeam) {
+        return groupTeamMapper.selectDefenseSetting(groupTeam.getMasterId());
+    }
 }

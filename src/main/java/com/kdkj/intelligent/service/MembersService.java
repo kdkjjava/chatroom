@@ -1,5 +1,7 @@
 package com.kdkj.intelligent.service;
 
+import com.kdkj.intelligent.entity.Members;
+
 import java.util.List;
 
 /**
@@ -15,4 +17,10 @@ public interface MembersService {
     List<String> selectGroupIdByUsername(String username);
 
     Integer deleteMemberShip(String groupId, String msgFrom);
+
+    Boolean updateSpeakStatus(String msgFrom, String groupId,Integer value);
+
+    Members selectBlockStatus(String groupId, String msgFrom);
+
+    Members selectBlockStatus(Members members);
 }

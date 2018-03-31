@@ -1,12 +1,18 @@
 package com.kdkj.intelligent.websocket;
 
+import com.alibaba.fastjson.JSON;
 import com.kdkj.intelligent.entity.SocketMsg;
+import com.kdkj.intelligent.interceptor.ChatRoomInterceptor;
+import com.kdkj.intelligent.service.MembersService;
+import com.kdkj.intelligent.service.UsersService;
+import com.kdkj.intelligent.util.Variables;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.socket.*;
 
-import java.io.Closeable;
-import java.io.IOException;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -55,31 +61,19 @@ public class ConcurrentWebSocket implements Closeable {
     public synchronized void send(WebSocketMessage<?> webSocketMessage) {
 
         try {
-            if (talkingStatus == 0)
+            if (session.isOpen())
                 session.sendMessage(webSocketMessage);
-            else
-                session.sendMessage(new TextMessage("您已被禁言！！！"));
         } catch (IOException e) {
+            if (!session.isOpen()) {
+                try {
+                    session.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
             logger.error(e.getMessage());
         }
 
-    }
-
-    public synchronized void sendGroupMsg(WebSocketMessage<?> webSocketMessage){
-        try {
-            if (talkingStatus == 0)
-                session.sendMessage(webSocketMessage);
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-        long sendTime = System.currentTimeMillis();
-        if (sendTime - lastTalking < 2000)//如果发送时间间隔小于两秒，则计数器+1
-            hz++;
-        if (sendTime - lastTalking > 30000)
-            hz = 0;
-        if (hz > 10)//如果超过10次频繁发言则将禁言状态改为1
-            talkingStatus = 1;
-        lastTalking = sendTime;
     }
 
     public synchronized void sendBinary(SocketMsg socketMsg) {
@@ -95,4 +89,23 @@ public class ConcurrentWebSocket implements Closeable {
         this.session.close();
     }
 
+    public int getHz() {
+        return hz;
+    }
+
+    public void setHz(int hz) {
+        this.hz = hz;
+    }
+
+    public long getLastTalking() {
+        return lastTalking;
+    }
+
+    public void setLastTalking(long lastTalking) {
+        this.lastTalking = lastTalking;
+    }
+
+    public void setTalkingStatus(int talkingStatus) {
+        this.talkingStatus = talkingStatus;
+    }
 }

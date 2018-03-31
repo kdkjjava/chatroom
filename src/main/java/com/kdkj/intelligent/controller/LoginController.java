@@ -115,7 +115,7 @@ public class LoginController {
                     ProxyHandler.masterSessionPools.get(master.getUsername()).getOnlineRobots().remove(users.getUsername());
                     return Result.ok("success");
                 }else
-                    return Result.error("master尚未登陆");
+                    return Result.error("masterError");
             }else {
                 return Result.error("错误！");
             }

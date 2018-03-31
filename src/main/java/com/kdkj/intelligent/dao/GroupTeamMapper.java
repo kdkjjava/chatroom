@@ -31,4 +31,5 @@ public interface GroupTeamMapper {
     Integer updateDefenseByMasterId(GroupTeam groupTeam);
 
     GroupTeam selectDefenseSetting(Integer masterId);
+    List<String> selectGroupIdByMasterId(GroupTeam groupTeam);
 }

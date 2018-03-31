@@ -22,6 +22,36 @@ public class Members extends Pageinfo implements Serializable{
 	 */
     private Date buildTime;
 
+    private Integer block;
+
+    private Integer ban;
+
+    private Date blockTime;
+
+    public Date getBlockTime() {
+        return blockTime;
+    }
+
+    public void setBlockTime(Date blockTime) {
+        this.blockTime = blockTime;
+    }
+
+    public Integer getBlock() {
+        return block;
+    }
+
+    public void setBlock(Integer block) {
+        this.block = block;
+    }
+
+    public Integer getBan() {
+        return ban;
+    }
+
+    public void setBan(Integer ban) {
+        this.ban = ban;
+    }
+
     public Long getId() {
         return id;
     }

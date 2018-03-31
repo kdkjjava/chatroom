@@ -27,6 +27,9 @@ public class ExceptionAll {
 
 	private static final  Logger logger = LogManager.getLogger(ExceptionAll.class);
 
+	private static final String TOOLARGE =  "文件过大或类型不匹配";
+
+	private static final String SERVER_ERROR = "你没有对应权限或内部错误请联系管理员";
 	/**
 	 * 处理文件过大异常
 	 * @param request
@@ -38,14 +41,23 @@ public class ExceptionAll {
 	@ResponseBody
 	public Result multipartExceptionErrorHandler(HttpServletRequest request, Exception e) {
 		logger.error(e.getMessage());
-		return Result.error("文件过大或类型不匹配");
+		e.printStackTrace();
+		return Result.error(TOOLARGE);
 	}
+
+	/**
+	 * 总的异常拦截，若前面的异常未拦截成功，则进入该拦截方法
+	 * @param request
+	 * @param e
+	 * @return
+	 */
 	@ExceptionHandler(Exception.class)
 	@ResponseStatus(HttpStatus.UNAUTHORIZED)
 	@ResponseBody
 	public Result processUnauthenticatedException(NativeWebRequest request, Exception e) {
 		logger.error(e.getMessage());
-		return Result.error("你没有对应权限或内部错误请联系管理员"); //返回一个逻辑视图名
+		e.printStackTrace();
+		return Result.error(SERVER_ERROR); //返回一个逻辑视图名
 	}
     
 }

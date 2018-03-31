@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.http.HttpServletRequest;
+
+import com.kdkj.intelligent.service.MembersService;
 import com.kdkj.intelligent.websocket.GroupHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,7 +27,8 @@ public class GroupTeamController {
 	private GroupTeamService groupTeamService;
 	@Autowired
 	private UsersService usersService;
-
+	@Autowired
+	private MembersService membersService;
 	private static final Logger logger = LogManager.getLogger(GroupTeamController.class);
 
 	@RequestMapping(value = "/selectListByGroup", method = RequestMethod.POST)
@@ -176,12 +179,10 @@ public class GroupTeamController {
 
 	/**
 	 * 开启频繁发言防御和炸房踢人接口
-	 * @param map
 	 * @return
 	 */
 	@PostMapping(value = "defense")
-	public Result changeDefense(@RequestBody Map<String, Object> map) {
-		GroupTeam groupTeam = mapToObj(GroupTeam.class, map);
+	public Result changeDefense(@RequestBody GroupTeam groupTeam) {
 
 		if (groupTeam !=null ){
 			Integer affect = groupTeamService.updateDefenseStrategy(groupTeam);
@@ -199,6 +200,33 @@ public class GroupTeamController {
 
 		return Result.error("参数传递错误");
 	}
+
+	/**
+	 * 获得房间禁言状态
+	 * @param groupTeam
+	 * @return
+	 */
+	@PostMapping("getBlockStatus")
+	public Result getBlockStatus(@RequestBody GroupTeam groupTeam){
+		if (groupTeam.getMasterId()==null)
+			return Result.error("请求参数不完整");
+		GroupTeam record = groupTeamService.selectDefenseSetting(groupTeam);
+		if (record!=null)
+			return Result.ok("0",record);
+		return Result.error("查询失败");
+	}
+
+	@PostMapping("getUserBlock")
+	public Result getUserBlock(@RequestBody Members members){
+		if (members.getGroupId()==null || members.getUserId()==null)
+			return Result.error("请求参数不完整");
+		Members returnMembers = membersService.selectBlockStatus(members);
+		if (members!=null)
+			return Result.ok("0",returnMembers);
+		return Result.error("没有数据");
+	}
+
+
 	/**
 	 * 将map集合封装为对象
 	 *

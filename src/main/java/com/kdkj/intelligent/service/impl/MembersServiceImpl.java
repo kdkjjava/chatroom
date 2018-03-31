@@ -1,6 +1,7 @@
 package com.kdkj.intelligent.service.impl;
 
 import com.kdkj.intelligent.dao.MembersMapper;
+import com.kdkj.intelligent.entity.Members;
 import com.kdkj.intelligent.service.MembersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,5 +33,20 @@ public class MembersServiceImpl implements MembersService{
     @Override
     public Integer deleteMemberShip(String groupId, String msgFrom) {
         return membersMapper.deleteMember(groupId,msgFrom);
+    }
+
+    @Override
+    public Boolean updateSpeakStatus(String msgFrom, String groupId,Integer value) {
+        return membersMapper.updateSpeakStatus(msgFrom,groupId,value);
+    }
+
+    @Override
+    public Members selectBlockStatus(String groupId, String msgFrom) {
+        return membersMapper.selectBlockStatus(groupId,msgFrom);
+    }
+
+    @Override
+    public Members selectBlockStatus(Members members) {
+        return membersMapper.selectBlockByIds(members);
     }
 }

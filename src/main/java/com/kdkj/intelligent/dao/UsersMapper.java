@@ -44,7 +44,6 @@ public interface UsersMapper {
 
 	List<Users> findNewMembers(Map<String,Long> map);
 
-    List<String> selectGroupIdByMasterId(GroupTeam groupTeam);
 
     Users selectByUserName(String username);
 

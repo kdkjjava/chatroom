@@ -8,6 +8,9 @@
         <result column="group_id" jdbcType="INTEGER" property="groupId"/>
         <result column="status" jdbcType="VARCHAR" property="status"/>
         <result column="build_time" jdbcType="TIMESTAMP" property="buildTime"/>
+        <result column="block" jdbcType="INTEGER" property="block"/>
+        <result column="block_time" jdbcType="TIMESTAMP" property="blockTime"/>
+
     </resultMap>
 
     <delete id="deleteMemberShip" parameterType="com.kdkj.intelligent.entity.Members">
@@ -52,7 +55,24 @@
         select id from users where username = #{username,jdbcType=VARCHAR} limit 1));
     </select>
     <delete id="deleteMember" parameterType="java.lang.String">
-        delete from members where user_id = (select id from users where username = #{msgFrom,jdbcType=VARCHAR})
-        and group_id = (select id from group_team where group_id = #{groupId,jdbcType=VARCHAR})
+        delete from members where user_id = (select id from users where username = #{msgFrom,jdbcType=VARCHAR} limit 1)
+        and group_id = (select id from group_team where group_id = #{groupId,jdbcType=VARCHAR} limit 1)
     </delete>
+    <update id="updateSpeakStatus">
+        update members
+        <set>
+            block=#{value,jdbcType=INTEGER}
+            <if test="value == 1">,block_time=now()</if>
+        </set>
+        where user_id = (select id from users where username = #{msgFrom,jdbcType=VARCHAR} limit 1)
+        and group_id = (select id from group_team where group_id = #{groupId,jdbcType=VARCHAR} limit 1)
+    </update>
+    <select id="selectBlockStatus" resultMap="BaseResultMap">
+        select block,block_time from members  where user_id = (select id from users where username = #{msgFrom,jdbcType=VARCHAR} limit 1)
+        and group_id = (select id from group_team where group_id = #{groupId,jdbcType=VARCHAR} limit 1)
+    </select>
+    <select id="selectBlockByIds" resultMap="BaseResultMap" parameterType="Members">
+        select block,block_time from members  where user_id = #{userId,jdbcType=INTEGER}
+        and group_id = #{groupId,jdbcType=INTEGER} limit 1
+    </select>
 </mapper>

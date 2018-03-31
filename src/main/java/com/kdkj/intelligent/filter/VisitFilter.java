@@ -45,6 +45,7 @@ public class VisitFilter implements Filter {
 		allowedPath.add("/user/addUser");
 		allowedPath.add("/tokenLogin");
 		allowedPath.add("/validate");
+		allowedPath.add("/robotLogout");
 		containPath.add("/phoneifexist");
 		containPath.add("/test");
 	}
