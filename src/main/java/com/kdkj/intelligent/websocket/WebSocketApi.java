@@ -74,7 +74,7 @@ public class WebSocketApi {
      */
     public void initSocketConnection(Users user, String header) {
         String username = user.getUsername();
-        if (header != null) {
+        if (header == null) {
             if (TotalHandler.totalSessions.containsKey(user.getUsername())) {
                 TotalHandler.totalSessions.get(username).close(4888, Variables.OFFLINEREASON);
                 TotalHandler.totalSessions.remove(username);

@@ -41,10 +41,10 @@ public class LoginController {
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public Result login(HttpServletRequest request, @RequestBody Users record) {
 		Result result = loginAction(request, record);
-		if ("0".equals(result.get("code"))){
+		if ((int)result.get("code")==0){
 			webSocketApi.initSocketConnection((Users) result.get("data"),request.getHeader("xxxx"));
 		}
-		return loginAction(request, record);
+		return result;
 	}
 
 	@RequestMapping(value = "/tokenLogin", method = RequestMethod.GET)
