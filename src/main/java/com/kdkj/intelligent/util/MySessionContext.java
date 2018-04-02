@@ -27,8 +27,13 @@ public class MySessionContext {
   
     public synchronized void delSession(String username) {  
     	HttpSession session=sessionMap.get(username);
-    	if(session!=null)
-    		session.invalidate();
+    	if(session!=null) {
+    		try{
+    			session.invalidate();
+    		}catch(Exception e) {
+    			e.printStackTrace();
+    		}
+    		}
     	sessionMap.remove(username);
     }  
   
