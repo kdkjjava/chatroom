@@ -51,7 +51,8 @@ public class FriendHandler implements WebSocketHandler {
                 }
             }
         }
-
+        if (TotalHandler.sessionContainer.containsKey(msgFrom))
+            TotalHandler.sessionContainer.get(msgFrom).add(new ConcurrentWebSocket(webSocketSession));
     }
 
     @Override

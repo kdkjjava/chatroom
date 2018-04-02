@@ -22,7 +22,7 @@ import java.util.*;
  * @Date: 2018/1/27 14:23
  * @Description:
  **/
-public class ConcurrentWebSocket implements Closeable {
+public class ConcurrentWebSocket{
 
     private static final Logger logger = LogManager.getLogger(ConcurrentWebSocket.class);
 
@@ -84,12 +84,26 @@ public class ConcurrentWebSocket implements Closeable {
         }
     }
 
-    @Override
-    public void close() throws IOException {
-        if (session.isOpen())
-            this.session.close();
+    public void close() {
+        if (session.isOpen()) {
+            try {
+                this.session.close();
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+                e.printStackTrace();
+            }
+        }
     }
-
+    public void close(int code,String reason) {
+        if (session.isOpen()) {
+            try {
+                this.session.close(new CloseStatus(code,reason));
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
     public int getHz() {
         return hz;
     }

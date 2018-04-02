@@ -42,7 +42,7 @@ public class LoginController {
 	public Result login(HttpServletRequest request, @RequestBody Users record) {
 		Result result = loginAction(request, record);
 		if ("0".equals(result.get("code"))){
-			webSocketApi.initSocketConnection((Users) result.get("data"));
+			webSocketApi.initSocketConnection((Users) result.get("data"),request.getHeader("xxxx"));
 		}
 		return loginAction(request, record);
 	}
