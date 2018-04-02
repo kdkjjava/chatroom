@@ -1,6 +1,7 @@
 package com.kdkj.intelligent.websocket;
 
 import com.kdkj.intelligent.entity.GroupTeam;
+import com.kdkj.intelligent.entity.Users;
 import com.kdkj.intelligent.service.GroupTeamService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -68,4 +69,21 @@ public class WebSocketApi {
             map.remove(obj);
     }
 
+    /**
+     * 断开被挤用户的websocket链接
+     * @param user
+     */
+    public void initSocketConnection(Users user) {
+        String username = user.getUsername();
+        if (TotalHandler.totalSessions.containsKey(user.getUsername())){
+            try {
+                TotalHandler.totalSessions.get(username).close();
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+                e.printStackTrace();
+            }
+            TotalHandler.totalSessions.remove(username);
+        }
+
+    }
 }

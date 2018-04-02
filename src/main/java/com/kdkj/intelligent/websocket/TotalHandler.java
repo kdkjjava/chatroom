@@ -30,8 +30,12 @@ public class TotalHandler implements WebSocketHandler {
     //该变量用于存储用户的总的session
     protected static Map<String, ConcurrentWebSocket> totalSessions;
 
+    //该变量用于存放用户所有websocket的引用
+    protected static Map<String,List<ConcurrentWebSocket>> sessionContainer;
+
     static {
         totalSessions = new ConcurrentHashMap<>();
+        sessionContainer = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -39,6 +43,7 @@ public class TotalHandler implements WebSocketHandler {
         String msgFrom = (String) webSocketSession.getAttributes().get("msgFrom");
         ConcurrentWebSocket concurrentWebSocket = new ConcurrentWebSocket(webSocketSession);
         if (msgFrom != null) {
+            sessionContainer.put(msgFrom,new ArrayList<>());
             if (!totalSessions.containsKey(msgFrom)) {
                 totalSessions.put(msgFrom, concurrentWebSocket);
             }

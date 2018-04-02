@@ -7,6 +7,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import com.kdkj.intelligent.websocket.ProxyHandler;
+import com.kdkj.intelligent.websocket.WebSocketApi;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,9 @@ public class LoginController {
 	@Autowired
 	private UsersService usersService;
 
+	@Autowired
+	private WebSocketApi webSocketApi;
+
 	@RequestMapping(value = "/phoneifexist", method = RequestMethod.POST)
 	public Result phoneifexist(HttpServletRequest request, @RequestBody Users record) {
 		List<Users> list = usersService.selectListByUser(record);
@@ -36,6 +40,10 @@ public class LoginController {
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public Result login(HttpServletRequest request, @RequestBody Users record) {
+		Result result = loginAction(request, record);
+		if ("0".equals(result.get("code"))){
+			webSocketApi.initSocketConnection((Users) result.get("data"));
+		}
 		return loginAction(request, record);
 	}
 

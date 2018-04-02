@@ -86,7 +86,8 @@ public class ConcurrentWebSocket implements Closeable {
 
     @Override
     public void close() throws IOException {
-        this.session.close();
+        if (session.isOpen())
+            this.session.close();
     }
 
     public int getHz() {

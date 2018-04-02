@@ -86,13 +86,10 @@ public class VisitFilter implements Filter {
 		String s = JSON.toJSONString((Result.error("用户尚未登录或者登录已过期，请重新登录！")));
 		HttpSession session = req.getSession();
 		String path = req.getServletPath();
-
 		//放行指定路径
-		for (String item :allowedPath){
-			if (item.equals(path)){
-				chain.doFilter(request, response);
-				return;
-			}
+		if (allowedPath.contains(path)){
+			chain.doFilter(request, response);
+			return;
 		}
 		//放行包含路径
 		for (String item :containPath){

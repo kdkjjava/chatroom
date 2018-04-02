@@ -80,6 +80,8 @@ public class GroupHandler implements WebSocketHandler {
         }
         if (leaveMsg.get(groupId).containsKey(msgFrom))
             getUnReceivedMsg(groupId, msgFrom);
+        //将websocket对象放到用户的socket池
+//        TotalHandler.totalSessions;
     }
 
     /**
