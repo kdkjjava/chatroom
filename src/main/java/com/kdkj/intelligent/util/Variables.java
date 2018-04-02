@@ -13,4 +13,5 @@ public class Variables {
     public static final String MSGTO = "msgTo";
     public static final String PING = "ping";
     public static final String PONG = "pong";
+    public static final String OFFLINEREASON = "您的账号在异地登陆，您已被挤下线";
 }
