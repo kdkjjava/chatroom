@@ -21,6 +21,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 
+import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.kdkj.intelligent.entity.Users;
 import com.kdkj.intelligent.service.UsersService;
@@ -77,10 +78,12 @@ public class VisitFilter implements Filter {
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse rep = (HttpServletResponse) response;
 		
+		String origin=req.getHeader("Origin");
+		if(!StringUtils.isEmpty(origin))
+			rep.setHeader("Access-Control-Allow-Origin", origin);
 		rep.setHeader("Access-Control-Allow-Credentials", "true");
 		rep.setHeader("Access-Control-Allow-Headers", "X-Requested-With, accept, content-type, xxxx,token");
 		rep.setHeader("Access-Control-Allow-Methods", "GET, HEAD, POST, PUT, DELETE, TRACE, OPTIONS, PATCH");
-		rep.setHeader("Access-Control-Allow-Origin", "http://localhost:8083");
 
 		rep.setCharacterEncoding("UTF-8");
 		String s = JSON.toJSONString((Result.error("用户尚未登录或者登录已过期，请重新登录！")));
