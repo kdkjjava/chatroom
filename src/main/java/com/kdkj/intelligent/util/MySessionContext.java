@@ -26,7 +26,11 @@ public class MySessionContext {
     }  
   
     public synchronized void delSession(String username) {  
-    	sessionMap.remove(username);
+    	if (username == null) {  
+    		HttpSession session=sessionMap.get(username);
+    		sessionMap.remove(username);
+    		session.invalidate();
+        } 
     }  
   
     public synchronized HttpSession getSession(String username) {  
